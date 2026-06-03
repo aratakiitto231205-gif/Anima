@@ -1,0 +1,643 @@
+/* ==========================================
+   PREMIUM VISUAL NOVEL & RPG STYLE STYLING
+   ========================================== */
+
+/* 1. Giao diện Môi trường (System/Environment Alert) */
+.cog-system-environment {
+    display: block;
+    width: 92%;
+    margin: 18px auto;
+    padding: 12px 18px;
+    text-align: center;
+    font-style: italic;
+    font-size: 0.95em;
+    font-family: 'Outfit', 'Inter', sans-serif;
+    color: #fbbf24; /* Vàng hổ phách cao cấp */
+    background: linear-gradient(90deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.02) 50%, rgba(245, 158, 11, 0.08));
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    border-left: 4px solid #f59e0b;
+    border-right: 4px solid #f59e0b;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 0 10px rgba(245, 158, 11, 0.05);
+    text-shadow: 0 0 6px rgba(245, 158, 11, 0.3);
+    animation: slideInSystem 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInSystem {
+    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 2. Giao diện Hành động (Beautiful Action Box) */
+.cog-action-caption {
+    display: block;
+    font-style: italic;
+    font-size: 0.92em;
+    line-height: 1.5;
+    color: #94a3b8; /* Xám dịu mắt */
+    background: rgba(255, 255, 255, 0.02);
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    border-left: 3px solid #6366f1; /* Neon Indigo */
+    border-radius: 4px 8px 8px 4px;
+    box-shadow: inset 2px 0 8px rgba(99, 102, 241, 0.05);
+    opacity: 0.9;
+}
+
+.cog-action-caption i {
+    color: #818cf8;
+    margin-right: 6px;
+    animation: walkIcon 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes walkIcon {
+    from { transform: translateX(0); }
+    to { transform: translateX(3px); }
+}
+
+/* 3. Lời thoại chính (Dialogue Text) */
+.cog-dialogue-text {
+    font-size: 1.05em;
+    line-height: 1.6;
+    color: #f8fafc;
+    padding: 4px 6px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* 4. Giao diện SFX Badge */
+.cog-sfx-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.08);
+    border: 1px solid rgba(251, 191, 36, 0.25);
+    border-radius: 6px;
+    padding: 3px 8px;
+    margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(251, 191, 36, 0.1);
+    animation: bounceSFX 2s infinite alternate ease-in-out;
+}
+
+@keyframes bounceSFX {
+    0% { transform: translateY(0); box-shadow: 0 2px 8px rgba(251, 191, 36, 0.1); }
+    100% { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(251, 191, 36, 0.25); }
+}
+
+/* 5. Cảm xúc & Hiệu ứng Bong bóng thoại Động */
+
+/* Tông màu nền Glassmorphism nền tảng cho tin nhắn */
+#chat .mes {
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Giận dữ: Rung lắc, màu đỏ cam rực lửa, bóng đổ lan tỏa */
+.cog-emotion-anger {
+    border: 2px solid rgba(239, 68, 68, 0.5) !important;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(239, 68, 68, 0.08)) !important;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2) !important;
+    animation: shakeBubble 0.12s infinite alternate !important;
+}
+
+.cog-emotion-anger .mes_text .cog-dialogue-text {
+    color: #fecaca !important;
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.3) !important;
+}
+
+@keyframes shakeBubble {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    100% { transform: translate(-1px, -1px) rotate(-0.5deg); }
+}
+
+/* Vui vẻ: Nảy nhẹ, viền ngọc lục bảo rực rỡ phát sáng */
+.cog-emotion-happy {
+    border: 2px solid rgba(16, 185, 129, 0.5) !important;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(16, 185, 129, 0.08)) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2) !important;
+    animation: bounceBubble 2s infinite alternate ease-in-out !important;
+}
+
+.cog-emotion-happy .mes_text .cog-dialogue-text {
+    color: #a7f3d0 !important;
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.3) !important;
+}
+
+@keyframes bounceBubble {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-4px); }
+}
+
+/* U sầu / Buồn bã: Màu xanh lam u uất nhạt nhòa, viền mờ dịu */
+.cog-emotion-sad {
+    border: 2px solid rgba(59, 130, 246, 0.4) !important;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(59, 130, 246, 0.05)) !important;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.15) !important;
+}
+
+.cog-emotion-sad .mes_text .cog-dialogue-text {
+    color: #93c5fd !important;
+    opacity: 0.95;
+}
+
+/* Lo sợ: Hiệu ứng rung giật cơ run rẩy, viền tím huyền bí */
+.cog-emotion-fear {
+    border: 2px dashed rgba(139, 92, 246, 0.4) !important;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(139, 92, 246, 0.08)) !important;
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.2) !important;
+    animation: shiverBubble 0.3s infinite alternate ease-in-out !important;
+}
+
+.cog-emotion-fear .mes_text .cog-dialogue-text {
+    color: #ddd6fe !important;
+    text-shadow: 0 0 8px rgba(139, 92, 246, 0.2) !important;
+}
+
+@keyframes shiverBubble {
+    0% { transform: translateX(0.6px); }
+    100% { transform: translateX(-0.6px); }
+}
+
+
+/* 6. Giao diện Thanh Quick-Input Helper Bar (Bản nâng cấp Giao diện Đỉnh cao) */
+.cog-user-input-helper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 8px 16px;
+    background: rgba(15, 23, 42, 0.65); /* Dark Slate Glassmorphism */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    box-sizing: border-box;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.cog-helper-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cog-helper-label {
+    font-size: 0.82em;
+    font-weight: 700;
+    color: #818cf8; /* Indigo Accent */
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Các nút chọn cảm xúc siêu đẹp */
+.cog-emotion-btn {
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(30, 41, 59, 0.5);
+    color: #94a3b8;
+    font-size: 0.8em;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cog-emotion-btn:hover {
+    color: #f8fafc;
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(30, 41, 59, 0.8);
+    transform: translateY(-1px);
+}
+
+/* Nút cảm xúc đang kích hoạt */
+.cog-emotion-btn.active[data-emotion="neutral"] {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: #cbd5e1 !important;
+    color: #f8fafc !important;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.cog-emotion-btn.active[data-emotion="happy"] {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #10b981 !important;
+    color: #34d399 !important;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.cog-emotion-btn.active[data-emotion="sad"] {
+    background: rgba(59, 130, 246, 0.15) !important;
+    border-color: #3b82f6 !important;
+    color: #60a5fa !important;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.cog-emotion-btn.active[data-emotion="anger"] {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important;
+    color: #f87171 !important;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+.cog-emotion-btn.active[data-emotion="fear"] {
+    background: rgba(139, 92, 246, 0.15) !important;
+    border-color: #8b5cf6 !important;
+    color: #a78bfa !important;
+    box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+/* Ô nhập liệu Glassmorphism (Loại bỏ ô màu trắng thô kệch) */
+.cog-helper-input {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.35); /* Tối và mờ */
+    color: #f8fafc;
+    font-size: 0.85em;
+    min-width: 150px;
+    flex-grow: 1;
+    transition: all 0.3s ease;
+}
+
+.cog-helper-input:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.cog-helper-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
+}
+
+/* Nút reset */
+.cog-reset-btn {
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    font-size: 0.8em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cog-reset-btn:hover {
+    background: rgba(239, 68, 68, 0.25);
+    border-color: rgba(239, 68, 68, 0.4);
+    transform: translateY(-0.5px);
+}
+
+/* 7. Giao diện Bộ chọn Tab & Database Quản lý Trí nhớ */
+.cog-tab-btn {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.cog-tab-btn:hover {
+    color: #f8fafc !important;
+    background: rgba(30, 41, 59, 0.8) !important;
+    border-color: rgba(99, 102, 241, 0.4) !important;
+}
+
+.cog-tab-btn.active {
+    color: #818cf8 !important;
+    background: rgba(99, 102, 241, 0.15) !important;
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.25);
+    font-weight: bold;
+}
+
+/* Các phần tử thuộc danh sách ký ức */
+.cog-db-lesson-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 5px;
+    padding: 6px 10px;
+    font-size: 0.85em;
+    color: #cbd5e1;
+    gap: 10px;
+    transition: background 0.2s ease;
+}
+
+.cog-db-lesson-item:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.cog-db-lesson-text {
+    flex-grow: 1;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+/* Các nút bấm thao tác Database Sửa / Xóa */
+.cog-db-item-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.cog-db-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85em;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    color: #64748b;
+}
+
+.cog-db-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.cog-db-icon-btn.edit:hover {
+    color: #fbbf24; /* Vàng hổ phách */
+}
+
+.cog-db-icon-btn.delete:hover {
+    color: #ef4444; /* Đỏ */
+}
+
+/* ==========================================
+   ADVANCED PSYCHOLOGICAL MEMORY DESIGN SYSTEM
+   ========================================== */
+
+/* 1. Hoạt ảnh phát sáng bóng đèn (Active Recall) */
+@keyframes glowLight {
+    0% { filter: drop-shadow(0 0 2px rgba(251, 191, 36, 0.4)); transform: scale(1); }
+    100% { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.95)); transform: scale(1.1); }
+}
+
+/* 2. Custom Range Slider Futuristic style */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    height: 6px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #6366f1;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.8);
+    transition: transform 0.1s, background-color 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background: #818cf8;
+}
+
+/* 3. Ngăn kéo ký ức gợi nhớ (Drawer Memory Card) */
+.cog-drawer-card {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 3px solid #eab308; /* Neon Gold */
+    border-radius: 6px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.cog-drawer-card:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(251, 191, 36, 0.3);
+    box-shadow: 0 4px 15px rgba(234, 179, 8, 0.08);
+}
+
+.cog-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8em;
+    color: #64748b;
+}
+
+.cog-drawer-stats {
+    display: flex;
+    gap: 8px;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.cog-drawer-badge {
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.8em;
+}
+
+.cog-badge-count {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.cog-badge-weight {
+    background: rgba(139, 92, 246, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+.cog-drawer-keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.cog-keyword-tag {
+    font-size: 0.75em;
+    font-weight: 600;
+    color: #22d3ee; /* Cyan */
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+
+.cog-associations-tag {
+    font-size: 0.75em;
+    color: #f472b6; /* Pink */
+    background: rgba(244, 114, 182, 0.08);
+    border: 1px solid rgba(244, 114, 182, 0.2);
+    border-radius: 4px;
+    padding: 1px 6px;
+    cursor: pointer;
+}
+
+/* 4. Biên niên sử Timeline Tree */
+.cog-timeline-container {
+    position: relative;
+    padding-left: 14px;
+    border-left: 2px solid rgba(16, 185, 129, 0.15); /* Green theme */
+    margin-left: 6px;
+    margin-top: 8px;
+}
+
+.cog-timeline-item {
+    position: relative;
+    padding-bottom: 12px;
+}
+
+.cog-timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 4px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 2px solid #0f172a;
+    box-shadow: 0 0 6px #10b981;
+}
+
+.cog-timeline-card {
+    background: rgba(16, 185, 129, 0.04);
+    border: 1px solid rgba(16, 185, 129, 0.1);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 0.85em;
+    color: #cbd5e1;
+    transition: all 0.2s;
+}
+
+.cog-timeline-card:hover {
+    background: rgba(16, 185, 129, 0.08);
+    border-color: rgba(16, 185, 129, 0.25);
+    transform: translateX(2px);
+}
+
+.cog-timeline-title {
+    font-weight: 700;
+    color: #34d399;
+    margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.cog-timeline-date {
+    font-size: 0.75em;
+    font-weight: normal;
+    color: #64748b;
+}
+
+.cog-timeline-summary {
+    line-height: 1.4;
+    font-style: italic;
+}
+
+/* ==========================================
+   NEURO-CHEMICAL INDICATORS PROGRESS BARS
+   ========================================== */
+.cog-hormone-bar-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.cog-hormone-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.76em;
+    color: #94a3b8;
+    font-weight: 600;
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.02em;
+}
+
+.cog-hormone-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.cog-hormone-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+/* Hiệu ứng nhịp thở nhấp nháy khi hormone báo động cực hạn (>= 7.5) */
+@keyframes breathingAlertHormone {
+    0% { filter: brightness(0.9) drop-shadow(0 0 2px rgba(255, 255, 255, 0.2)); opacity: 0.8; }
+    100% { filter: brightness(1.2) drop-shadow(0 0 10px rgba(255, 255, 255, 0.8)); opacity: 1; }
+}
+
+.cog-hormone-alert {
+    animation: breathingAlertHormone 0.8s infinite alternate ease-in-out !important;
+}
+
+/* ==========================================
+   AMYGDALA ADAPTIVE REFLEX STYLING (v3)
+   ========================================== */
+.cog-trigger-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 3px solid #f43f5e; /* Hồng ngọc Amygdala */
+    border-radius: 6px;
+    padding: 8px 10px;
+    gap: 8px;
+    transition: all 0.2s ease-in-out;
+}
+
+.cog-trigger-card:hover {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(244, 63, 94, 0.3);
+    box-shadow: 0 4px 15px rgba(244, 63, 94, 0.08);
+}
+
+.cog-trigger-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.cog-trigger-event {
+    font-weight: 600;
+    color: #fda4af;
+    font-size: 0.85em;
+    word-break: break-word;
+}
+
+.cog-trigger-effects {
+    font-size: 0.78em;
+    color: #cbd5e1;
+    margin-top: 2px;
+    word-break: break-word;
+}
+
+

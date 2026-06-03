@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+
+# Archives and backups
+archive/
+*.backup.*
+
+# Test coverage
+coverage/
+
+# Build outputs
+dist/
+build/

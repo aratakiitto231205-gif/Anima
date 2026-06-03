@@ -1,0 +1,6 @@
+Key: sk-JzQVP3rRnh1tx15M79T5T8IsDdyu5X2M1fv8MLkWYJz4Fx3v
+Model: gemini-3-flash-preview hoặc gemini-3.1-pro-preview
+
+profile: C:\Users\DMX HUNG HOA\Address\knowledge\user_profile_hitsuji\artifacts\profile.md
+
+new key: sk-ant-api03--Dgju-6gf_gFOdb22EklPkC9AK8cC0VKIczRc9pkHO8PVXlB6EMTQHvDoq6Yn4gM1tE4Z5AG5YvaxB-Me5s2FQ

@@ -1,0 +1,37 @@
+Báo cáo Ý tưởng: Cognitive Dashboard Extension
+
+1. Tầm nhìn & Mục tiêu Cốt lõi
+Biến AI từ một mô hình "Hỏi - Đáp" thành một thực thể sống động, đáp ứng các tiêu chí:
+- Không ảo giác (Zero Hallucination): Đảm bảo AI duy trì đúng bối cảnh, tính cách (OOC) và không bịa đặt các dữ kiện cốt lõi của nhân vật.
+- Có nhận thức thời gian, không gian: AI hiểu được hiện tại là ngày nào, mấy giờ và sử dụng công cụ (function calling) để cập nhật thông tin môi trường.
+- Trạng thái cảm xúc thực (Emotional Continuity): Tâm trạng AI thay đổi dựa trên các hành vi của người dùng và lưu trữ qua thời gian.
+- Cơ chế Tác tử chủ động (Autonomous Agent): AI có luồng suy nghĩ độc lập, chủ động tìm kiếm kiến thức hoặc tương tác.
+- Minh bạch qua Dashboard (Dễ Debug): Tất cả những điều kiện, trạng thái này phải hiển thị rõ ràng trên một bảng điều khiển.
+
+2. Các Tính năng Trọng tâm
+A. Chain of Thought (Dòng suy nghĩ nội tâm)
+Trước khi AI xuất ra tin nhắn trả lời, bắt buộc phải chạy qua luồng tư duy ẩn. Hiển thị hộp thoại "Thinking..." và ghi lại dòng suy nghĩ này trên Dashboard.
+
+B. Hệ thống Cảm xúc & Bộ nhớ Động
+Cảm xúc dao động 0-100. Gán "trọng số cảm xúc" vào ký ức trong Vector Storage để AI dễ nhớ những sự kiện ấn tượng.
+
+C. Function Calling & Real-time Context
+Cung cấp khả năng kích hoạt các function ẩn thông qua STscript. Nhận thức thời gian thực và không gian.
+
+D. Tác tử tự trị (Proactive Trigger)
+Thiết lập vòng lặp ngầm (background cron) để AI tự sinh ra suy nghĩ hoặc nhắn tin trước khi người dùng im lặng quá lâu.
+
+3. Lộ trình Triển khai
+Giai đoạn 1: Khung nền tảng (Dashboard Base)
+- [x] Tạo extension hợp lệ tích hợp thẳng vào ST's Extensions Tab.
+- [ ] Gắn API Hook (OAI_REQUEST_START, MESSAGE_RECEIVED) để đọc luồng gửi/nhận.
+- [ ] Xây dựng UI phản hồi lại theo sự kiện.
+
+Giai đoạn 2: Chain of Thought & Inject
+- [ ] Chèn prompt ẩn yêu cầu AI xuất ra JSON: [Thought, Emotion, Answer].
+- [ ] Parse cú pháp JSON, tách Answer ra khung chat, Thought và Emotion sang Dashboard.
+
+Giai đoạn 3: Long-term Evolution (Mở rộng dài hạn)
+- [ ] Lưu trạng thái cảm xúc vào Character Metadata (mang tính vĩnh viễn).
+- [ ] Kết hợp Vector Storage cho suy nghĩ nội tâm.
+- [ ] Bổ sung Function Calling API (thời tiết, tìm kiếm...).

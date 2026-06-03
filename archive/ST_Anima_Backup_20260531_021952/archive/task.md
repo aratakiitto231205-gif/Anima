@@ -1,0 +1,28 @@
+# Checklist Nhiệm Vụ Anima Engine v9.2 (Sửa Lỗi Nhận Thức XML & Parser)
+
+- `[x]` Pha 1: Chẩn đoán & Vá lỗi Prompt Injection cho lượt chat thứ hai (Turn 2)
+  - `[x]` Chuyển đổi kiểm tra vai trò sang không phân biệt chữ hoa chữ thường (`.toLowerCase()`)
+  - `[x]` Tự động khởi tạo và tiêm (unshift) tin nhắn `system` mới nếu thiếu trong payload của SillyTavern
+  - `[x]` Làm sạch (clean) nhắc nhở định dạng cũ để tránh phình ngữ cảnh khi Swipe/Regenerate
+- `[x]` Pha 2: Đồng bộ hóa Trạng thái Sinh vật học khi thức dậy (Sleep race condition fix)
+  - `[x]` Chuyển đổi cập nhật hormone khi ngủ dậy thành xử lý đồng bộ trước khi chạy quiet prompt củng cố
+- `[x]` Pha 3: Tối ưu hóa Bộ phân tích XML & Cơ chế tự phục hồi (Advanced Parser Fallback)
+  - `[x]` Thêm cơ chế tự động phân tách dấu hoa thị (`*`) cho phần prose nằm ngoài thẻ XML khi `hasAnyTag` là `true`
+  - `[x]` Thêm cơ chế tự động phân tách thoại và miêu tả theo dấu ngoặc kép (`"`, `“`)
+- `[x]` Pha 4: Kiểm thử tự động & Đồng bộ hóa Flat Backup
+  - `[x]` Sửa đổi tệp tin test dòng thời gian `test_time_jump.js` để khớp với API MemoryEngine mới
+  - `[x]` Chạy kiểm tra ES6 syntax (`node -c`) cho cả `index.js` và `CognitiveAgent.js` thành công
+  - `[x]` Đồng bộ hóa toàn bộ tệp tin mới nhất (`index.js`, `CognitiveAgent.js`, `template.html`, `style.css`, `walkthrough.md`) sang thư mục phẳng Desktop `ST plus`
+- `[x]` Pha 5: Đồng bộ hóa trực tiếp vào thư mục Active SillyTavern trên ổ D:
+  - `[x]` Sao chép và ghi đè tệp tin lõi sang `D:\silly\SillyTavern-Launcher\SillyTavern\public\scripts\extensions\third-party\cognitive-dashboard\`
+  - `[x]` Kiểm nghiệm và vá lỗi Prose Parser Fallback cao cấp thành công bằng văn bản lỗi thực tế của ní
+- `[x]` Pha 6: Giải quyết triệt để lỗi Chỉnh sửa tin nhắn (Edit Message) & Dọn dẹp điểm crash
+  - `[x]` Triển khai cơ chế bảo vệ chế độ chỉnh sửa (Edit Mode Protection)
+  - `[x]` Xóa bỏ hàm lỗi thời `buildNetworkAssociations` gây crash
+  - `[x]` Giải quyết hoàn hảo race condition lúc Save bằng trễ nhịp DOM 100ms (`setTimeout`)
+- `[x]` Pha 7: Khắc phục triệt để lỗi Syntax Error và lỗi bộ nhớ đệm khiến Swipe/Edit không Render
+  - `[x]` Xóa bỏ rác merge dính dấp tại dòng 385 (`saveActiveAgentState` bị gộp vào handler signature)
+  - `[x]` Xóa bỏ rác lặp lại tại dòng 626-666 (`onTextCompletionPromptReady` bị leak code rác)
+  - `[x]` Thiết lập biến theo dõi `lastProcessedMessageText` để phát hiện thay đổi nội dung ở cùng một index tin nhắn cuối
+  - `[x]` Đồng bộ hóa triệt để bản vá sạch cú pháp lên ổ D: và thư mục backup ST plus
+- `[x]` Pha 8: Bàn giao trực quan và hướng dẫn ní reload trình duyệt (F5) để thưởng thức bản cập nhật hoàn mỹ!
