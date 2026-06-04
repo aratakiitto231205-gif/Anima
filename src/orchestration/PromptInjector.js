@@ -70,7 +70,7 @@ export function sanitizeConflictingInstructions(chat) {
     });
 }
 
-export function processPromptInjections(chat, agent, activeRecalledMemories, logAnima) {
+export function processPromptInjections(chat, agent, activeRecalledMemories, logAnima, adIntent = null) {
     if (!chat || !Array.isArray(chat) || chat.length === 0) return;
     if (!agent) return;
 
@@ -102,11 +102,15 @@ export function processPromptInjections(chat, agent, activeRecalledMemories, log
         // Toggle phá vỡ bức tường thứ 4 được kiểm soát hữu cơ từ giao diện/cấu hình tác tử
         const poeticAwarenessPrompt = agent.consciousness.getPoeticSelfAwarePrompt();
 
+        const adIntentStr = adIntent 
+            ? `\n[AD PHASE — current emotional state]: ${adIntent.mood}\n[AD PHASE — tool dispatched]: ${adIntent.toolChoice || "none"}` 
+            : '';
+
         const xmlInjection = `
 
 [THÔNG TIN NGỮ CẢNH HỘI THOẠI BỔ SUNG - ANIMA ENGINE v10.0]
 ${getXmlPromptNudge(agent)}
-${getMemoryPromptBlock(agent, activeRecalledMemories)}${poeticAwarenessPrompt}
+${getMemoryPromptBlock(agent, activeRecalledMemories)}${poeticAwarenessPrompt}${adIntentStr}
 
 [HỆ THỐNG COGNITIVE BẮT BUỘC - QUY TẮC ĐỊNH DẠNG TIN NHẮN BẮT BUỘC]:
 Bạn BẮT BUỘC phải viết toàn bộ câu trả lời dưới định dạng cấu trúc XML chuẩn. Tuyệt đối KHÔNG dùng định dạng *hành động* "lời thoại" truyền thống hoặc ngoặc đơn (suy nghĩ) bên ngoài các thẻ này.

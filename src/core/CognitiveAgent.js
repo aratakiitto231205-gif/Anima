@@ -9,6 +9,10 @@
 import { HormoneEngine } from './HormoneEngine.js';
 import { MemoryEngine } from './MemoryEngine.js';
 import { ConsciousnessEngine } from './ConsciousnessEngine.js';
+import { PersonalityCore } from './PersonalityCore.js';
+import { ADAgent } from '../cognitive/ADAgent.js';
+import fs from 'fs';
+import path from 'path';
 
 export class CognitiveAgent {
     constructor(saveState = null) {
@@ -25,6 +29,9 @@ export class CognitiveAgent {
         this.hormones = new HormoneEngine(memoryData?.neuro_chemistry);
         this.memory = new MemoryEngine(memoryData, this.genetics);
         this.consciousness = new ConsciousnessEngine(memoryData?.config);
+        
+        this.personalityCore = new PersonalityCore(memoryData?.personality_traits);
+        this.adAgent = null;
         
         this.body = memoryData?.body || 'Bình thường, khỏe mạnh.';
         
@@ -324,6 +331,38 @@ export class CognitiveAgent {
         this.mental_state = "Cân bằng / Yên bình 😐";
     }
 
+    async getADIntentForMessage(userInput, availableTools = [], characterName = 'itto') {
+        if (!this.adAgent) {
+            this.adAgent = new ADAgent();
+        }
+
+        let charPersonality = {};
+        try {
+            const pPath = path.join(process.cwd(), 'characters', characterName.toLowerCase(), 'personality.json');
+            if (fs.existsSync(pPath)) {
+                charPersonality = JSON.parse(fs.readFileSync(pPath, 'utf8'));
+            }
+        } catch (err) {
+            console.warn(`Could not load personality for ${characterName}:`, err.message);
+        }
+
+        const mergedTraits = { ...charPersonality, ...this.personalityCore.getAllTraits() };
+        const context = `Mental State: ${this.mental_state}.`;
+
+        const result = await this.adAgent.evaluate({
+            context,
+            userInput,
+            availableTools,
+            personality: mergedTraits,
+            characterName
+        });
+
+        if (result) {
+            console.log(`[AD] mood=${result.mood} tool=${result.toolChoice || 'none'} spend=$${this.adAgent.getTokenSpendToday().toFixed(4)}`);
+        }
+        return result;
+    }
+
     serialize() {
         const memSerialized = this.memory.serialize();
         return {
@@ -338,7 +377,8 @@ export class CognitiveAgent {
             last_update_timestamp: this.last_update_timestamp,
             personality: this.personality,
             biomarker_triggers: this.biomarker_triggers,
-            neuro_history: this.neuro_history
+            neuro_history: this.neuro_history,
+            personality_traits: this.personalityCore.serialize()
         };
     }
 }

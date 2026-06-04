@@ -39,6 +39,7 @@ export class EventOrchestrator {
             if (!eventData || !Array.isArray(eventData.chat)) return;
 
             const agent = this.getActiveAgent();
+            let adIntent = null;
             if (agent) {
                 applyTemporalAnchor(agent, eventData.chat);
 
@@ -52,6 +53,12 @@ export class EventOrchestrator {
                 if (result.shouldProcess) {
                     if (!result.wasSleeping && lastUserMsg && lastUserMsg !== this.lastProcessedUserMsg) {
                         agent.processMessage(lastUserMsg, 'user', messageIndex);
+                        
+                        const context = typeof SillyTavern !== 'undefined' ? SillyTavern.getContext() : {};
+                        const charName = context?.characters?.[context?.characterId]?.name || 'itto';
+                        const availableTools = ["search_web", "recall_memory", "play_music", "set_timer", "tell_joke", "check_news", "surf_tiktok", "query_lore_db"];
+                        adIntent = await agent.getADIntentForMessage(lastUserMsg, availableTools, charName);
+                        
                         this.saveActiveAgentState();
                     }
                     this.lastProcessedUserMsg = result.newLastProcessedUserMsg;
@@ -79,7 +86,7 @@ export class EventOrchestrator {
                 updateActiveRecallUI(this.activeRecalledMemories);
             }
 
-            processPromptInjections(eventData.chat, this.getActiveAgent(), this.activeRecalledMemories, this.logAnima);
+            processPromptInjections(eventData.chat, this.getActiveAgent(), this.activeRecalledMemories, this.logAnima, adIntent);
         } catch (err) {
             console.error("Anima Engine: Error in onChatCompletionPromptReady:", err);
         }
@@ -120,6 +127,7 @@ export class EventOrchestrator {
             if (!chat || !Array.isArray(chat)) return;
 
             const agent = this.getActiveAgent();
+            let adIntent = null;
             if (agent) {
                 applyTemporalAnchor(agent, chat);
 
@@ -133,13 +141,19 @@ export class EventOrchestrator {
                 if (result.shouldProcess) {
                     if (!result.wasSleeping && lastUserMsg && lastUserMsg !== this.lastProcessedUserMsg) {
                         agent.processMessage(lastUserMsg, 'user', messageIndex);
+                        
+                        const context = typeof SillyTavern !== 'undefined' ? SillyTavern.getContext() : {};
+                        const charName = context?.characters?.[context?.characterId]?.name || 'itto';
+                        const availableTools = ["search_web", "recall_memory", "play_music", "set_timer", "tell_joke", "check_news", "surf_tiktok", "query_lore_db"];
+                        adIntent = await agent.getADIntentForMessage(lastUserMsg, availableTools, charName);
+                        
                         this.saveActiveAgentState();
                     }
                     this.lastProcessedUserMsg = result.newLastProcessedUserMsg;
                 }
             }
 
-            processPromptInjections(chat, this.getActiveAgent(), this.activeRecalledMemories, this.logAnima);
+            processPromptInjections(chat, this.getActiveAgent(), this.activeRecalledMemories, this.logAnima, adIntent);
         } catch (err) {
             this.logAnima('error', 'Interceptor', 'Lỗi nghiêm trọng trong Prompt Interceptor của Anima Engine:', err);
         }

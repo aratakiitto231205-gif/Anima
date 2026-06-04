@@ -13,6 +13,9 @@ import { startSubconsciousTicker } from './src/backstage/SubconsciousTicker.js';
 // Orchestration modules
 import { EventOrchestrator } from './src/orchestration/EventOrchestrator.js';
 
+// UI Modules
+import { ADSettingsPanel } from './src/ui/ADSettingsPanel.js';
+
 const MODULE_NAME = 'third-party/cognitive-dashboard';
 let activeAgent = null;
 let activeEnvironment = null;
@@ -310,6 +313,9 @@ async function init() {
     if (extSettings) {
         extSettings.appendChild(container);
     }
+
+    // Initialize AD Settings Panel
+    ADSettingsPanel.init();
 
     // Initialize orchestrator
     orchestrator = new EventOrchestrator({
