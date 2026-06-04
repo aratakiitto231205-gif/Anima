@@ -17,6 +17,7 @@ import { EventOrchestrator } from './src/orchestration/EventOrchestrator.js';
 import { ADSettingsPanel } from './src/ui/ADSettingsPanel.js';
 
 const extensionPath = new URL('.', import.meta.url).pathname;
+alert("Anima script is being evaluated! Path: " + extensionPath);
 let MODULE_NAME = 'third-party/Anima';
 try {
     const extIdx = extensionPath.indexOf('/extensions/');
