@@ -44,7 +44,7 @@ export class MemoryEngine {
         this.stm_buffer = memoryData?.stm_buffer || []; // Bộ đệm Working Memory STM
         this.in_crisis = memoryData?.in_crisis || false;
         
-        let baseThreshold = memoryData?.personality?.habit_threshold || 3;
+        const baseThreshold = memoryData?.personality?.habit_threshold || 3;
         if (genetics && genetics.drd4 === '7R+') {
             this.habit_threshold = 5; // Ngưỡng tạo thói quen cao hơn do Novelty Seeking
         } else {
