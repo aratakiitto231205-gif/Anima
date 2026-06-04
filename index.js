@@ -311,63 +311,79 @@ function setupEventHandlers() {
 // INITIALIZATION
 // ==========================================
 async function init() {
-    logAnima('info', 'System', 'Khởi chạy Anima Engine v10.0 (Tái cấu trúc Mô-đun chuyên nghiệp)...');
+    try {
+        logAnima('info', 'System', 'Khởi chạy Anima Engine v10.0 (Tái cấu trúc Mô-đun chuyên nghiệp)...');
 
-    const container = document.createElement('div');
-    container.id = 'cognitive_dashboard_container';
-    container.classList.add('extension_container');
-    container.innerHTML = await renderExtensionTemplateAsync(MODULE_NAME, 'template');
+        const container = document.createElement('div');
+        container.id = 'cognitive_dashboard_container';
+        container.classList.add('extension_container');
+        
+        logAnima('info', 'System', `Đang nạp template từ MODULE_NAME: ${MODULE_NAME}`);
+        const templateHtml = await renderExtensionTemplateAsync(MODULE_NAME, 'template');
+        container.innerHTML = templateHtml;
 
-    const extSettings = document.getElementById('extensions_settings');
-    if (extSettings) {
-        extSettings.appendChild(container);
-    }
-
-    // Initialize AD Settings Panel
-    ADSettingsPanel.init();
-
-    // Initialize orchestrator
-    orchestrator = new EventOrchestrator({
-        getActiveAgent,
-        saveActiveAgentState,
-        refreshMemoryUIWrapper,
-        logAnima
-    });
-
-    // Register ST events
-    eventSource.on(event_types.CHAT_CHANGED, () => {
-        activeAgent = null;
-        orchestrator.lastProcessedMessageId = -1;
-        orchestrator.lastProcessedMessageText = '';
-        orchestrator.lastProcessedUserMsg = '';
-        orchestrator.onChatChanged();
-    });
-
-    eventSource.on(event_types.MESSAGE_RECEIVED, (msgId) => orchestrator.onMessageReceived(msgId));
-    eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, (msgId) => orchestrator.onMessageRendered(msgId));
-    eventSource.on(event_types.USER_MESSAGE_RENDERED, (msgId) => orchestrator.onMessageRendered(msgId));
-    eventSource.on(event_types.MESSAGE_UPDATED, (msgId) => orchestrator.onMessageReceived(msgId));
-    eventSource.on(event_types.MESSAGE_EDITED, (msgId) => orchestrator.onMessageReceived(msgId));
-
-    eventSource.on(event_types.GENERATION_STARTED, () => orchestrator.onGenerationStarted());
-    eventSource.on(event_types.STREAM_TOKEN_RECEIVED, (token) => orchestrator.onStreamTokenReceived(token));
-
-    eventSource.on(event_types.CHAT_COMPLETION_PROMPT_READY, (data) => orchestrator.onChatCompletionPromptReady(data));
-    eventSource.on(event_types.GENERATE_BEFORE_COMBINE_PROMPTS, (data) => orchestrator.onTextCompletionPromptReady(data));
-
-    setupTabs();
-    setupEventHandlers();
-    refreshLogsUi();
-
-    // Initialize observer and ticker
-    setTimeout(() => {
-        const agent = getActiveAgent();
-        if (agent) {
-            startChatObserver(getActiveAgent, saveActiveAgentState, refreshMemoryUIWrapper);
-            startSubconsciousTicker(getActiveAgent, saveActiveAgentState, refreshMemoryUIWrapper);
-            refreshMemoryUIWrapper();
+        const extSettings = document.getElementById('extensions_settings');
+        if (extSettings) {
+            extSettings.appendChild(container);
+            logAnima('success', 'System', 'Đã chèn panel Anima vào extensions_settings');
+        } else {
+            console.warn("Anima Engine: Không tìm thấy phần tử #extensions_settings trong DOM!");
+            // Thử chèn vào body hoặc nơi khác để hiển thị tạm thời
+            document.body.appendChild(container);
         }
-    }, 1000);
+
+        // Initialize AD Settings Panel
+        ADSettingsPanel.init();
+
+        // Initialize orchestrator
+        orchestrator = new EventOrchestrator({
+            getActiveAgent,
+            saveActiveAgentState,
+            refreshMemoryUIWrapper,
+            logAnima
+        });
+
+        // Register ST events
+        eventSource.on(event_types.CHAT_CHANGED, () => {
+            activeAgent = null;
+            orchestrator.lastProcessedMessageId = -1;
+            orchestrator.lastProcessedMessageText = '';
+            orchestrator.lastProcessedUserMsg = '';
+            orchestrator.onChatChanged();
+        });
+
+        eventSource.on(event_types.MESSAGE_RECEIVED, (msgId) => orchestrator.onMessageReceived(msgId));
+        eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, (msgId) => orchestrator.onMessageRendered(msgId));
+        eventSource.on(event_types.USER_MESSAGE_RENDERED, (msgId) => orchestrator.onMessageRendered(msgId));
+        eventSource.on(event_types.MESSAGE_UPDATED, (msgId) => orchestrator.onMessageReceived(msgId));
+        eventSource.on(event_types.MESSAGE_EDITED, (msgId) => orchestrator.onMessageReceived(msgId));
+
+        eventSource.on(event_types.GENERATION_STARTED, () => orchestrator.onGenerationStarted());
+        eventSource.on(event_types.STREAM_TOKEN_RECEIVED, (token) => orchestrator.onStreamTokenReceived(token));
+
+        eventSource.on(event_types.CHAT_COMPLETION_PROMPT_READY, (data) => orchestrator.onChatCompletionPromptReady(data));
+        eventSource.on(event_types.GENERATE_BEFORE_COMBINE_PROMPTS, (data) => orchestrator.onTextCompletionPromptReady(data));
+
+        setupTabs();
+        setupEventHandlers();
+        refreshLogsUi();
+
+        // Initialize observer and ticker
+        setTimeout(() => {
+            const agent = getActiveAgent();
+            if (agent) {
+                startChatObserver(getActiveAgent, saveActiveAgentState, refreshMemoryUIWrapper);
+                startSubconsciousTicker(getActiveAgent, saveActiveAgentState, refreshMemoryUIWrapper);
+                refreshMemoryUIWrapper();
+            }
+        }, 1000);
+    } catch (error) {
+        console.error("Anima Engine Init Error:", error);
+        alert("Anima Engine Init Error: " + error.message + "\nStack: " + error.stack);
+        if (typeof toastr !== 'undefined') {
+            toastr.error("Anima Engine failed to initialize: " + error.message);
+        }
+    }
 }
 
 jQuery(function() {
