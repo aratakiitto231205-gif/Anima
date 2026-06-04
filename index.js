@@ -1,5 +1,5 @@
-import { eventSource, event_types, generateQuietPrompt, getRequestHeaders } from '../../../../script.js';
-import { renderExtensionTemplateAsync, writeExtensionField } from '../../../extensions.js';
+import { eventSource, event_types, generateQuietPrompt, getRequestHeaders } from '/script.js';
+import { renderExtensionTemplateAsync, writeExtensionField } from '/scripts/extensions.js';
 
 // Core modules
 import { CognitiveAgent } from './src/core/CognitiveAgent.js';

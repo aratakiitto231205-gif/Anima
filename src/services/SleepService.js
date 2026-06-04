@@ -5,7 +5,7 @@
  * và củng cố ký ức ngắn hạn (STM) thành dài hạn (LTM).
  */
 
-import { generateQuietPrompt } from '../../../../../../script.js';
+import { generateQuietPrompt } from '/script.js';
 import { syncVectorMemoryCard } from './VectorMemoryService.js';
 
 export async function triggerSleepConsolidationLLM(agent, sleepDurationMinutes, wasInterrupted, callbacks = {}) {

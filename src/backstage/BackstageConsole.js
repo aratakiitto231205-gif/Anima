@@ -6,7 +6,7 @@
  * cảm giác somatosensory, và môi trường vật lý cố định.
  */
 
-import { generateQuietPrompt } from '../../../../../../script.js';
+import { generateQuietPrompt } from '/script.js';
 import { saveCharacterEnvironment } from '../services/EnvironmentService.js';
 import { syncVectorMemoryCard } from '../services/VectorMemoryService.js';
 import { refreshEnvironmentUI, escapeHtml } from '../ui/DashboardUI.js';
