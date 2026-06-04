@@ -174,6 +174,10 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-05 | Project overview relocated: `docs/ST_ANIMA_OVERVIEW.md` (noob-friendly) replaces `ANIMA_ENGINE_OVERVIEW.md` (old technical) | Single source of truth for project explanation |
 | 2026-06-05 | Cleanup pass: archived stale `.md` files (old vision, unanswered interview, old overview) to `archive/docs_archive_20260605/`; debug JSON to `archive/debug/` + gitignored | Repo root is lean; no privacy leak risk on public push |
 | 2026-06-05 | Mobile test phase: push public → install Termux → test vài ngày → ghi phone Notes → gửi raw cho agents. Flip private **sau feedback**, not ngay sau install | Real-world feedback trước khi "đóng gói" — bắt Termux quirks + AD Agent feel-test + bất tiện thực tế làm input cho spec 003. Replaces older plan (flip ngay sau install). |
+| 2026-06-05 | Fixed manifest.json loader crash | Removed `?v=10.0.0` from `js` and `css` fields because `fs.existsSync` on server was failing to locate files. |
+| 2026-06-05 | Removed fs/path static imports in CognitiveAgent.js | Browser threw module resolution error for Node.js modules; refactored to fetch in browser and dynamic imports in Vitest. |
+| 2026-06-05 | Replaced static ST imports with SillyTavern.getContext() | Avoided all relative/absolute path import issues by fetching events and scripts directly from the global ST context. |
+
 
 ---
 
@@ -205,4 +209,4 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-> **Last updated:** 2026-06-05 (v5 — spec 002 done, cleanup pass, repo push pending)
+> **Last updated:** 2026-06-05 (v6 — spec 002 done, cleanup done, mobile loader and imports fixed, pushed)
