@@ -1,5 +1,5 @@
-import { eventSource, event_types, generateQuietPrompt, getRequestHeaders } from '../../script.js';
-import { renderExtensionTemplateAsync, writeExtensionField } from '../../extensions.js';
+import { eventSource, event_types, generateQuietPrompt, getRequestHeaders } from '../../../../script.js';
+import { renderExtensionTemplateAsync, writeExtensionField } from '../../../extensions.js';
 
 // Core modules
 import { CognitiveAgent } from './src/core/CognitiveAgent.js';
@@ -17,14 +17,14 @@ import { EventOrchestrator } from './src/orchestration/EventOrchestrator.js';
 import { ADSettingsPanel } from './src/ui/ADSettingsPanel.js';
 
 const extensionPath = new URL('.', import.meta.url).pathname;
-let MODULE_NAME = 'Anima';
+let MODULE_NAME = 'third-party/Anima';
 try {
     const extIdx = extensionPath.indexOf('/extensions/');
     if (extIdx !== -1) {
         MODULE_NAME = extensionPath.substring(extIdx + 12).replace(/\/$/, '');
     }
 } catch (e) {
-    console.error("Anima Engine: Failed to resolve MODULE_NAME dynamically, using default 'Anima':", e);
+    console.error("Anima Engine: Failed to resolve MODULE_NAME dynamically, using default 'third-party/Anima':", e);
 }
 let activeAgent = null;
 let activeEnvironment = null;

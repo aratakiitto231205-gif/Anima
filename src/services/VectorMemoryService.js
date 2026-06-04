@@ -4,7 +4,7 @@
  * Quản lý đồng bộ hóa và tìm kiếm ngữ nghĩa các thẻ ký ức với Vector DB của SillyTavern.
  */
 
-import { getRequestHeaders } from '../../../../script.js';
+import { getRequestHeaders } from '../../../../../../script.js';
 
 export async function syncVectorMemoryCard(characterId, card, action = 'insert') {
     // SillyTavern là đối tượng toàn cục trong ngữ cảnh extension của ST
