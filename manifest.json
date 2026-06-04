@@ -2,8 +2,8 @@
     "display_name": "Anima Engine",
     "version": "10.0.0",
     "description": "Hệ thống nhận thức sinh lý học thần kinh và tự trị liên tưởng cho nhân vật AI",
-    "js": "index.js?v=10.0.0",
-    "css": "style.css?v=10.0.0",
+    "js": "index.js",
+    "css": "style.css",
     "author": "Hitsuji",
     "loading_order": 5,
     "generate_interceptor": "animaCognitiveInterceptor"
