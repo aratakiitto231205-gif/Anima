@@ -41,8 +41,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | `docs/ST_ANIMA_OVERVIEW.md` | ✅ Done (noob-friendly overview) | Replaces old technical overview at root |
 | `agent_handoff/` | ✅ Active | Cross-agent messages, numbered sequentially |
 | ESLint | ✅ Working (spec 001) | 5 pre-existing warnings, not growing |
-| Git | ✅ Initialized (spec 001) | Default branch `main`, spec 001 + spec 002 committed |
+| Git | ✅ Pushed | Default branch `main`, repo: https://github.com/aratakiitto231205-gif/Anima |
 | Tests | ✅ 49→50 (spec 002 added 1) | `npm test` runs in <1s |
+
 
 ---
 
@@ -182,7 +183,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | Priority | Item | Status |
 |---|---|---|
 | 🟡 P1 | AD Agent (spec 002) needs real feel-test from Hitsuji | Pending Hitsuji chat trial in ST |
-| 🟡 P1 | Repo not yet pushed to GitHub | Awaiting Hitsuji to create empty `anima-engine` public repo + paste URL |
+| ✅ Done | Repo pushed to GitHub | Pushed to https://github.com/aratakiitto231205-gif/Anima |
 | 🟡 P1 | After install on Termux, flip repo to private | Next step after push succeeds |
 | 🟢 P2 | `costPerCall = 0.0001` in ADAgent is approximation, not real token accounting | Spec 003: parse `data.usage` from API response |
 | 🟢 P2 | `tokenSpendTracker` resets on extension reload (in-memory only) | Spec 003: persist to extension storage |
