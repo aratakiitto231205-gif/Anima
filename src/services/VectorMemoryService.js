@@ -4,7 +4,7 @@
  * Quản lý đồng bộ hóa và tìm kiếm ngữ nghĩa các thẻ ký ức với Vector DB của SillyTavern.
  */
 
-import { getRequestHeaders } from '/script.js';
+
 
 export async function syncVectorMemoryCard(characterId, card, action = 'insert') {
     // SillyTavern là đối tượng toàn cục trong ngữ cảnh extension của ST
@@ -15,7 +15,7 @@ export async function syncVectorMemoryCard(characterId, card, action = 'insert')
     try {
         await fetch('/api/extensions/vectors/sync_card', {
             method: 'POST',
-            headers: getRequestHeaders(),
+            headers: context.getRequestHeaders(),
             body: JSON.stringify({
                 characterId,
                 cardId: card.id,
@@ -41,7 +41,7 @@ export async function recallMemoriesSemantic(characterId, text, limit = 3, minSc
     try {
         const response = await fetch('/api/extensions/vectors/search', {
             method: 'POST',
-            headers: getRequestHeaders(),
+            headers: context.getRequestHeaders(),
             body: JSON.stringify({ characterId, text, limit, minScore })
         });
         if (response.ok) {

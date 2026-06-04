@@ -5,14 +5,14 @@
  * Địa điểm hoạt động (active_location), danh sách vật phẩm (items), số lượng và trạng thái.
  */
 
-import { getRequestHeaders } from '/script.js';
+
 
 export async function getCharacterEnvironment(characterId) {
     if (characterId === undefined || characterId === null) return null;
     try {
         const response = await fetch('/api/extensions/environment/get', {
             method: 'POST',
-            headers: getRequestHeaders(),
+            headers: SillyTavern.getContext().getRequestHeaders(),
             body: JSON.stringify({ characterId })
         });
         if (response.ok) {
@@ -40,7 +40,7 @@ export async function saveCharacterEnvironment(characterId, envData) {
     try {
         await fetch('/api/extensions/environment/save', {
             method: 'POST',
-            headers: getRequestHeaders(),
+            headers: SillyTavern.getContext().getRequestHeaders(),
             body: JSON.stringify({ characterId, envData })
         });
     } catch (e) {

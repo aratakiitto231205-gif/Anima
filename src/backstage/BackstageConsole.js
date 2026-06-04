@@ -6,7 +6,6 @@
  * cảm giác somatosensory, và môi trường vật lý cố định.
  */
 
-import { generateQuietPrompt } from '/script.js';
 import { saveCharacterEnvironment } from '../services/EnvironmentService.js';
 import { syncVectorMemoryCard } from '../services/VectorMemoryService.js';
 import { refreshEnvironmentUI, escapeHtml } from '../ui/DashboardUI.js';
@@ -123,7 +122,7 @@ Hãy phản hồi cực kỳ thân thiện, dí dỏm bằng tiếng Việt (xư
 Hãy trả lời Hitsuji thật chi tiết và chèn các thẻ thực thi thích hợp:`;
 
     try {
-        const reply = await generateQuietPrompt({ quietPrompt: prompt, responseLength: 1000 });
+        const reply = await SillyTavern.getContext().generateQuietPrompt({ quietPrompt: prompt, responseLength: 1000 });
         if (reply && reply.trim()) {
             let changed = false;
 

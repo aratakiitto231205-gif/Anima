@@ -5,7 +5,6 @@
  * và củng cố ký ức ngắn hạn (STM) thành dài hạn (LTM).
  */
 
-import { generateQuietPrompt } from '/script.js';
 import { syncVectorMemoryCard } from './VectorMemoryService.js';
 
 export async function triggerSleepConsolidationLLM(agent, sleepDurationMinutes, wasInterrupted, callbacks = {}) {
@@ -55,7 +54,7 @@ CHỈ TRẢ VỀ CÁC THẺ SAU:
     let consolidatedMemories = [];
 
     try {
-        const reply = await generateQuietPrompt({ quietPrompt: prompt, responseLength: 400 });
+        const reply = await context.generateQuietPrompt({ quietPrompt: prompt, responseLength: 400 });
         if (reply && reply.trim()) {
             const dreamMatch = /<dream>([\s\S]*?)<\/dream>/i.exec(reply);
             if (dreamMatch) dreamContent = dreamMatch[1].trim();

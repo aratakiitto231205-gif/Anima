@@ -11,8 +11,6 @@ import { MemoryEngine } from './MemoryEngine.js';
 import { ConsciousnessEngine } from './ConsciousnessEngine.js';
 import { PersonalityCore } from './PersonalityCore.js';
 import { ADAgent } from '../cognitive/ADAgent.js';
-import fs from 'fs';
-import path from 'path';
 
 export class CognitiveAgent {
     constructor(saveState = null) {
@@ -338,9 +336,27 @@ export class CognitiveAgent {
 
         let charPersonality = {};
         try {
-            const pPath = path.join(process.cwd(), 'characters', characterName.toLowerCase(), 'personality.json');
-            if (fs.existsSync(pPath)) {
-                charPersonality = JSON.parse(fs.readFileSync(pPath, 'utf8'));
+            if (typeof window !== 'undefined' || typeof fetch !== 'undefined') {
+                let moduleName = 'third-party/Anima';
+                try {
+                    const extensionPath = new URL('.', import.meta.url).pathname;
+                    const extIdx = extensionPath.indexOf('/extensions/');
+                    if (extIdx !== -1) {
+                        moduleName = extensionPath.substring(extIdx + 12).replace(/\/$/, '');
+                    }
+                } catch (e) {}
+
+                const response = await fetch(`/extensions/${moduleName}/characters/${characterName.toLowerCase()}/personality.json`);
+                if (response.ok) {
+                    charPersonality = await response.json();
+                }
+            } else {
+                const fs = await import('fs');
+                const path = await import('path');
+                const pPath = path.join(process.cwd(), 'characters', characterName.toLowerCase(), 'personality.json');
+                if (fs.existsSync(pPath)) {
+                    charPersonality = JSON.parse(fs.readFileSync(pPath, 'utf8'));
+                }
             }
         } catch (err) {
             console.warn(`Could not load personality for ${characterName}:`, err.message);

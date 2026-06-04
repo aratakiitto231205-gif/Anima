@@ -1,6 +1,3 @@
-import { eventSource, event_types, generateQuietPrompt, getRequestHeaders } from '/script.js';
-import { renderExtensionTemplateAsync, writeExtensionField } from '/scripts/extensions.js';
-
 // Core modules
 import { CognitiveAgent } from './src/core/CognitiveAgent.js';
 import { getCharacterEnvironment, saveCharacterEnvironment } from './src/services/EnvironmentService.js';
@@ -17,7 +14,6 @@ import { EventOrchestrator } from './src/orchestration/EventOrchestrator.js';
 import { ADSettingsPanel } from './src/ui/ADSettingsPanel.js';
 
 const extensionPath = new URL('.', import.meta.url).pathname;
-alert("Anima script is being evaluated! Path: " + extensionPath);
 let MODULE_NAME = 'third-party/Anima';
 try {
     const extIdx = extensionPath.indexOf('/extensions/');
@@ -134,7 +130,7 @@ function saveActiveAgentState() {
         if (!character.data.extensions) character.data.extensions = {};
         character.data.extensions.cognitive_memory = state;
     }
-    writeExtensionField(context.characterId, 'cognitive_memory', state);
+    context.writeExtensionField(context.characterId, 'cognitive_memory', state);
 }
 
 function refreshMemoryUIWrapper() {
@@ -313,6 +309,13 @@ function setupEventHandlers() {
 // ==========================================
 async function init() {
     try {
+        if (typeof SillyTavern === 'undefined') {
+            console.error("Anima Engine: SillyTavern global object not found! Cannot initialize.");
+            return;
+        }
+        const context = SillyTavern.getContext();
+        const { eventSource, event_types, renderExtensionTemplateAsync } = context;
+
         logAnima('info', 'System', 'Khởi chạy Anima Engine v10.0 (Tái cấu trúc Mô-đun chuyên nghiệp)...');
 
         const container = document.createElement('div');
