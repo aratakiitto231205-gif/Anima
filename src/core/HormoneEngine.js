@@ -90,7 +90,7 @@ export class HormoneEngine {
         }
 
         for (const key in this.levels) {
-            let k = this.baseDecay[key] || 0.05;
+            const k = this.baseDecay[key] || 0.05;
             let M = 1.0;
 
             if (isExhausted) {

@@ -53,7 +53,7 @@ export function sanitizeConflictingInstructions(chat) {
 
     chat.forEach(msg => {
         if (!msg) return;
-        let content = msg.content || msg.mes || '';
+        const content = msg.content || msg.mes || '';
         if (typeof content !== 'string') return;
 
         // Loại bỏ các chỉ thị chèn dấu ngoặc/dấu sao cũ của SillyTavern gây conflict

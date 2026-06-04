@@ -19,7 +19,7 @@ export function parseXmlTags(text) {
 
     const thoughtRegex = /<thought>([\s\S]*?)(?:<\/thought>|$)/gi;
     let thoughtMatch;
-    let thoughts = [];
+    const thoughts = [];
     while ((thoughtMatch = thoughtRegex.exec(text)) !== null) {
         if (thoughtMatch[1]) thoughts.push(thoughtMatch[1].trim());
     }
@@ -40,7 +40,7 @@ export function parseXmlTags(text) {
     result.change_location = tagExtract('change_location');
     result.environment_update = tagExtract('environment_update');
 
-    let textToRender = text
+    const textToRender = text
         .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
         .replace(/<thought>[\s\S]*/gi, '')
         .replace(/<emotion>[\s\S]*?<\/emotion>/gi, '')
@@ -97,7 +97,7 @@ export function parseXmlTags(text) {
                 content: tagMatch[2].trim()
             });
         } else {
-            let cleanNarration = trimmed.replace(/<\/?(?:dialogue|action|environment|sfx)>/gi, '').trim();
+            const cleanNarration = trimmed.replace(/<\/?(?:dialogue|action|environment|sfx)>/gi, '').trim();
             if (cleanNarration) {
                 result.blocks.push({ type: 'narration', content: cleanNarration });
             }
