@@ -17,7 +17,15 @@ import { EventOrchestrator } from './src/orchestration/EventOrchestrator.js';
 import { ADSettingsPanel } from './src/ui/ADSettingsPanel.js';
 
 const extensionPath = new URL('.', import.meta.url).pathname;
-const MODULE_NAME = extensionPath.substring(extensionPath.indexOf('/extensions/') + 12).replace(/\/$/, '');
+let MODULE_NAME = 'Anima';
+try {
+    const extIdx = extensionPath.indexOf('/extensions/');
+    if (extIdx !== -1) {
+        MODULE_NAME = extensionPath.substring(extIdx + 12).replace(/\/$/, '');
+    }
+} catch (e) {
+    console.error("Anima Engine: Failed to resolve MODULE_NAME dynamically, using default 'Anima':", e);
+}
 let activeAgent = null;
 let activeEnvironment = null;
 let orchestrator = null;
