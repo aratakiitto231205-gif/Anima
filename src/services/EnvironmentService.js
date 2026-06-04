@@ -5,7 +5,7 @@
  * Địa điểm hoạt động (active_location), danh sách vật phẩm (items), số lượng và trạng thái.
  */
 
-import { getRequestHeaders } from '../../../../../../script.js';
+import { getRequestHeaders } from '/script.js';
 
 export async function getCharacterEnvironment(characterId) {
     if (characterId === undefined || characterId === null) return null;

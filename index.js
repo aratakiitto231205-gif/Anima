@@ -1,5 +1,5 @@
-import { eventSource, event_types, generateQuietPrompt, getRequestHeaders } from '../../../../script.js';
-import { renderExtensionTemplateAsync, writeExtensionField } from '../../../extensions.js';
+import { eventSource, event_types, generateQuietPrompt, getRequestHeaders } from '/script.js';
+import { renderExtensionTemplateAsync, writeExtensionField } from '/extensions.js';
 
 // Core modules
 import { CognitiveAgent } from './src/core/CognitiveAgent.js';
@@ -16,7 +16,8 @@ import { EventOrchestrator } from './src/orchestration/EventOrchestrator.js';
 // UI Modules
 import { ADSettingsPanel } from './src/ui/ADSettingsPanel.js';
 
-const MODULE_NAME = 'third-party/cognitive-dashboard';
+const extensionPath = new URL('.', import.meta.url).pathname;
+const MODULE_NAME = extensionPath.substring(extensionPath.indexOf('/extensions/') + 12).replace(/\/$/, '');
 let activeAgent = null;
 let activeEnvironment = null;
 let orchestrator = null;

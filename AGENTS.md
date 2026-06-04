@@ -173,6 +173,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-05 | Key handling refactored to use ST extension settings | No more hardcoded `sk-...` in repo. `ADSettingsPanel.js` exposes 4 inputs. |
 | 2026-06-05 | Project overview relocated: `docs/ST_ANIMA_OVERVIEW.md` (noob-friendly) replaces `ANIMA_ENGINE_OVERVIEW.md` (old technical) | Single source of truth for project explanation |
 | 2026-06-05 | Cleanup pass: archived stale `.md` files (old vision, unanswered interview, old overview) to `archive/docs_archive_20260605/`; debug JSON to `archive/debug/` + gitignored | Repo root is lean; no privacy leak risk on public push |
+| 2026-06-05 | Mobile test phase: push public → install Termux → test vài ngày → ghi phone Notes → gửi raw cho agents. Flip private **sau feedback**, not ngay sau install | Real-world feedback trước khi "đóng gói" — bắt Termux quirks + AD Agent feel-test + bất tiện thực tế làm input cho spec 003. Replaces older plan (flip ngay sau install). |
 
 ---
 
@@ -182,9 +183,10 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 | Priority | Item | Status |
 |---|---|---|
-| 🟡 P1 | AD Agent (spec 002) needs real feel-test from Hitsuji | Pending Hitsuji chat trial in ST |
+| 🟡 P1 | AD Agent (spec 002) needs real feel-test from Hitsuji | Covered by mobile test phase below |
 | ✅ Done | Repo pushed to GitHub | Pushed to https://github.com/aratakiitto231205-gif/Anima |
-| 🟡 P1 | After install on Termux, flip repo to private | Next step after push succeeds |
+| 🟡 P1 | **Mobile test phase** — Hitsuji to install on Termux, use vài ngày, ghi feedback vào phone Notes, gửi raw cho agents | Repo **stays public** during test. Flip private **sau feedback** |
+| 🟡 P1 | After feedback review + spec 003 planned, flip repo to private | Next step after mobile test |
 | 🟢 P2 | `costPerCall = 0.0001` in ADAgent is approximation, not real token accounting | Spec 003: parse `data.usage` from API response |
 | 🟢 P2 | `tokenSpendTracker` resets on extension reload (in-memory only) | Spec 003: persist to extension storage |
 | 🟢 P2 | Code duplication in `EventOrchestrator.js` (6-line AD call block copy-pasted in 2 hooks) | Next refactor pass — extract `_dispatchAD(agent, lastUserMsg)` helper |
