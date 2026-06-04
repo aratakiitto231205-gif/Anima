@@ -14,26 +14,35 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v10)
+## 📊 Current State (v10 + spec 001 + spec 002)
 
 | Component | Status | Notes |
 |---|---|---|
-| `src/core/CognitiveAgent.js` | ✅ Done | Main orchestrator |
+| `src/core/CognitiveAgent.js` | ✅ Done | Main orchestrator (spec 002 added lazy `adAgent` + `personalityCore` + `getADIntentForMessage`, additive only) |
 | `src/core/HormoneEngine.js` | ✅ Done | 8 neurochemicals + Hill equation + decay |
-| `src/core/MemoryEngine.js` | ✅ Done | STM/LTM, Ebbinghaus, Jaccard, Hebbian. **40 tests pass** |
+| `src/core/MemoryEngine.js` | ✅ Done | STM/LTM, Ebbinghaus, Jaccard, Hebbian |
+| `src/core/PersonalityCore.js` | ✅ Done (spec 002) | Abstract trait schema, engine-agnostic |
 | `src/core/ConsciousnessEngine.js` | ✅ Done | Scope minimal — verify what it does |
-| `src/orchestration/` | ✅ Done | EventOrchestrator, PromptInjector, SleepDetector, TemporalAnchor |
+| `src/cognitive/ADAgent.js` | ✅ Done (spec 002) | Flash Lite AD phase, reads config from ST extension settings |
+| `src/cognitive/ad-prompt.js` | ✅ Done (spec 002) | System prompt builder |
+| `src/cognitive/__tests__/ADAgent.test.js` | ✅ 5 tests | Valid JSON, hallucination guard, budget cap, malformed, prompt builder |
+| `src/core/__tests__/PersonalityCore.test.js` | ✅ 4 tests | Init/validation/getTrait/serialize |
+| `src/core/MemoryEngine.test.js` | ✅ 40 tests | Ebbinghaus, Jaccard, Hebbian, STM/LTM |
+| `src/orchestration/` | ✅ Done | EventOrchestrator, PromptInjector, SleepDetector, TemporalAnchor (spec 002 added AD hook in EventOrchestrator + adIntent arg in PromptInjector) |
 | `src/services/` | ✅ Done | Environment, Sleep, TimeJump, VectorMemory |
 | `src/backstage/` | ✅ Done | BackstageConsole, SubconsciousTicker |
-| `src/ui/DashboardUI.js` | ✅ Done | Intense Mode dashboard |
-| `index.js` | ✅ Entry point, ~360 lines | |
+| `src/ui/DashboardUI.js` + `ADSettingsPanel.js` | ✅ Done | Dashboard + new AD settings drawer (spec 002) |
+| `characters/itto/personality.json` | ✅ Done (spec 002) | Itto's CoALA traits, 7 dimensions, 0-10 range |
+| `index.js` | ✅ Entry point | Hooks ADSettingsPanel.init() on load |
 | `template.html` + `style.css` | ✅ UI shell | |
-| ESLint | ❌ **BROKEN** | Config migration needed |
-| Git | ❌ **NOT INIT** | No version control |
-| Tests | ⚠️ Only `MemoryEngine` covered | Need: Hormone, Consciousness, orchestration |
-| `docs/specs/001_dx_foundation.md` | 📋 In progress | Covers ESLint + git + tests |
-
-**Current priority:** Spec 001 (DX foundation). Don't expand scope until that's done.
+| `docs/specs/001_dx_foundation.md` | ✅ Done | ESLint + git + tests DX |
+| `docs/specs/002_cognitive_architecture.md` | ✅ Done | CoALA-inspired AD phase |
+| `docs/reviews/review_002_cognitive_architecture.md` | ✅ Done | Conditional greenlight + 3 open Q's |
+| `docs/ST_ANIMA_OVERVIEW.md` | ✅ Done (noob-friendly overview) | Replaces old technical overview at root |
+| `agent_handoff/` | ✅ Active | Cross-agent messages, numbered sequentially |
+| ESLint | ✅ Working (spec 001) | 5 pre-existing warnings, not growing |
+| Git | ✅ Initialized (spec 001) | Default branch `main`, spec 001 + spec 002 committed |
+| Tests | ✅ 49→50 (spec 002 added 1) | `npm test` runs in <1s |
 
 ---
 
@@ -76,36 +85,49 @@ This project uses **Arataki Itto** as the test character. Character definition (
 ├── template.html, style.css
 ├── src/
 │   ├── backstage/         ← BackstageConsole, SubconsciousTicker
-│   ├── core/              ← CognitiveAgent, engines
+│   ├── core/              ← CognitiveAgent, engines, PersonalityCore
+│   │   └── __tests__/     ← PersonalityCore.test.js
+│   ├── cognitive/         ← ADAgent, ad-prompt (spec 002)
+│   │   └── __tests__/     ← ADAgent.test.js
 │   ├── orchestration/     ← EventOrchestrator, etc.
 │   ├── services/          ← Environment, Sleep, etc.
-│   └── ui/                ← DashboardUI, DOMAutoHealing
+│   └── ui/                ← DashboardUI, DOMAutoHealing, ADSettingsPanel
+├── characters/
+│   └── itto/              ← personality.json + README (per-character config)
 ├── docs/
 │   ├── specs/             ← task specs
 │   ├── reviews/           ← code reviews
-│   └── research/          ← one-time research
-├── agent_handoff/         ← cross-agent messages
+│   ├── history/           ← historical logs (e.g. cleanup_log_20260531)
+│   └── ST_ANIMA_OVERVIEW.md  ← noob-friendly project overview
+├── agent_handoff/         ← cross-agent messages, numbered sequentially
 ├── archive/               ← historical, don't delete
-└── node_modules/, coverage/  ← gitignored
+│   ├── docs_archive_20260605/  ← old .md files (vision, interview, old overview)
+│   ├── debug/             ← debug logs (e.g. server_request_debug)
+│   └── ST_Anima_Backup_20260531_021952/  ← original v10 backup
+└── node_modules/, coverage/, sillytavern-docs/  ← gitignored
 ```
 
 **Rules:**
-- Docs → `docs/`. Never at root.
+- Docs → `docs/`. Never at root (only `AGENTS.md` + this file at root).
 - Handoff messages → `agent_handoff/`. Numbered.
 - Code → `src/`. Never `.js` at root.
+- Per-character config (personality traits, README) → `characters/<name>/`. Engine never hardcodes character values.
 - Old/dead code → `archive/`, not deleted.
+- Debug/diagnostic logs → `archive/debug/`, not at root.
+- Personality traits (CoALA) = abstract schema in `src/core/PersonalityCore.js`, values in `characters/<name>/personality.json`. Engine is character-agnostic.
 
 ---
 
 ## 📐 Code Conventions
 
-- **CommonJS only** — `require` / `module.exports`. No `import`/`export`.
+- **ES modules** — `import` / `export`. (Pre-spec 002 code was CommonJS; spec 002 cognitive module uses ESM. Don't mix in same file.)
 - **Comment density** — match existing code. Vietnamese OK. Comments explain *why*, not *what*.
 - **File size** — ~250 lines max (refactor if it improves things).
-- **Tests** — colocate: `X.js` → `X.test.js`. Run: `npm test`.
-- **No `console.log` in production code** — use `logAnima()` (see `index.js:36`).
+- **Tests** — colocate: `X.js` → `X.js` test in `__tests__/` subfolder. Run: `npm test`.
+- **No `console.log` in production code** — use `logAnima()` (see `index.js:36`). Spec 002 ADAgent + EventOrchestrator hook use `console.log` for AD phase observability — acceptable exception.
 - **Naming** — PascalCase classes, camelCase funcs/vars, SCREAMING_SNAKE constants.
 - **Errors** — wrap async in try/catch, log via `logAnima('ERROR', ...)`.
+- **Additive changes only** — never modify the 3 untouchables: `MemoryEngine.learnMemoryDynamically`, `HormoneEngine.tick`, `ConsciousnessEngine.evaluate`, `CognitiveAgent.processMessage` semantics. New modules or new exports OK; modifying existing behavior is a red flag.
 
 ---
 
@@ -114,15 +136,18 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | Term | Meaning | Ref |
 |---|---|---|
 | RP Agent | Roleplay agent (user-facing character) | — |
-| AD Agent | "Backstage" agent (state/stats/env) | `src/backstage/` |
+| AD Agent | **2 meanings, do not confuse:** (1) Legacy "Backstage" agent in `src/backstage/BackstageConsole.js` for state/stats/env XML commands. (2) Spec 002 "Subconscious" agent in `src/cognitive/ADAgent.js` using Flash Lite to pick mood+tool per user message. | Both files exist, distinct roles. |
+| AD Phase | Spec 002 cognitive loop: per user message, AD Agent picks mood+tool, intent is injected into RP system prompt before main LLM render | `src/cognitive/ADAgent.js` + `EventOrchestrator` hook |
 | Hormone Engine | 8 neurochemicals + decay | `src/core/HormoneEngine.js` |
 | Memory Engine | STM/LTM + Ebbinghaus | `src/core/MemoryEngine.js` |
+| Personality Core | CoALA-inspired abstract trait schema (engine-agnostic); values come from `characters/<name>/personality.json` | `src/core/PersonalityCore.js` |
 | STM / LTM | Short / Long-Term Memory | `MemoryEngine.js` |
 | Jaccard | Keyword-set similarity (merge memory) | `MemoryEngine.js` |
 | Hebbian | "Neurons that fire together wire together" | `MemoryEngine.js` |
 | Hill equation | Sigmoid saturation for hormone | `HormoneEngine.js` |
 | Ebbinghaus | Forgetting curve for STM | `MemoryEngine.js` |
 | Anima XML | `<add_memory>`, `<stat_update>`, `<env_*>` | `KNOWN_XML_TAGS` in `BackstageConsole.js` |
+| CoALA | Cognitive Architectures for Language Agents (framework spec 002 references) | `docs/specs/002_cognitive_architecture.md` |
 
 ---
 
@@ -139,7 +164,14 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-04 | Antigravity = Contributor (not grunt) | Equal voice in architecture |
 | 2026-06-04 | Workflow doesn't need Hitsuji to forward messages | Agents coordinate via `agent_handoff/` |
 | 2026-06-04 | Hitsuji: continue v10, fix bugs, don't rewrite | Project live in production |
-| 2026-06-04 | **Removed v3 overreach** (5 pillars, 2-Phase, User Journey, Canon Guard sections) | Hitsuji: focus on current project, no grand plans until v10 stable |
+| 2026-06-04 | Removed v3 overreach (5 pillars, 2-Phase, User Journey, Canon Guard sections) | Hitsuji: focus on current project, no grand plans until v10 stable |
+| 2026-06-04 | Spec 001 (DX foundation) greenlit | ESLint + git init + tests = pre-requisites for safe spec 002 |
+| 2026-06-04 | Spec 001 done — ESLint working, git init on `main`, tests scaffolded | Hitsuji confirmed via `from_antigravity_009` (handoff 008) |
+| 2026-06-05 | Spec 002 build greenlit (review 002) | Conditional: 3 open Q's defaulted in build plan, DMN/Canon-Guard deferred to spec 003 |
+| 2026-06-05 | Spec 002 code done — AD phase via Flash Lite, additive only | Commit `feat(spec002): AD phase via Flash Lite, additive to V10` |
+| 2026-06-05 | Key handling refactored to use ST extension settings | No more hardcoded `sk-...` in repo. `ADSettingsPanel.js` exposes 4 inputs. |
+| 2026-06-05 | Project overview relocated: `docs/ST_ANIMA_OVERVIEW.md` (noob-friendly) replaces `ANIMA_ENGINE_OVERVIEW.md` (old technical) | Single source of truth for project explanation |
+| 2026-06-05 | Cleanup pass: archived stale `.md` files (old vision, unanswered interview, old overview) to `archive/docs_archive_20260605/`; debug JSON to `archive/debug/` + gitignored | Repo root is lean; no privacy leak risk on public push |
 
 ---
 
@@ -149,12 +181,25 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 | Priority | Item | Status |
 |---|---|---|
-| 🔴 P0 | ESLint config broken | Spec 001 in progress |
-| 🔴 P0 | Git not initialized | Spec 001 in progress |
-| 🟡 P1 | Test coverage thin (only MemoryEngine tested) | Add: Hormone, Consciousness, services |
+| 🟡 P1 | AD Agent (spec 002) needs real feel-test from Hitsuji | Pending Hitsuji chat trial in ST |
+| 🟡 P1 | Repo not yet pushed to GitHub | Awaiting Hitsuji to create empty `anima-engine` public repo + paste URL |
+| 🟡 P1 | After install on Termux, flip repo to private | Next step after push succeeds |
+| 🟢 P2 | `costPerCall = 0.0001` in ADAgent is approximation, not real token accounting | Spec 003: parse `data.usage` from API response |
+| 🟢 P2 | `tokenSpendTracker` resets on extension reload (in-memory only) | Spec 003: persist to extension storage |
+| 🟢 P2 | Code duplication in `EventOrchestrator.js` (6-line AD call block copy-pasted in 2 hooks) | Next refactor pass — extract `_dispatchAD(agent, lastUserMsg)` helper |
 | 🟢 P2 | `package.json` version 1.0.0 vs engine v10.0.0 | Low priority |
-| 🟢 P2 | Scientific model accuracy review | Flagged in `AGENT_ACTIVITY_LOG.md` |
+| 🟢 P2 | Scientific model accuracy review | Flagged in `docs/history/cleanup_log_20260531.md` |
 
 ---
 
-> **Last updated:** 2026-06-04 (v4 — minimal, focused on v10 current state)
+## 🧹 Deferred to Spec 003 (intentionally out of scope for spec 002)
+
+- Default Mode Network / 24-7 autonomous idle behavior
+- Soft Canon-Guard (1-5 star rating UI + prompt-injection mechanism)
+- Sensory Memory decay timing (5-10 min spec; current Ebbinghaus is fine)
+- Episodic vs Semantic LTM split (current `recallable_drawer` is fine)
+- AD Agent 2nd tool inventory (current 8 tools from probe are sufficient)
+
+---
+
+> **Last updated:** 2026-06-05 (v5 — spec 002 done, cleanup pass, repo push pending)

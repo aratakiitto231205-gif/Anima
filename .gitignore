@@ -28,3 +28,7 @@ npm-debug.log*
 
 # Environment variables
 .env
+
+# Debug / diagnostic logs (contain NSFW + persona — privacy sensitive)
+server_request_debug.json
+archive/debug/
