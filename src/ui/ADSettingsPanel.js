@@ -3,12 +3,12 @@ export class ADSettingsPanel {
         if (typeof SillyTavern === 'undefined') return;
         const context = SillyTavern.getContext();
         // Safely check for either extension_settings or extensionSettings
-        const extSettings = context.extension_settings || context.extensionSettings || {};
-        if (!extSettings.anima_engine) {
-            extSettings.anima_engine = {};
+        const ctxExtSettings = context.extension_settings || context.extensionSettings || {};
+        if (!ctxExtSettings.anima_engine) {
+            ctxExtSettings.anima_engine = {};
         }
 
-        const settings = extSettings.anima_engine;
+        const settings = ctxExtSettings.anima_engine;
         
         // Defaults
         if (!settings.ad_api_key) settings.ad_api_key = '';
