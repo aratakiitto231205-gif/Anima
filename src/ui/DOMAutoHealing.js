@@ -245,8 +245,6 @@ export async function renderParsedMessage(messageId, rawText, isHistory = false,
     
     // Ghi đè giao diện Visual Novel
     setTimeout(() => {
-        if (context && context.messageFormatter) return;
-
         const messageEl = document.querySelector(`#chat .mes[mesid="${messageId}"]`);
         const messageTextEl = document.querySelector(`#chat .mes[mesid="${messageId}"] .mes_text`);
         
