@@ -77,18 +77,9 @@ export class ADSettingsPanel {
         attachEvent('anima_ad_model', 'ad_model');
         attachEvent('anima_ad_api_url', 'ad_api_url');
         attachEvent('anima_ad_daily_budget_usd', 'ad_daily_budget_usd');
-        
-        // Add toggle behavior for drawer
-        const drawer = document.getElementById('anima_ad_settings');
-        if (drawer) {
-            const header = drawer.querySelector('.inline-drawer-toggle');
-            const content = drawer.querySelector('.inline-drawer-content');
-            if (header && content) {
-                header.addEventListener('click', () => {
-                    const isHidden = content.style.display === 'none';
-                    content.style.display = isHidden ? 'block' : 'none';
-                });
-            }
-        }
+
+        // GHI CHÚ: Class .inline-drawer của SillyTavern ĐÃ CÓ sẵn global click
+        // handler để toggle content. Tự attach thêm listener ở đây sẽ gây
+        // double-toggle → click mở rồi đóng ngay. Không cần custom listener.
     }
 }

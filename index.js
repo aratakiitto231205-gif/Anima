@@ -98,6 +98,71 @@ function clearAnimaLogs() {
     logAnima('success', 'Logger', 'Đã làm sạch nhật ký nhận thức.');
 }
 
+// Format logs thành plain text để copy/download
+function getAnimaLogsText() {
+    return animaLogs.map(log => {
+        const detail = log.detail ? `\n   ${log.detail}` : '';
+        return `[${log.time}] [${log.level}] [${log.module}] ${log.message}${detail}`;
+    }).join('\n');
+}
+
+// Sao chép nhật ký vào clipboard (fallback cho browser cũ không hỗ trợ navigator.clipboard)
+async function copyAnimaLogsToClipboard() {
+    const text = getAnimaLogsText();
+    if (!text) {
+        if (typeof toastr !== 'undefined') toastr.warning('Nhật ký trống, không có gì để sao chép.');
+        return;
+    }
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+        } else {
+            // Fallback: dùng textarea tạm + execCommand
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.position = 'fixed';
+            ta.style.opacity = '0';
+            document.body.appendChild(ta);
+            ta.focus();
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+        if (typeof toastr !== 'undefined') toastr.success(`Đã sao chép ${animaLogs.length} dòng nhật ký.`);
+        logAnima('success', 'Logger', `Đã sao chép ${animaLogs.length} dòng nhật ký vào clipboard.`);
+    } catch (err) {
+        console.error('Anima Logger: Copy failed', err);
+        if (typeof toastr !== 'undefined') toastr.error('Sao chép thất bại: ' + err.message);
+    }
+}
+
+// Tải nhật ký về máy dưới dạng .txt
+function downloadAnimaLogsAsFile() {
+    const text = getAnimaLogsText();
+    if (!text) {
+        if (typeof toastr !== 'undefined') toastr.warning('Nhật ký trống, không có gì để tải.');
+        return;
+    }
+    try {
+        const dateStr = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const filename = `anima-logs-${dateStr}.txt`;
+        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        if (typeof toastr !== 'undefined') toastr.success(`Đã tải ${animaLogs.length} dòng nhật ký (${filename}).`);
+        logAnima('success', 'Logger', `Đã tải nhật ký về máy: ${filename}`);
+    } catch (err) {
+        console.error('Anima Logger: Download failed', err);
+        if (typeof toastr !== 'undefined') toastr.error('Tải thất bại: ' + err.message);
+    }
+}
+
 // ==========================================
 // AGENT STATE MANAGEMENT
 // ==========================================
@@ -301,6 +366,16 @@ function setupEventHandlers() {
     const clearLogsBtn = document.getElementById('cog_logs_clear_btn');
     if (clearLogsBtn) {
         clearLogsBtn.addEventListener('click', clearAnimaLogs);
+    }
+
+    const copyLogsBtn = document.getElementById('cog_logs_copy_btn');
+    if (copyLogsBtn) {
+        copyLogsBtn.addEventListener('click', copyAnimaLogsToClipboard);
+    }
+
+    const downloadLogsBtn = document.getElementById('cog_logs_download_btn');
+    if (downloadLogsBtn) {
+        downloadLogsBtn.addEventListener('click', downloadAnimaLogsAsFile);
     }
 }
 

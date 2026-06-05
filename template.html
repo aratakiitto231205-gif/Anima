@@ -480,7 +480,11 @@
                             <i class="fa-solid fa-list-check" style="color: #10b981;"></i>
                             <span>Nhật ký Nhận thức (Anima Logger)</span>
                         </span>
-                        <button id="cog_logs_clear_btn" style="padding: 2px 6px; font-size: 0.75em; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #94a3b8; cursor: pointer; transition: all 0.2s;">Xóa</button>
+                        <div style="display: flex; gap: 4px;">
+                            <button id="cog_logs_copy_btn" title="Sao chép nhật ký vào clipboard" style="padding: 2px 6px; font-size: 0.75em; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #94a3b8; cursor: pointer; transition: all 0.2s;">📋 Copy</button>
+                            <button id="cog_logs_download_btn" title="Tải nhật ký về máy (.txt)" style="padding: 2px 6px; font-size: 0.75em; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #94a3b8; cursor: pointer; transition: all 0.2s;">⬇ Tải</button>
+                            <button id="cog_logs_clear_btn" style="padding: 2px 6px; font-size: 0.75em; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #94a3b8; cursor: pointer; transition: all 0.2s;">Xóa</button>
+                        </div>
                     </h4>
                     <div id="cog_logs_container" style="font-size: 0.78em; line-height: 1.45; height: 180px; overflow-y: auto; padding: 8px 12px; background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; font-family: 'Courier New', Courier, monospace; word-break: break-all; white-space: pre-wrap;"></div>
                 </div>
