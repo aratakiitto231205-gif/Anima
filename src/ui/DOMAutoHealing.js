@@ -127,7 +127,7 @@ export function getFormattedMessageHtml(rawText, messageId) {
 
     if (!htmlContent.trim()) {
         if (parsed.thought) {
-            htmlContent = `<div class="cog-action-caption"><i class="fa-solid fa-brain"></i> <i>(Nhân vật đang chìm trong dòng suy nghĩ và không có hành động cụ thể...)</i></div>`;
+            htmlContent = `<div class="cog-action-caption"><i>*...*</i></div>`;
         } else {
             // Fallback an toàn nếu không nhận diện được bất kỳ định dạng nào
             htmlContent = `<div class="cog-action-caption">${escapeHtml(rawText)}</div>`;

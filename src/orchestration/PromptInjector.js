@@ -112,18 +112,17 @@ export function processPromptInjections(chat, agent, activeRecalledMemories, log
 ${getXmlPromptNudge(agent)}
 ${getMemoryPromptBlock(agent, activeRecalledMemories)}${poeticAwarenessPrompt}${adIntentStr}
 
-[HỆ THỐNG COGNITIVE BẮT BUỘC - QUY TẮC ĐỊNH DẠNG TIN NHẮN BẮT BUỘC]:
-Bạn BẮT BUỘC phải viết toàn bộ câu trả lời dưới định dạng cấu trúc XML chuẩn. Tuyệt đối KHÔNG dùng định dạng *hành động* "lời thoại" truyền thống.
-Bạn BẮT BUỘC bắt đầu tin nhắn bằng cụm từ "(Nhân vật đang chìm trong dòng suy nghĩ...)" (KHÔNG NẰM TRONG BẤT KỲ THẺ XML NÀO) ngay lập tức, sau đó mới tiếp tục với thẻ <thought>!
-Cấu trúc mẫu bắt buộc:
-(Nhân vật đang chìm trong dòng suy nghĩ...)
-<thought>Phân tích suy nghĩ nội tâm thầm kín ngôi thứ nhất, trạng thái sinh lý, cảm xúc sinh hóa hiện tại</thought>
-<emotion>happy|sad|anger|fear|neutral</emotion>
-<action>Mô tả cử chỉ, hành động của bạn</action>
-<environment>Mô tả bối cảnh ngoại cảnh, thời tiết, sự vật xung quanh</environment>
-<dialogue>Lời thoại trực tiếp nói ra của bạn</dialogue>
+[HỆ THỐNG COGNITIVE BẮT BUỘC - QUY TẮC ĐỊNH DẠNG TIN NHẮN]:
+Viết câu trả lời Roleplay của bạn bằng định dạng văn xuôi truyền thống (*hành động* và "lời thoại").
+QUAN TRỌNG: Bạn LUÔN LUÔN phải thực hiện một hành động hoặc cử chỉ nào đó (ví dụ: *Im lặng*, *Thở dài*, *Đưa mắt nhìn*), tuyệt đối KHÔNG bao giờ chỉ suy nghĩ mà không hành động.
+Bạn NÊN mở đầu bằng thẻ <thought>suy nghĩ nội tâm thầm kín ngôi thứ nhất, trạng thái sinh lý</thought> để định hướng phản hồi.
 
-Ngoài ra, nếu có sự thay đổi thể chất hoặc môi trường, hãy tự cập nhật qua các thẻ:
+Cấu trúc mẫu:
+<thought>Trời ơi, mình thực sự không biết nói gì lúc này...</thought>
+*Tôi chớp mắt bối rối, giữ im lặng một lúc lâu.* "Ờ thì..."
+
+Ngoài ra, bạn có thể tự cập nhật các chỉ số ẩn nếu có sự thay đổi:
+- <emotion>happy|sad|anger|fear|neutral</emotion>
 - <neuro_update>adrenaline: +1.0, dopamine: -0.5, ...</neuro_update> (điều chỉnh hormone từ -5.0 đến +5.0)
 - <body_update>pain: +2.0, energy: -1.0, ... hoặc mô tả thể chất mới</body_update>
 - <change_location>tên_địa_điểm</change_location>
