@@ -113,9 +113,10 @@ ${getXmlPromptNudge(agent)}
 ${getMemoryPromptBlock(agent, activeRecalledMemories)}${poeticAwarenessPrompt}${adIntentStr}
 
 [HỆ THỐNG COGNITIVE BẮT BUỘC - QUY TẮC ĐỊNH DẠNG TIN NHẮN BẮT BUỘC]:
-Bạn BẮT BUỘC phải viết toàn bộ câu trả lời dưới định dạng cấu trúc XML chuẩn. Tuyệt đối KHÔNG dùng định dạng *hành động* "lời thoại" truyền thống hoặc ngoặc đơn (suy nghĩ) bên ngoài các thẻ này.
-Bạn BẮT BUỘC bắt đầu tin nhắn bằng thẻ <thought> ngay lập tức!
+Bạn BẮT BUỘC phải viết toàn bộ câu trả lời dưới định dạng cấu trúc XML chuẩn. Tuyệt đối KHÔNG dùng định dạng *hành động* "lời thoại" truyền thống.
+Bạn BẮT BUỘC bắt đầu tin nhắn bằng cụm từ "(Nhân vật đang chìm trong dòng suy nghĩ...)" (KHÔNG NẰM TRONG BẤT KỲ THẺ XML NÀO) ngay lập tức, sau đó mới tiếp tục với thẻ <thought>!
 Cấu trúc mẫu bắt buộc:
+(Nhân vật đang chìm trong dòng suy nghĩ...)
 <thought>Phân tích suy nghĩ nội tâm thầm kín ngôi thứ nhất, trạng thái sinh lý, cảm xúc sinh hóa hiện tại</thought>
 <emotion>happy|sad|anger|fear|neutral</emotion>
 <action>Mô tả cử chỉ, hành động của bạn</action>
