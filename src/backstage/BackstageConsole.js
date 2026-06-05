@@ -62,9 +62,7 @@ const KNOWN_XML_TAGS = new Set([
 ]);
 
 export async function processAdminCommand(text, agent, activeEnvironment, callbacks = {}) {
-    if (!agent || typeof SillyTavern === 'undefined') {
-        return "Tui không thể truy cập bộ não nhân vật lúc này (Không tìm thấy bộ não nhân vật đang hoạt động). Hãy đảm bảo ní đã chọn một nhân vật hợp lệ để chat!";
-    }
+    if (!agent || typeof SillyTavern === 'undefined') return "Không tìm thấy bộ não nhân vật đang hoạt động.";
     
     const context = SillyTavern.getContext();
     const characterId = context.characterId;
