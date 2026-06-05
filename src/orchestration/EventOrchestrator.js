@@ -226,7 +226,7 @@ export class EventOrchestrator {
 
     onStreamTokenReceived(token) {
         this.streamBuffer += token;
-        const thoughtRegex = /<thought>([\s\S]*?)(?:<\/thought>|$)/i;
+        const thoughtRegex = /<animaing>([\s\S]*?)(?:<\/animaing>|$)/i;
         const match = this.streamBuffer.match(thoughtRegex);
         if (match && match[1]) {
             const thoughtsEl = document.getElementById('cog_dash_thoughts');

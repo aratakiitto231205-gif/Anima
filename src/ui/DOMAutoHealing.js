@@ -1,7 +1,7 @@
 /**
  * DOMAutoHealing.js - v10.0 (MutationObserver & Visual Novel Style Healer)
  * 
- * Quản lý bóc tách thẻ XML Anima (<thought>, <dialogue>, <action>...)
+ * Quản lý bóc tách thẻ XML Anima (<animaing>, <dialogue>, <action>...)
  * và MutationObserver tự động vá DOM tin nhắn trong 50ms khi có chỉnh sửa.
  */
 
@@ -17,7 +17,7 @@ export function parseXmlTags(text) {
 
     if (!text) return result;
 
-    const thoughtRegex = /<thought>([\s\S]*?)(?:<\/thought>|$)/gi;
+    const thoughtRegex = /<animaing>([\s\S]*?)(?:<\/animaing>|$)/gi;
     let thoughtMatch;
     const thoughts = [];
     while ((thoughtMatch = thoughtRegex.exec(text)) !== null) {
@@ -41,8 +41,8 @@ export function parseXmlTags(text) {
     result.environment_update = tagExtract('environment_update');
 
     const textToRender = text
-        .replace(/<thought>[\s\S]*?<\/thought>/gi, '')
-        .replace(/<thought>[\s\S]*/gi, '')
+        .replace(/<animaing>[\s\S]*?<\/animaing>/gi, '')
+        .replace(/<animaing>[\s\S]*/gi, '')
         .replace(/<emotion>[\s\S]*?<\/emotion>/gi, '')
         .replace(/<emotion>[\s\S]*/gi, '')
         .replace(/<memory_update>[\s\S]*?<\/memory_update>/gi, '')
@@ -139,7 +139,7 @@ export function getFormattedMessageHtml(rawText, messageId) {
 
 export function convertProseToXml(text) {
     if (!text || typeof text !== 'string') return text;
-    if (text.includes('<thought>') || text.includes('<dialogue>')) {
+    if (text.includes('<animaing>') || text.includes('<dialogue>')) {
         return text;
     }
     
@@ -166,7 +166,7 @@ export function convertProseToXml(text) {
         }
     });
     
-    return `<thought>Phản hồi tự nhiên.</thought>\n<emotion>neutral</emotion>\n` + blocks.join('\n');
+    return `<animaing>Phản hồi tự nhiên.</animaing>\n<emotion>neutral</emotion>\n` + blocks.join('\n');
 }
 
 export async function renderParsedMessage(messageId, rawText, isHistory = false, getActiveAgentFn, saveAgentStateFn, refreshUIFn) {
@@ -253,7 +253,7 @@ export async function renderParsedMessage(messageId, rawText, isHistory = false,
                 return;
             }
             
-            const hasTags = ['thought', 'emotion', 'dialogue', 'action', 'environment', 'sfx'].some(tag => rawText.includes(`<${tag}>`) || rawText.includes(`</${tag}>`));
+            const hasTags = ['animaing', 'emotion', 'dialogue', 'action', 'environment', 'sfx'].some(tag => rawText.includes(`<${tag}>`) || rawText.includes(`</${tag}>`));
             if (!hasTags) return; // Do not touch DOM for non-Anima messages!
 
             messageEl.classList.remove('cog-emotion-anger', 'cog-emotion-happy', 'cog-emotion-sad', 'cog-emotion-fear');
@@ -313,7 +313,7 @@ export function startChatObserver(getActiveAgentFn, saveAgentStateFn, refreshUIF
                 if (msgObj && (msgObj.is_user || msgObj.is_system)) return;
                 
                 if (msgObj && msgObj.mes) {
-                    const hasTags = ['thought', 'emotion', 'dialogue', 'action', 'environment', 'sfx'].some(tag => msgObj.mes.includes(`<${tag}>`) || msgObj.mes.includes(`</${tag}>`));
+                    const hasTags = ['animaing', 'emotion', 'dialogue', 'action', 'environment', 'sfx'].some(tag => msgObj.mes.includes(`<${tag}>`) || msgObj.mes.includes(`</${tag}>`));
                     if (!hasTags) return; // Do not touch DOM if it has no Anima XML tags!
                 }
 

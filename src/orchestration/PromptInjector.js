@@ -115,10 +115,10 @@ ${getMemoryPromptBlock(agent, activeRecalledMemories)}${poeticAwarenessPrompt}${
 [HỆ THỐNG COGNITIVE BẮT BUỘC - QUY TẮC ĐỊNH DẠNG TIN NHẮN]:
 Viết câu trả lời Roleplay của bạn bằng định dạng văn xuôi truyền thống (*hành động* và "lời thoại").
 QUAN TRỌNG: Bạn LUÔN LUÔN phải thực hiện một hành động hoặc cử chỉ nào đó (ví dụ: *Im lặng*, *Thở dài*, *Đưa mắt nhìn*), tuyệt đối KHÔNG bao giờ chỉ suy nghĩ mà không hành động.
-Bạn NÊN mở đầu bằng thẻ <thought>suy nghĩ nội tâm thầm kín ngôi thứ nhất, trạng thái sinh lý</thought> để định hướng phản hồi.
+Bạn NÊN mở đầu bằng thẻ <animaing>suy nghĩ nội tâm thầm kín ngôi thứ nhất, trạng thái sinh lý</animaing> để định hướng phản hồi.
 
 Cấu trúc mẫu:
-<thought>Trời ơi, mình thực sự không biết nói gì lúc này...</thought>
+<animaing>Trời ơi, mình thực sự không biết nói gì lúc này...</animaing>
 *Tôi chớp mắt bối rối, giữ im lặng một lúc lâu.* "Ờ thì..."
 
 Ngoài ra, bạn có thể tự cập nhật các chỉ số ẩn nếu có sự thay đổi:

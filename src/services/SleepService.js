@@ -141,7 +141,7 @@ CHỈ TRẢ VỀ CÁC THẺ SAU:
 Bạn vừa thức dậy sau giấc ngủ dài. Đêm qua bạn đã trải qua giấc mơ sau:
 "${dreamContent}"
 Trạng thái thức giấc hiện tại: ${wasInterrupted ? 'Bị giật mình đánh thức đột ngột giữa chừng' : 'Thức dậy một cách tự nhiên, vô cùng sảng khoái'}.
-Hãy tinh tế thể hiện trải nghiệm giấc mơ này cùng với cảm xúc và vết thương thể chất vào suy nghĩ <thought> và lời thoại <dialogue> của bạn một cách nghệ thuật nhất.`;
+Hãy tinh tế thể hiện trải nghiệm giấc mơ này cùng với cảm xúc và vết thương thể chất vào suy nghĩ <animaing> và lời thoại <dialogue> của bạn một cách nghệ thuật nhất.`;
 
     if (callbacks.saveState) callbacks.saveState();
     if (callbacks.refreshUI) callbacks.refreshUI();
