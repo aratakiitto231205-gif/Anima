@@ -112,13 +112,13 @@ export function processPromptInjections(chat, agent, activeRecalledMemories, log
 ${getXmlPromptNudge(agent)}
 ${getMemoryPromptBlock(agent, activeRecalledMemories)}${poeticAwarenessPrompt}${adIntentStr}
 
-[HỆ THỐNG COGNITIVE BẮT BUỘC - QUY TẮC ĐỊNH DẠNG TIN NHẮN]:
-Viết câu trả lời Roleplay của bạn bằng định dạng văn xuôi truyền thống (*hành động* và "lời thoại").
-QUAN TRỌNG: Bạn LUÔN LUÔN phải thực hiện một hành động hoặc cử chỉ nào đó (ví dụ: *Im lặng*, *Thở dài*, *Đưa mắt nhìn*), tuyệt đối KHÔNG bao giờ chỉ suy nghĩ mà không hành động.
+[HỆ THỐNG COGNITIVE BẮT BUỘC - QUY TẮC ĐỊNH DẠNG]:
+Viết câu trả lời Roleplay của bạn bằng văn phong tự nhiên. Bạn phải nhập vai hoàn hảo, tuân thủ đúng văn phong và dung lượng được yêu cầu.
+QUAN TRỌNG: Hãy miêu tả sống động cả môi trường xung quanh, âm thanh (SFX) và các vi biểu cảm tinh tế thay vì chỉ có lời thoại. Hãy giữ nhịp độ thực tế, phản ứng hợp lý theo toàn cảnh thay vì vội vã.
 Bạn NÊN mở đầu bằng thẻ <animaing>suy nghĩ nội tâm thầm kín ngôi thứ nhất, trạng thái sinh lý</animaing> để định hướng phản hồi.
 
 Cấu trúc mẫu:
-<animaing>Trời ơi, mình thực sự không biết nói gì lúc này...</animaing>
+<animaing>Trời ơi, tiếng mưa lớn quá... mình thực sự không biết nói gì lúc này.</animaing>
 *Tôi chớp mắt bối rối, giữ im lặng một lúc lâu.* "Ờ thì..."
 
 Ngoài ra, bạn có thể tự cập nhật các chỉ số ẩn nếu có sự thay đổi:
@@ -127,7 +127,7 @@ Ngoài ra, bạn có thể tự cập nhật các chỉ số ẩn nếu có sự
 - <body_update>pain: +2.0, energy: -1.0, ... hoặc mô tả thể chất mới</body_update>
 - <change_location>tên_địa_điểm</change_location>
 - <environment_update>tên_vật_phẩm: trạng_thái_mới</environment_update>
-- <memory_update>Một hoặc hai câu đúc rút bài học/nhận thức mới về đối phương.</memory_update>
+- <memory_update>Ghi lại 1 quan sát cụ thể, thực tế về tính cách, thói quen hoặc sự kiện quan trọng vừa xảy ra.</memory_update>
 `;
         if (lastMsgObj.content !== undefined) lastMsgObj.content = cleanContent + xmlInjection;
         if (lastMsgObj.mes !== undefined) lastMsgObj.mes = cleanContent + xmlInjection;

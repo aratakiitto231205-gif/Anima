@@ -16,56 +16,28 @@ export class ADSettingsPanel {
         if (!settings.ad_api_url) settings.ad_api_url = 'https://api.shopaikey.com/v1/chat/completions';
         if (!settings.ad_daily_budget_usd) settings.ad_daily_budget_usd = 0.50;
 
-        const html = `
-            <div class="inline-drawer" id="anima_ad_settings">
-                <div class="inline-drawer-toggle inline-drawer-header">
-                    <b>Anima Engine: AD Agent Settings</b>
-                    <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
-                </div>
-                <div class="inline-drawer-content" style="display: none;">
-                    <div class="flex-container">
-                        <label for="anima_ad_api_key">AD API Key:</label>
-                        <input id="anima_ad_api_key" type="password" class="text_pole" value="${settings.ad_api_key}" placeholder="sk-...">
-                    </div>
-                    <div class="flex-container">
-                        <label for="anima_ad_model">Model:</label>
-                        <input id="anima_ad_model" type="text" class="text_pole" value="${settings.ad_model}">
-                    </div>
-                    <div class="flex-container">
-                        <label for="anima_ad_api_url">API URL:</label>
-                        <input id="anima_ad_api_url" type="text" class="text_pole" value="${settings.ad_api_url}">
-                    </div>
-                    <div class="flex-container">
-                        <label for="anima_ad_daily_budget_usd">Daily Budget (USD):</label>
-                        <input id="anima_ad_daily_budget_usd" type="number" step="0.01" class="text_pole" value="${settings.ad_daily_budget_usd}">
-                    </div>
-                    <div class="flex-container" style="margin-top: 10px;">
-                        <span id="anima_ad_status" style="font-style: italic; opacity: 0.8;">
-                            AD Agent status: ${settings.ad_api_key ? 'configured' : 'not configured'}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        const extSettings = document.getElementById('extensions_settings');
-        if (extSettings) {
-            extSettings.insertAdjacentHTML('beforeend', html);
-        }
-
-        const saveSettings = () => {
-            if (typeof SillyTavern.saveSettingsDebounced === 'function') {
-                SillyTavern.saveSettingsDebounced();
-            }
+        const updateStatus = () => {
             const statusEl = document.getElementById('anima_ad_status');
             if (statusEl) {
                 statusEl.innerText = `AD Agent status: ${settings.ad_api_key ? 'configured' : 'not configured'}`;
             }
         };
 
+        const saveSettings = () => {
+            if (typeof SillyTavern.saveSettingsDebounced === 'function') {
+                SillyTavern.saveSettingsDebounced();
+            }
+            updateStatus();
+        };
+
         const attachEvent = (id, key) => {
             const el = document.getElementById(id);
             if (el) {
+                // Initialize value from settings
+                if (settings[key] !== undefined) {
+                    el.value = settings[key];
+                }
+                
                 el.addEventListener('input', () => {
                     let val = el.value;
                     if (el.type === 'number') val = parseFloat(val) || 0;
@@ -80,8 +52,6 @@ export class ADSettingsPanel {
         attachEvent('anima_ad_api_url', 'ad_api_url');
         attachEvent('anima_ad_daily_budget_usd', 'ad_daily_budget_usd');
 
-        // GHI CHÚ: Class .inline-drawer của SillyTavern ĐÃ CÓ sẵn global click
-        // handler để toggle content. Tự attach thêm listener ở đây sẽ gây
-        // double-toggle → click mở rồi đóng ngay. Không cần custom listener.
+        updateStatus();
     }
 }

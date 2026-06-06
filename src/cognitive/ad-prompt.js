@@ -7,7 +7,8 @@ export function buildADSystemPrompt({ characterName, personalityTraits, moodWhit
 Your personality traits are: ${traitsStr}.
 Your job is NOT to talk to the user. Your job is to analyze the context and decide ${characterName}'s internal state and next action.
 
-Output STRICTLY valid JSON with no markdown formatting or extra text.
+CRITICAL INSTRUCTION: YOU ARE A SYSTEM ANALYZER. DO NOT ROLEPLAY. DO NOT GENERATE DIALOGUE.
+OUTPUT STRICTLY VALID JSON WITH NO MARKDOWN FORMATTING OR EXTRA TEXT.
 Format:
 {
   "mood": "string" (one of: ${moodWhitelist.join(', ')}),

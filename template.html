@@ -488,6 +488,36 @@
                     </h4>
                     <div id="cog_logs_container" style="font-size: 0.78em; line-height: 1.45; height: 180px; overflow-y: auto; padding: 8px 12px; background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; font-family: 'Courier New', Courier, monospace; word-break: break-all; white-space: pre-wrap;"></div>
                 </div>
+                <!-- AD Agent Settings Panel -->
+                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; margin-top: 10px;">
+                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-robot" style="color: #f43f5e;"></i>
+                        <span>AD Agent Settings (Nhận thức Vô thức)</span>
+                    </h4>
+                    <div class="flex-container flexFlowColumn gap12">
+                        <div class="flex-container">
+                            <label for="anima_ad_api_key" style="font-size: 0.85em; color: #cbd5e1;">AD API Key:</label>
+                            <input id="anima_ad_api_key" type="password" class="text_pole" placeholder="sk-..." style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); color: #f8fafc; padding: 6px 10px; border-radius: 5px; flex-grow: 1;">
+                        </div>
+                        <div class="flex-container">
+                            <label for="anima_ad_model" style="font-size: 0.85em; color: #cbd5e1;">Model:</label>
+                            <input id="anima_ad_model" type="text" class="text_pole" value="gemini-3.1-flash-lite" style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); color: #f8fafc; padding: 6px 10px; border-radius: 5px; flex-grow: 1;">
+                        </div>
+                        <div class="flex-container">
+                            <label for="anima_ad_api_url" style="font-size: 0.85em; color: #cbd5e1;">API URL:</label>
+                            <input id="anima_ad_api_url" type="text" class="text_pole" value="https://api.shopaikey.com/v1/chat/completions" style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); color: #f8fafc; padding: 6px 10px; border-radius: 5px; flex-grow: 1;">
+                        </div>
+                        <div class="flex-container">
+                            <label for="anima_ad_daily_budget_usd" style="font-size: 0.85em; color: #cbd5e1;">Daily Budget (USD):</label>
+                            <input id="anima_ad_daily_budget_usd" type="number" step="0.01" class="text_pole" value="0.50" style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); color: #f8fafc; padding: 6px 10px; border-radius: 5px; flex-grow: 1;">
+                        </div>
+                        <div class="flex-container" style="margin-top: 4px;">
+                            <span id="anima_ad_status" style="font-style: italic; color: #94a3b8; font-size: 0.8em;">
+                                AD Agent status: not configured
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
             
         </div>

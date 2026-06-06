@@ -57,7 +57,8 @@ export class EventOrchestrator {
                         const context = typeof SillyTavern !== 'undefined' ? SillyTavern.getContext() : {};
                         const charName = context?.characters?.[context?.characterId]?.name || 'itto';
                         const availableTools = ["search_web", "recall_memory", "play_music", "set_timer", "tell_joke", "check_news", "surf_tiktok", "query_lore_db"];
-                        adIntent = await agent.getADIntentForMessage(lastUserMsg, availableTools, charName);
+                        const recentContext = getRecentChatContext(eventData.chat, 4);
+                        adIntent = await agent.getADIntentForMessage(recentContext, availableTools, charName);
                         
                         this.saveActiveAgentState();
                     }
@@ -145,7 +146,8 @@ export class EventOrchestrator {
                         const context = typeof SillyTavern !== 'undefined' ? SillyTavern.getContext() : {};
                         const charName = context?.characters?.[context?.characterId]?.name || 'itto';
                         const availableTools = ["search_web", "recall_memory", "play_music", "set_timer", "tell_joke", "check_news", "surf_tiktok", "query_lore_db"];
-                        adIntent = await agent.getADIntentForMessage(lastUserMsg, availableTools, charName);
+                        const recentContext = getRecentChatContext(chat, 4);
+                        adIntent = await agent.getADIntentForMessage(recentContext, availableTools, charName);
                         
                         this.saveActiveAgentState();
                     }
