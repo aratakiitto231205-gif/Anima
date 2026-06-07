@@ -1,10 +1,4 @@
-/**
- * DashboardUI.js - v10.0 (Modularized UI Synchronizer)
- * 
- * Quản lý đồng bộ trạng thái nhận thức và sinh lý của tác tử lên giao diện HTML,
- * xử lý hoạt họa nhịp tim, các thanh đo hormone neon, và danh sách nhật ký nhận thức.
- */
-
+// v11.0
 export function escapeHtml(text) {
     if (!text) return '';
     return text
@@ -17,13 +11,22 @@ export function escapeHtml(text) {
 
 export function refreshMemoryUI(agent, activeEnvironment, saveAgentStateFn) {
     if (!agent) return;
-    
-    // 1. Cập nhật các chỉ số sinh tồn lâm sàng (Vital Signs)
+    renderVitals(agent);
+    renderSomatosensory(agent);
+    renderHormones(agent);
+    renderMentalState(agent);
+    renderBeliefs(agent, saveAgentStateFn, activeEnvironment);
+    renderMemories(agent);
+    renderTriggers(agent);
+    renderBodyText(agent);
+    refreshEnvironmentUI(activeEnvironment);
+}
+
+export function renderVitals(agent) {
     const hrEl = document.getElementById('cog_vital_heart_rate');
     if (hrEl) {
         hrEl.innerText = `${agent.vitals.heart_rate} bpm`;
         
-        // Cập nhật hoạt họa đập tim dựa theo tốc độ nhịp tim
         const heartIcon = document.getElementById('cog_heart_icon');
         if (heartIcon) {
             const duration = Math.max(0.3, 60 / agent.vitals.heart_rate);
@@ -45,8 +48,9 @@ export function refreshMemoryUI(agent, activeEnvironment, saveAgentStateFn) {
     if (respEl) {
         respEl.innerText = `${agent.vitals.resp_rate}/m`;
     }
-    
-    // 2. Cập nhật Thể Trạng (Somatosensory bars)
+}
+
+export function renderSomatosensory(agent) {
     const sensKeys = ['energy', 'pain', 'hunger', 'thirst', 'toilet_need', 'nausea'];
     sensKeys.forEach(k => {
         const valEl = document.getElementById(`cog_sens_${k}`);
@@ -56,7 +60,6 @@ export function refreshMemoryUI(agent, activeEnvironment, saveAgentStateFn) {
             valEl.innerText = val.toFixed(1);
             barEl.style.width = `${val * 10}%`;
             
-            // Đổi màu thanh đo dựa trên mức độ nguy hại
             if (k === 'energy') {
                 barEl.style.background = val < 3.0 
                     ? 'linear-gradient(90deg, #ef4444, #f87171)' 
@@ -73,8 +76,9 @@ export function refreshMemoryUI(agent, activeEnvironment, saveAgentStateFn) {
     if (tempSensEl) {
         tempSensEl.innerText = agent.body_status.temp_sensation || 'Bình thường 🧘';
     }
+}
 
-    // 3. Cập nhật Hormones
+export function renderHormones(agent) {
     const hormones = agent.hormones.levels;
     Object.keys(hormones).forEach(k => {
         const valEl = document.getElementById(`cog_val_${k}`);
@@ -85,19 +89,23 @@ export function refreshMemoryUI(agent, activeEnvironment, saveAgentStateFn) {
             barEl.style.width = `${val * 10}%`;
         }
     });
+}
 
-    // 4. Cập nhật Trạng thái Tâm lý và Thể chất
+export function renderMentalState(agent) {
     const psychEl = document.getElementById('cog_dash_psych');
     if (psychEl) {
         psychEl.innerText = agent.mental_state || 'Cân bằng / Yên bình 😐';
     }
+}
 
+export function renderBodyText(agent) {
     const bodyTextEl = document.getElementById('cog_db_body');
     if (bodyTextEl && document.activeElement !== bodyTextEl) {
         bodyTextEl.value = agent.body || 'Bình thường, khỏe mạnh.';
     }
+}
 
-    // Render beliefs list
+export function renderBeliefs(agent, saveAgentStateFn, activeEnvironment) {
     const beliefsListEl = document.getElementById('cog_db_beliefs_list');
     if (beliefsListEl) {
         if (agent.memory.beliefs && agent.memory.beliefs.length > 0) {
@@ -120,8 +128,9 @@ export function refreshMemoryUI(agent, activeEnvironment, saveAgentStateFn) {
             beliefsListEl.innerHTML = `<i style="color: #64748b; font-size: 0.8em;">Chưa có niềm tin cốt lõi nào...</i>`;
         }
     }
+}
 
-    // Render Core Memories list
+export function renderMemories(agent) {
     const coreListEl = document.getElementById('cog_db_core_list');
     if (coreListEl) {
         if (agent.memory.recallable_drawer && agent.memory.recallable_drawer.length > 0) {
@@ -140,7 +149,6 @@ export function refreshMemoryUI(agent, activeEnvironment, saveAgentStateFn) {
         }
     }
 
-    // Render Drawer (Long term Drawer list)
     const drawerListEl = document.getElementById('cog_db_drawer_list');
     if (drawerListEl) {
         if (agent.memory.recallable_drawer && agent.memory.recallable_drawer.length > 0) {
@@ -158,8 +166,9 @@ export function refreshMemoryUI(agent, activeEnvironment, saveAgentStateFn) {
             drawerListEl.innerHTML = `<i style="color: #64748b; font-size: 0.8em;">Ngăn kéo trống, chưa học ký ức...</i>`;
         }
     }
+}
 
-    // Render Amygdala triggers
+export function renderTriggers(agent) {
     const triggersListEl = document.getElementById('cog_db_triggers_list');
     if (triggersListEl) {
         if (agent.biomarker_triggers && agent.biomarker_triggers.length > 0) {
@@ -172,9 +181,6 @@ export function refreshMemoryUI(agent, activeEnvironment, saveAgentStateFn) {
             triggersListEl.innerHTML = `<i style="color: #64748b; font-size: 0.8em;">Chưa học được phản xạ tùy biến nào...</i>`;
         }
     }
-
-    // 5. Đồng bộ môi trường vật lý
-    refreshEnvironmentUI(activeEnvironment);
 }
 
 export function refreshEnvironmentUI(activeEnvironment) {

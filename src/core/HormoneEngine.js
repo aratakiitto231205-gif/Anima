@@ -1,5 +1,5 @@
 /**
- * HormoneEngine.js - v10.0 (Modularized Neurochemical Axis)
+ * HormoneEngine.js - v11.0 (Modularized Neurochemical Axis)
  * 
  * Quản lý 8 chất dẫn truyền thần kinh & hormone:
  * Adrenaline, Cortisol, Melatonin, Dopamine, Serotonin, Oxytocin, Endorphins, Sex Hormones.

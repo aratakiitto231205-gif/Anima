@@ -32,3 +32,9 @@ npm-debug.log*
 # Debug / diagnostic logs (contain NSFW + persona — privacy sensitive)
 server_request_debug.json
 archive/debug/
+
+# Playtest logs & temp notes
+Log 7_6.docx
+Notes_260607_032156.docx
+log_temp.md
+notes_extracted.txt

@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MemoryEngine, getKeywords, getJaccardSimilarity } from './MemoryEngine.js';
+import { MemoryEngine, getKeywords, getJaccardSimilarity, findNewestMemory } from './MemoryEngine.js';
 
 describe('MemoryEngine - Helper Functions', () => {
     describe('getKeywords', () => {
@@ -316,6 +316,7 @@ describe('MemoryEngine - Forgetting Curve (Ebbinghaus)', () => {
         // Rehearse before decay
         engine.learnMemoryDynamically("Rehearsed memory", 1, mockHormones);
         const weightAfterRehearsal = engine.stm_buffer[0].weight;
+        expect(weightAfterRehearsal).toBeGreaterThan(0);
 
         engine.decayShortTermMemory(5);
 
@@ -583,5 +584,34 @@ describe('MemoryEngine - Emotional Intensity', () => {
         const memory = engine.stm_buffer[0];
         // joy = min(dopamine + (oxytocin * 0.3), 10.0) = min(6.0 + 1.65, 10.0) = 7.65
         expect(memory.emotions.joy).toBeGreaterThan(7.0);
+    });
+});
+
+describe('MemoryEngine - findNewestMemory', () => {
+    it('should return STM if it has a newer timestamp than LTM', () => {
+        const agent = {
+            memory: {
+                recallable_drawer: [
+                    { content: 'Old LTM memory', timestamp: new Date('2026-06-07T10:00:00Z').toISOString() }
+                ],
+                stm_buffer: [
+                    { content: 'New STM memory', timestamp: new Date('2026-06-07T12:00:00Z').toISOString() }
+                ]
+            }
+        };
+        const newest = findNewestMemory(agent);
+        expect(newest.content).toBe('New STM memory');
+    });
+
+    it('should return null if memory state is empty', () => {
+        const agentNull = null;
+        const agentEmpty = {
+            memory: {
+                recallable_drawer: [],
+                stm_buffer: []
+            }
+        };
+        expect(findNewestMemory(agentNull)).toBeNull();
+        expect(findNewestMemory(agentEmpty)).toBeNull();
     });
 });

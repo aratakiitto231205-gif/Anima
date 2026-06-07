@@ -1,3 +1,4 @@
+// v11.0
 import { getCharacterEnvironment } from '../services/EnvironmentService.js';
 import { recallMemoriesSemantic } from '../services/VectorMemoryService.js';
 import { renderParsedMessage, startChatObserver } from '../ui/DOMAutoHealing.js';
@@ -5,13 +6,10 @@ import { updateActiveRecallUI } from '../ui/DashboardUI.js';
 import { startSubconsciousTicker, stopSubconsciousTicker } from '../backstage/SubconsciousTicker.js';
 import { getJaccardSimilarity } from '../core/MemoryEngine.js';
 import { processPromptInjections, getRecentChatContext } from './PromptInjector.js';
-import { handleSleepInterruption, isSleeping } from './SleepDetector.js';
+import { handleSleepInterruption } from './SleepDetector.js';
 import { applyTemporalAnchor, applyTemporalAnchorFromChatLog, getLastUserMessage } from './TemporalAnchor.js';
+import { AVAILABLE_TOOLS } from '../utils/constants.js';
 
-/**
- * EventOrchestrator - Đăng ký và xử lý các sự kiện ST
- * Nhận các hàm accessor/callback từ index.js để tránh circular dependency
- */
 export class EventOrchestrator {
     constructor({ getActiveAgent, saveActiveAgentState, refreshMemoryUIWrapper, logAnima }) {
         this.getActiveAgent = getActiveAgent;
@@ -34,66 +32,66 @@ export class EventOrchestrator {
         };
     }
 
-    async onChatCompletionPromptReady(eventData) {
+    async _dispatch({ chat, applyVectorSearch = true }) {
         try {
-            if (!eventData || !Array.isArray(eventData.chat)) return;
-
+            if (!chat || !Array.isArray(chat)) return;
             const agent = this.getActiveAgent();
+            if (!agent) return;
+
+            applyTemporalAnchor(agent, chat);
+            const lastUserMsg = getLastUserMessage(chat);
+            const messageIndex = chat.length - 1;
+
+            const sleepResult = handleSleepInterruption(agent, lastUserMsg, this.lastProcessedUserMsg, this.getCallbacks());
+
             let adIntent = null;
-            if (agent) {
-                applyTemporalAnchor(agent, eventData.chat);
+            if (sleepResult.shouldProcess && !sleepResult.wasSleeping && lastUserMsg && lastUserMsg !== this.lastProcessedUserMsg) {
+                agent.processMessage(lastUserMsg, 'user', messageIndex);
+                const context = typeof SillyTavern !== 'undefined' ? SillyTavern.getContext() : {};
+                const charName = context?.characters?.[context?.characterId]?.name || 'itto';
+                const recentContext = getRecentChatContext(chat, 4);
+                adIntent = await agent.getADIntentForMessage(recentContext, AVAILABLE_TOOLS, charName);
+                this.saveActiveAgentState();
+            }
+            this.lastProcessedUserMsg = sleepResult.newLastProcessedUserMsg;
 
-                const lastUserMsg = getLastUserMessage(eventData.chat);
-                const messageIndex = eventData.chat.length - 1;
-
-                const result = handleSleepInterruption(
-                    agent, lastUserMsg, this.lastProcessedUserMsg, this.getCallbacks()
-                );
-
-                if (result.shouldProcess) {
-                    if (!result.wasSleeping && lastUserMsg && lastUserMsg !== this.lastProcessedUserMsg) {
-                        agent.processMessage(lastUserMsg, 'user', messageIndex);
-                        
-                        const context = typeof SillyTavern !== 'undefined' ? SillyTavern.getContext() : {};
-                        const charName = context?.characters?.[context?.characterId]?.name || 'itto';
-                        const availableTools = ["search_web", "recall_memory", "play_music", "set_timer", "tell_joke", "check_news", "surf_tiktok", "query_lore_db"];
-                        const recentContext = getRecentChatContext(eventData.chat, 4);
-                        adIntent = await agent.getADIntentForMessage(recentContext, availableTools, charName);
-                        
-                        this.saveActiveAgentState();
-                    }
-                    this.lastProcessedUserMsg = result.newLastProcessedUserMsg;
-                }
-
-                // Vector Semantic Search
-                const context = SillyTavern.getContext();
-                if (!this.activeEnvironment && context.characterId !== undefined) {
-                    this.activeEnvironment = await getCharacterEnvironment(context.characterId);
-                }
-                const recentContext = getRecentChatContext(eventData.chat, 3);
-                if (recentContext && context.characterId !== undefined) {
-                    this.activeRecalledMemories = await recallMemoriesSemantic(context.characterId, recentContext, 4, 0.2);
-                    if (!this.activeRecalledMemories || this.activeRecalledMemories.length === 0) {
-                        this.activeRecalledMemories = agent.memory.recallable_drawer
-                            .map(card => ({ card, sim: getJaccardSimilarity(card.content, recentContext) }))
-                            .filter(item => item.sim > 0.05)
-                            .sort((a, b) => b.sim - a.sim)
-                            .slice(0, 4)
-                            .map(item => item.card);
-                    }
-                }
-
-                this.refreshMemoryUIWrapper();
-                updateActiveRecallUI(this.activeRecalledMemories);
+            if (applyVectorSearch) {
+                await this._vectorSearch(chat, agent);
             }
 
-            processPromptInjections(eventData.chat, this.getActiveAgent(), this.activeRecalledMemories, this.logAnima, adIntent);
+            this.refreshMemoryUIWrapper();
+            updateActiveRecallUI(this.activeRecalledMemories);
+            processPromptInjections(chat, this.getActiveAgent(), this.activeRecalledMemories, this.logAnima, adIntent);
         } catch (err) {
-            console.error("Anima Engine: Error in onChatCompletionPromptReady:", err);
+            this.logAnima('error', 'Interceptor', 'Lỗi trong dispatch:', err);
         }
     }
 
-    async onTextCompletionPromptReady() {
+    async _vectorSearch(chat, agent) {
+        const context = SillyTavern.getContext();
+        if (!this.activeEnvironment && context.characterId !== undefined) {
+            this.activeEnvironment = await getCharacterEnvironment(context.characterId);
+        }
+        const recentContext = getRecentChatContext(chat, 3);
+        if (recentContext && context.characterId !== undefined) {
+            this.activeRecalledMemories = await recallMemoriesSemantic(context.characterId, recentContext, 4, 0.2);
+            if (!this.activeRecalledMemories || this.activeRecalledMemories.length === 0) {
+                // Jaccard fallback - tăng threshold từ 0.05 → 0.10
+                this.activeRecalledMemories = agent.memory.recallable_drawer
+                    .map(card => ({ card, sim: getJaccardSimilarity(card.content, recentContext) }))
+                    .filter(item => item.sim > 0.10)
+                    .sort((a, b) => b.sim - a.sim)
+                    .slice(0, 4)
+                    .map(item => item.card);
+            }
+        }
+    }
+
+    onChatCompletionPromptReady(eventData) {
+        return this._dispatch({ chat: eventData?.chat, applyVectorSearch: true });
+    }
+
+    onTextCompletionPromptReady() {
         try {
             const context = SillyTavern.getContext();
             const chatLog = context.chat || [];
@@ -103,62 +101,22 @@ export class EventOrchestrator {
             const agent = this.getActiveAgent();
             if (agent) {
                 applyTemporalAnchorFromChatLog(agent, chatLog);
-
                 const messageIndex = chatLog.length - 1;
-                const result = handleSleepInterruption(
-                    agent, lastMsgText, this.lastProcessedUserMsg, this.getCallbacks()
-                );
-
-                if (result.shouldProcess) {
-                    if (!result.wasSleeping && lastMsgText && lastMsgText !== this.lastProcessedUserMsg) {
-                        agent.processMessage(lastMsgText, 'user', messageIndex);
-                        this.saveActiveAgentState();
-                    }
-                    this.lastProcessedUserMsg = result.newLastProcessedUserMsg;
+                const sleepResult = handleSleepInterruption(agent, lastMsgText, this.lastProcessedUserMsg, this.getCallbacks());
+                if (sleepResult.shouldProcess && !sleepResult.wasSleeping && lastMsgText && lastMsgText !== this.lastProcessedUserMsg) {
+                    agent.processMessage(lastMsgText, 'user', messageIndex);
+                    this.saveActiveAgentState();
                 }
+                this.lastProcessedUserMsg = sleepResult.newLastProcessedUserMsg;
             }
         } catch (err) {
             this.logAnima('error', 'Interceptor', 'Lỗi trong Text Completion Prompt Ready:', err);
         }
     }
 
-    async onPromptInterceptor(chat) {
-        try {
-            this.logAnima('info', 'Interceptor', `Kích hoạt Prompt Interceptor cho text-completion.`);
-            if (!chat || !Array.isArray(chat)) return;
-
-            const agent = this.getActiveAgent();
-            let adIntent = null;
-            if (agent) {
-                applyTemporalAnchor(agent, chat);
-
-                const lastUserMsg = getLastUserMessage(chat);
-                const messageIndex = chat.length - 1;
-
-                const result = handleSleepInterruption(
-                    agent, lastUserMsg, this.lastProcessedUserMsg, this.getCallbacks()
-                );
-
-                if (result.shouldProcess) {
-                    if (!result.wasSleeping && lastUserMsg && lastUserMsg !== this.lastProcessedUserMsg) {
-                        agent.processMessage(lastUserMsg, 'user', messageIndex);
-                        
-                        const context = typeof SillyTavern !== 'undefined' ? SillyTavern.getContext() : {};
-                        const charName = context?.characters?.[context?.characterId]?.name || 'itto';
-                        const availableTools = ["search_web", "recall_memory", "play_music", "set_timer", "tell_joke", "check_news", "surf_tiktok", "query_lore_db"];
-                        const recentContext = getRecentChatContext(chat, 4);
-                        adIntent = await agent.getADIntentForMessage(recentContext, availableTools, charName);
-                        
-                        this.saveActiveAgentState();
-                    }
-                    this.lastProcessedUserMsg = result.newLastProcessedUserMsg;
-                }
-            }
-
-            processPromptInjections(chat, this.getActiveAgent(), this.activeRecalledMemories, this.logAnima, adIntent);
-        } catch (err) {
-            this.logAnima('error', 'Interceptor', 'Lỗi nghiêm trọng trong Prompt Interceptor của Anima Engine:', err);
-        }
+    onPromptInterceptor(chat) {
+        this.logAnima('info', 'Interceptor', `Kích hoạt Prompt Interceptor cho text-completion.`);
+        return this._dispatch({ chat, applyVectorSearch: false });
     }
 
     onMessageReceived(messageId) {
@@ -189,7 +147,6 @@ export class EventOrchestrator {
     }
 
     async onChatChanged() {
-        // Reset state on chat change
         stopSubconsciousTicker();
 
         setTimeout(async () => {
@@ -205,7 +162,6 @@ export class EventOrchestrator {
                 startChatObserver(this.getActiveAgent, this.saveActiveAgentState, this.refreshMemoryUIWrapper);
                 startSubconsciousTicker(this.getActiveAgent, this.saveActiveAgentState, this.refreshMemoryUIWrapper);
 
-                // Đồng bộ checkbox states
                 const awareToggle = document.getElementById('cog_opt_self_aware');
                 if (awareToggle) awareToggle.checked = agent.consciousness.self_awareness;
                 const bgConToggle = document.getElementById('cog_opt_bg_conscious');

@@ -1,4 +1,6 @@
+// v11.0
 import { buildADSystemPrompt } from './ad-prompt.js';
+import { MOOD_WHITELIST } from '../utils/constants.js';
 
 export class BudgetExceededError extends Error {
     constructor(message) {
@@ -17,6 +19,8 @@ export class ADAgent {
         
         // Approx cost per call for Flash Lite
         this.costPerCall = 0.0001; 
+
+        this.loadConfigFromSTContext();
     }
 
     loadConfigFromSTContext() {
@@ -48,10 +52,12 @@ export class ADAgent {
         }
 
         if (this.tokenSpendTracker + this.costPerCall > this.dailyBudgetUsd) {
-            throw new BudgetExceededError(`Daily budget of $${this.dailyBudgetUsd} exceeded.`);
+            const errMsg = `Daily budget of $${this.dailyBudgetUsd} exceeded (Spent: $${this.tokenSpendTracker.toFixed(4)}).`;
+            console.warn(`[AD Agent] Budget Limit: ${errMsg}`);
+            throw new BudgetExceededError(errMsg);
         }
 
-        const moodWhitelist = ["calm", "excited", "annoyed", "sleepy", "concerned", "competitive", "affectionate"];
+        const moodWhitelist = MOOD_WHITELIST;
         const systemPrompt = buildADSystemPrompt({ characterName, personalityTraits: personality, moodWhitelist });
         const userPrompt = `Context: ${context}\nUser Input: ${userInput}\nAvailable Tools: ${availableTools.join(", ")}\n`;
 
@@ -62,8 +68,7 @@ export class ADAgent {
                 { role: "user", content: userPrompt }
             ],
             response_format: { type: "json_object" },
-            temperature: 0.2,
-            max_tokens: 800
+            temperature: 0.2
         };
 
         try {
@@ -86,8 +91,8 @@ export class ADAgent {
             this.tokenSpendTracker += this.costPerCall;
 
             let rawText = data.choices[0].message.content;
-            if (rawText.startsWith('```json')) {
-                rawText = rawText.replace(/```json\\n/g, '').replace(/\\n```/g, '').trim();
+            if (rawText.startsWith('```')) {
+                rawText = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
             }
 
             const parsed = JSON.parse(rawText);

@@ -1,21 +1,19 @@
-// Core modules
-import { CognitiveAgent } from './src/core/CognitiveAgent.js';
-import { getCharacterEnvironment, saveCharacterEnvironment } from './src/services/EnvironmentService.js';
-import { executeTimeJump } from './src/services/TimeJumpService.js';
-import { refreshMemoryUI, refreshEnvironmentUI, appendLogToUi } from './src/ui/DashboardUI.js';
+// v11.0
+import { ADSettingsPanel } from './src/ui/ADSettingsPanel.js';
+import { EventOrchestrator } from './src/orchestration/EventOrchestrator.js';
+import { getActiveAgent, saveActiveAgentState, resetActiveAgent } from './src/utils/agentStore.js';
+import { logAnima, clearAnimaLogs, copyAnimaLogsToClipboard, downloadAnimaLogsAsFile, refreshLogsUi } from './src/utils/logger.js';
+import { refreshMemoryUI } from './src/ui/DashboardUI.js';
 import { startChatObserver } from './src/ui/DOMAutoHealing.js';
 import { handleAdminMessage } from './src/backstage/BackstageConsole.js';
 import { startSubconsciousTicker } from './src/backstage/SubconsciousTicker.js';
+import { executeTimeJump } from './src/services/TimeJumpService.js';
 
-// Orchestration modules
-import { EventOrchestrator } from './src/orchestration/EventOrchestrator.js';
-
-// UI Modules
-import { ADSettingsPanel } from './src/ui/ADSettingsPanel.js';
-
-const extensionPath = new URL('.', import.meta.url).pathname;
+let orchestrator = null;
 let MODULE_NAME = 'third-party/Anima';
+
 try {
+    const extensionPath = new URL('.', import.meta.url).pathname;
     const extIdx = extensionPath.indexOf('/extensions/');
     if (extIdx !== -1) {
         MODULE_NAME = extensionPath.substring(extIdx + 12).replace(/\/$/, '');
@@ -23,216 +21,18 @@ try {
 } catch (e) {
     console.error("Anima Engine: Failed to resolve MODULE_NAME dynamically, using default 'third-party/Anima':", e);
 }
-let activeAgent = null;
-let activeEnvironment = null;
-let orchestrator = null;
-
-// ==========================================
-// ANIMA LOGGER ENGINE v10.0
-// ==========================================
-const MAX_LOG_SIZE = 150;
-let animaLogs = [];
-
-try {
-    const savedLogs = sessionStorage.getItem('anima_engine_session_logs');
-    if (savedLogs) {
-        animaLogs = JSON.parse(savedLogs);
-    }
-} catch (e) {
-    console.warn("Anima Logger: Failed to load session logs:", e);
-}
-
-export function logAnima(level, moduleName, message, detail = null) {
-    const timestamp = new Date();
-    const timeStr = timestamp.toLocaleTimeString();
-
-    const logEntry = {
-        time: timeStr,
-        level: level.toUpperCase(),
-        module: moduleName,
-        message: message,
-        detail: detail ? (typeof detail === 'object' ? JSON.stringify(detail) : String(detail)) : null
-    };
-
-    animaLogs.push(logEntry);
-    if (animaLogs.length > MAX_LOG_SIZE) {
-        animaLogs.shift();
-    }
-
-    try {
-        sessionStorage.setItem('anima_engine_session_logs', JSON.stringify(animaLogs));
-    } catch (e) {}
-
-    const colors = {
-        'INFO': 'color: #94a3b8;',
-        'SUCCESS': 'color: #10b981; font-weight: bold;',
-        'WARNING': 'color: #f59e0b; font-weight: bold;',
-        'ERROR': 'color: #ef4444; font-weight: bold; background: rgba(239, 68, 68, 0.1);',
-        'COGNITIVE': 'color: #a855f7; font-weight: bold;'
-    };
-
-    const consoleColor = colors[logEntry.level] || 'color: #cbd5e1;';
-    console.log(
-        `%c[Anima Engine - ${logEntry.level}]%c [${logEntry.module}] ${logEntry.message}`,
-        `${consoleColor}`,
-        'color: unset;',
-        detail || ''
-    );
-
-    appendLogToUi(logEntry);
-}
-
-function refreshLogsUi() {
-    const container = document.getElementById('cog_logs_container');
-    if (!container) return;
-    container.innerHTML = '';
-    animaLogs.forEach(log => appendLogToUi(log));
-}
-
-function clearAnimaLogs() {
-    animaLogs = [];
-    try {
-        sessionStorage.removeItem('anima_engine_session_logs');
-    } catch (e) {}
-    refreshLogsUi();
-    logAnima('success', 'Logger', 'Đã làm sạch nhật ký nhận thức.');
-}
-
-// Format logs thành plain text để copy/download
-function getAnimaLogsText() {
-    return animaLogs.map(log => {
-        const detail = log.detail ? `\n   ${log.detail}` : '';
-        return `[${log.time}] [${log.level}] [${log.module}] ${log.message}${detail}`;
-    }).join('\n');
-}
-
-// Sao chép nhật ký vào clipboard (fallback cho browser cũ không hỗ trợ navigator.clipboard)
-async function copyAnimaLogsToClipboard() {
-    const text = getAnimaLogsText();
-    if (!text) {
-        if (typeof toastr !== 'undefined') toastr.warning('Nhật ký trống, không có gì để sao chép.');
-        return;
-    }
-    try {
-        if (navigator.clipboard && window.isSecureContext) {
-            await navigator.clipboard.writeText(text);
-        } else {
-            // Fallback: dùng textarea tạm + execCommand
-            const ta = document.createElement('textarea');
-            ta.value = text;
-            ta.style.position = 'fixed';
-            ta.style.opacity = '0';
-            document.body.appendChild(ta);
-            ta.focus();
-            ta.select();
-            document.execCommand('copy');
-            document.body.removeChild(ta);
-        }
-        if (typeof toastr !== 'undefined') toastr.success(`Đã sao chép ${animaLogs.length} dòng nhật ký.`);
-        logAnima('success', 'Logger', `Đã sao chép ${animaLogs.length} dòng nhật ký vào clipboard.`);
-    } catch (err) {
-        console.error('Anima Logger: Copy failed', err);
-        if (typeof toastr !== 'undefined') toastr.error('Sao chép thất bại: ' + err.message);
-    }
-}
-
-// Tải nhật ký về máy dưới dạng .txt
-function downloadAnimaLogsAsFile() {
-    const text = getAnimaLogsText();
-    if (!text) {
-        if (typeof toastr !== 'undefined') toastr.warning('Nhật ký trống, không có gì để tải.');
-        return;
-    }
-    try {
-        const dateStr = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-        const filename = `anima-logs-${dateStr}.txt`;
-        const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-        if (typeof toastr !== 'undefined') toastr.success(`Đã tải ${animaLogs.length} dòng nhật ký (${filename}).`);
-        logAnima('success', 'Logger', `Đã tải nhật ký về máy: ${filename}`);
-    } catch (err) {
-        console.error('Anima Logger: Download failed', err);
-        if (typeof toastr !== 'undefined') toastr.error('Tải thất bại: ' + err.message);
-    }
-}
-
-// ==========================================
-// AGENT STATE MANAGEMENT
-// ==========================================
-function getCharacterMemory() {
-    if (typeof SillyTavern === 'undefined') return null;
-    const context = SillyTavern.getContext();
-    const id = (context && context.characterId !== undefined) ? context.characterId : (context && context.groupId);
-    if (!context || id === undefined || !context.characters) return null;
-    const character = context.characters[id];
-    if (!character) return null;
-    return (character.data && character.data.extensions && character.data.extensions.cognitive_memory) || null;
-}
-
-function getActiveAgent() {
-    if (activeAgent) return activeAgent;
-    const memory = getCharacterMemory();
-    if (!memory) {
-        if (typeof SillyTavern !== 'undefined') {
-            const context = SillyTavern.getContext();
-            const id = (context && context.characterId !== undefined) ? context.characterId : (context && context.groupId);
-            const charObj = (id !== undefined && context && context.characters) ? context.characters[id] : null;
-            if (charObj) {
-                logAnima('info', 'System', `Khởi tạo bộ não mới cho nhân vật: ${charObj.name}`);
-                activeAgent = new CognitiveAgent(null);
-                saveActiveAgentState();
-                return activeAgent;
-            } else {
-                console.warn("Anima Engine: characterId/groupId is undefined or character not found. getActiveAgent returning null.");
-            }
-        }
-        return null;
-    }
-    activeAgent = new CognitiveAgent(memory);
-    return activeAgent;
-}
-
-function saveActiveAgentState() {
-    if (!activeAgent || typeof SillyTavern === 'undefined') return;
-    const context = SillyTavern.getContext();
-    const id = (context && context.characterId !== undefined) ? context.characterId : (context && context.groupId);
-    if (!context || id === undefined || !context.characters) return;
-
-    const state = activeAgent.serialize();
-    const character = context.characters[id];
-    if (character) {
-        if (!character.data) character.data = {};
-        if (!character.data.extensions) character.data.extensions = {};
-        character.data.extensions.cognitive_memory = state;
-    }
-    if (typeof context.writeExtensionField === 'function') {
-        context.writeExtensionField(id, 'cognitive_memory', state);
-    }
-}
 
 function refreshMemoryUIWrapper() {
-    refreshMemoryUI(getActiveAgent(), activeEnvironment, saveActiveAgentState);
+    const env = orchestrator ? orchestrator.activeEnvironment : null;
+    refreshMemoryUI(getActiveAgent(), env, saveActiveAgentState);
 }
 
-// ==========================================
-// GLOBAL INTERCEPTOR FOR TEXT COMPLETION
-// ==========================================
-globalThis.animaCognitiveInterceptor = async function(chat, contextSize, abort, type) {
+globalThis.animaCognitiveInterceptor = async function(chat) {
     if (orchestrator) {
         await orchestrator.onPromptInterceptor(chat);
     }
 };
 
-// ==========================================
-// UI SETUP
-// ==========================================
 function setupTabs() {
     const tabBtns = document.querySelectorAll('.cog-tab-btn');
     tabBtns.forEach(btn => {
@@ -250,7 +50,6 @@ function setupTabs() {
         });
     });
 
-    // Toggle controls
     const awareToggle = document.getElementById('cog_opt_self_aware');
     if (awareToggle) {
         const agent = getActiveAgent();
@@ -303,19 +102,23 @@ function setupTabs() {
 }
 
 function setupEventHandlers() {
-    // Backstage Chat
     const adminSendBtn = document.getElementById('cog_admin_send_btn');
     if (adminSendBtn) {
-        adminSendBtn.addEventListener('click', () => handleAdminMessage(getActiveAgent(), activeEnvironment, { saveState: saveActiveAgentState, refreshUI: refreshMemoryUIWrapper }));
+        adminSendBtn.addEventListener('click', () => {
+            const env = orchestrator ? orchestrator.activeEnvironment : null;
+            handleAdminMessage(getActiveAgent(), env, { saveState: saveActiveAgentState, refreshUI: refreshMemoryUIWrapper });
+        });
     }
     const adminInputEl = document.getElementById('cog_admin_chat_input');
     if (adminInputEl) {
         adminInputEl.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleAdminMessage(getActiveAgent(), activeEnvironment, { saveState: saveActiveAgentState, refreshUI: refreshMemoryUIWrapper });
+            if (e.key === 'Enter') {
+                const env = orchestrator ? orchestrator.activeEnvironment : null;
+                handleAdminMessage(getActiveAgent(), env, { saveState: saveActiveAgentState, refreshUI: refreshMemoryUIWrapper });
+            }
         });
     }
 
-    // Time Jump
     document.querySelectorAll('.cog-time-jump-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const mins = parseInt(this.getAttribute('data-minutes'));
@@ -337,7 +140,6 @@ function setupEventHandlers() {
         });
     }
 
-    // Save Body & Reset Memory
     const saveBodyBtn = document.getElementById('cog_save_body');
     if (saveBodyBtn) {
         saveBodyBtn.addEventListener('click', () => {
@@ -398,9 +200,6 @@ function setupEventHandlers() {
     }
 }
 
-// ==========================================
-// INITIALIZATION
-// ==========================================
 async function init() {
     try {
         if (typeof SillyTavern === 'undefined') {
@@ -410,7 +209,7 @@ async function init() {
         const context = SillyTavern.getContext();
         const { eventSource, event_types, renderExtensionTemplateAsync } = context;
 
-        logAnima('info', 'System', 'Khởi chạy Anima Engine v10.0 (Tái cấu trúc Mô-đun chuyên nghiệp)...');
+        logAnima('info', 'System', 'Khởi chạy Anima Engine v11.0 (Tái cấu trúc Mô-đun chuyên nghiệp)...');
 
         const container = document.createElement('div');
         container.id = 'cognitive_dashboard_container';
@@ -426,14 +225,11 @@ async function init() {
             logAnima('success', 'System', 'Đã chèn panel Anima vào extensions_settings');
         } else {
             console.warn("Anima Engine: Không tìm thấy phần tử #extensions_settings trong DOM!");
-            // Thử chèn vào body hoặc nơi khác để hiển thị tạm thời
             document.body.appendChild(container);
         }
 
-        // Initialize AD Settings Panel
         ADSettingsPanel.init();
 
-        // Initialize orchestrator
         orchestrator = new EventOrchestrator({
             getActiveAgent,
             saveActiveAgentState,
@@ -441,9 +237,8 @@ async function init() {
             logAnima
         });
 
-        // Register ST events
         eventSource.on(event_types.CHAT_CHANGED, () => {
-            activeAgent = null;
+            resetActiveAgent();
             orchestrator.lastProcessedMessageId = -1;
             orchestrator.lastProcessedMessageText = '';
             orchestrator.lastProcessedUserMsg = '';
@@ -466,7 +261,6 @@ async function init() {
         setupEventHandlers();
         refreshLogsUi();
 
-        // Initialize observer and ticker
         setTimeout(() => {
             const agent = getActiveAgent();
             if (agent) {

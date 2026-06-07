@@ -1,5 +1,5 @@
 /**
- * EnvironmentService.js - v10.0 (Persistent Physical Environment Service)
+ * EnvironmentService.js - v11.0 (Persistent Physical Environment Service)
  * 
  * Liên lạc với API backend SillyTavern để lưu giữ trạng thái môi trường vật lý:
  * Địa điểm hoạt động (active_location), danh sách vật phẩm (items), số lượng và trạng thái.

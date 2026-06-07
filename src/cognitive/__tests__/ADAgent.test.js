@@ -161,4 +161,66 @@ describe('ADAgent', () => {
         expect(prompt).toContain("ambition: 9/10");
         expect(prompt).toContain("calm, excited");
     });
+
+    it('does not include max_tokens in the request body', async () => {
+        const mockResponse = {
+            choices: [{
+                message: {
+                    content: JSON.stringify({
+                        mood: "calm",
+                        relevant_memories_to_recall: [],
+                        should_use_tool: false,
+                        tool_choice: null,
+                        reasoning: "Test reasoning"
+                    })
+                }
+            }]
+        };
+
+        global.fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockResponse
+        });
+
+        await agent.evaluate({
+            context: "Test context",
+            userInput: "Hello",
+            availableTools: []
+        });
+
+        expect(global.fetch).toHaveBeenCalled();
+        const fetchArgs = global.fetch.mock.calls[0];
+        const bodyParsed = JSON.parse(fetchArgs[1].body);
+        expect(bodyParsed).not.toHaveProperty('max_tokens');
+    });
+
+    it('calls loadConfigFromSTContext in constructor and sets apiKey', () => {
+        const newAgent = new ADAgent();
+        expect(newAgent.apiKey).toBe('test_key');
+    });
+
+    it('parses response correctly when wrapped in markdown JSON code block', async () => {
+        const mockResponse = {
+            choices: [{
+                message: {
+                    content: "```json\n{\n  \"mood\": \"excited\",\n  \"relevant_memories_to_recall\": [],\n  \"should_use_tool\": false,\n  \"tool_choice\": null,\n  \"reasoning\": \"Markdown JSON\"\n}\n```"
+                }
+            }]
+        };
+
+        global.fetch.mockResolvedValueOnce({
+            ok: true,
+            json: async () => mockResponse
+        });
+
+        const result = await agent.evaluate({
+            context: "Test context",
+            userInput: "Hello",
+            availableTools: []
+        });
+
+        expect(result).not.toBeNull();
+        expect(result.mood).toBe("excited");
+        expect(result.reasoning).toBe("Markdown JSON");
+    });
 });

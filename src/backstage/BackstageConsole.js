@@ -1,11 +1,4 @@
-/**
- * BackstageConsole.js - v10.0 (Backstage Console & AD Agent Service)
- * 
- * Quản lý hội thoại tiềm thức với AD Agent (AI Quản trị sau cánh gà),
- * biên dịch mệnh lệnh ngôn ngữ tự nhiên thành các thẻ XML thay đổi chỉ số sinh hóa,
- * cảm giác somatosensory, và môi trường vật lý cố định.
- */
-
+// v11.0
 import { saveCharacterEnvironment } from '../services/EnvironmentService.js';
 import { syncVectorMemoryCard } from '../services/VectorMemoryService.js';
 import { refreshEnvironmentUI, escapeHtml } from '../ui/DashboardUI.js';
@@ -45,21 +38,210 @@ export function appendAdminChatLog(sender, text) {
     chatLogEl.scrollTop = chatLogEl.scrollHeight;
 }
 
-/**
- * Clamp a numeric value to [min, max].
- * Handles non-numeric input by defaulting to 0 before clamping.
- */
-function clampValue(val, min, max) {
-    return Math.max(min, Math.min(max, parseFloat(val) || 0));
+const BACKSTAGE_PARSERS = [
+    {
+        match: (text) => /chữa vết thương|hồi phục|hồi máu|chữa lành/i.test(text),
+        apply: (agent) => {
+            agent.body = 'Bình thường, khỏe mạnh. Cơ thể đã được khôi phục hoàn toàn.';
+            agent.body_status.pain = 0.0;
+            agent.body_status.energy = 10.0;
+            agent.body_status.nausea = 0.0;
+            agent.body_status.hunger = 0.0;
+            agent.body_status.thirst = 0.0;
+            agent.body_status.toilet_need = 0.0;
+            agent.body_status.dyspnea = 0.0;
+            agent.body_status.temp_sensation = 'Bình thường';
+            agent.updateDynamicMentalState();
+            return "Hệ thống Somatosensory đã được phục hồi tối ưu: vết thương lành lặn, đau đớn biến mất hoàn toàn (0.0) và năng lượng đầy tràn (10.0)!";
+        }
+    }
+];
+
+function applyChangeLocation(match, env) {
+    const newLoc = match[1].trim();
+    if (env.locations && env.locations[newLoc]) {
+        env.active_location = newLoc;
+        return true;
+    }
+    return false;
 }
 
-// Whitelist of XML tag names the LLM is permitted to emit.
-// Any tag not in this set is logged as a warning and ignored by the parsers below.
+function applyUpdateItem(match, env) {
+    const loc = match[1].trim();
+    const name = match[2].trim();
+    const state = match[3].trim();
+    const qty = parseInt(match[4]) || 1;
+
+    if (!env.locations) env.locations = {};
+    if (!env.locations[loc]) {
+        env.locations[loc] = { description: "Địa điểm mới", items: [] };
+    }
+    const locObj = env.locations[loc];
+    if (!locObj.items) locObj.items = [];
+
+    const existingItem = locObj.items.find(i => i.name.toLowerCase() === name.toLowerCase());
+    if (existingItem) {
+        existingItem.state = state;
+        existingItem.quantity = qty;
+    } else {
+        locObj.items.push({ name, state, quantity: qty });
+    }
+    return true;
+}
+
+function applyDeleteItem(match, env) {
+    const loc = match[1].trim();
+    const name = match[2].trim();
+    const locObj = env.locations && env.locations[loc];
+    if (locObj && locObj.items) {
+        const idx = locObj.items.findIndex(i => i.name.toLowerCase() === name.toLowerCase());
+        if (idx !== -1) {
+            locObj.items.splice(idx, 1);
+            return true;
+        }
+    }
+    return false;
+}
+
+function applyCreateLocation(match, env) {
+    const name = match[1].trim();
+    const inner = match[2];
+    const descMatch = /<description>([\s\S]*?)<\/description>/i.exec(inner);
+    const description = descMatch ? descMatch[1].trim() : "Không có mô tả bối cảnh.";
+
+    if (!env.locations) env.locations = {};
+    env.locations[name] = { description, items: [] };
+    return true;
+}
+
+const TAG_PARSERS = {
+    add_memory: {
+        regex: /<add_memory(?:\s+emotion=["'](\w+)["'])?\s*>([\s\S]*?)<\/add_memory>/gi,
+        apply: async (match, agent, env, characterId) => {
+            const content = match[2].trim();
+            if (content.length > 5) {
+                const newCard = {
+                    id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                    content: content,
+                    timestamp: new Date().toISOString(),
+                    weight: 6.0,
+                    count: 1,
+                    emotions: { joy: 5, sadness: 1, fear: 1, anger: 1, nostalgia: 5 }
+                };
+                agent.memory.recallable_drawer.push(newCard);
+                await syncVectorMemoryCard(characterId, newCard, 'insert');
+                return true;
+            }
+            return false;
+        }
+    },
+    add_belief: {
+        regex: /<add_belief>([\s\S]*?)<\/add_belief>/gi,
+        apply: async (match, agent) => {
+            agent.memory.beliefs.push({
+                id: 'belief_' + Date.now(),
+                content: match[1].trim(),
+                timestamp: new Date().toISOString()
+            });
+            return true;
+        }
+    },
+    body_update: {
+        regex: /<body_update>([\s\S]*?)<\/body_update>/gi,
+        apply: async (match, agent) => {
+            agent.body = match[1].trim();
+            return true;
+        }
+    },
+    stat_update: {
+        regex: /<stat_update>([\s\S]*?)<\/stat_update>/gi,
+        apply: async (match, agent) => {
+            const regex = /([a-z_]+)\s*:\s*([0-9.]+)/gi;
+            let sMatch;
+            let changed = false;
+            while ((sMatch = regex.exec(match[1])) !== null) {
+                const key = sMatch[1].toLowerCase().trim();
+                const val = parseFloat(sMatch[2]);
+                if (agent.body_status[key] !== undefined && !isNaN(val)) {
+                    agent.body_status[key] = Math.max(0.0, Math.min(10.0, val));
+                    changed = true;
+                }
+            }
+            return changed;
+        }
+    },
+    neuro_update: {
+        regex: /<neuro_update>([\s\S]*?)<\/neuro_update>/gi,
+        apply: async (match, agent) => {
+            const neuro = agent.hormones.levels;
+            const regex = /([a-z_]+)\s*:\s*([+-]?[0-9.]+)/gi;
+            let nMatch;
+            let changed = false;
+            while ((nMatch = regex.exec(match[1])) !== null) {
+                const key = nMatch[1].toLowerCase().trim();
+                const val = parseFloat(nMatch[2]);
+                if (neuro[key] !== undefined && !isNaN(val)) {
+                    neuro[key] = Math.max(0.0, Math.min(10.0, neuro[key] + val));
+                    changed = true;
+                }
+            }
+            return changed;
+        }
+    },
+    env_change_location: {
+        regex: /<env_change_location>([\s\S]*?)<\/env_change_location>/gi,
+        apply: async (match, agent, env) => applyChangeLocation(match, env)
+    },
+    env_update_item: {
+        regex: /<env_update_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s+state=["']([^"']+)["']\s+quantity=["'](\d+)["']\s*\/>/gi,
+        apply: async (match, agent, env) => applyUpdateItem(match, env)
+    },
+    env_delete_item: {
+        regex: /<env_delete_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s*\/>/gi,
+        apply: async (match, agent, env) => applyDeleteItem(match, env)
+    },
+    env_create_location: {
+        regex: /<env_create_location\s+name=["']([^"']+)["']\s*>([\s\S]*?)<\/env_create_location>/gi,
+        apply: async (match, agent, env) => applyCreateLocation(match, env)
+    },
+    change_location: {
+        regex: /<change_location>([\s\S]*?)<\/change_location>/gi,
+        apply: async (match, agent, env) => applyChangeLocation(match, env)
+    },
+    update_item: {
+        regex: /<update_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s+state=["']([^"']+)["']\s+quantity=["'](\d+)["']\s*\/>/gi,
+        apply: async (match, agent, env) => applyUpdateItem(match, env)
+    },
+    delete_item: {
+        regex: /<delete_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s*\/>/gi,
+        apply: async (match, agent, env) => applyDeleteItem(match, env)
+    },
+    create_location: {
+        regex: /<create_location\s+name=["']([^"']+)["']\s*>([\s\S]*?)<\/create_location>/gi,
+        apply: async (match, agent, env) => applyCreateLocation(match, env)
+    }
+};
+
 const KNOWN_XML_TAGS = new Set([
-    'add_memory', 'add_belief', 'body_update', 'stat_update',
-    'neuro_update', 'env_change_location', 'env_update_item',
-    'env_delete_item', 'env_create_location', 'description'
+    'add_memory', 'add_belief', 'body_update', 'stat_update', 'neuro_update',
+    'env_change_location', 'env_update_item', 'env_delete_item', 'env_create_location',
+    'change_location', 'update_item', 'delete_item', 'create_location', 'description'
 ]);
+
+function stripAllTags(text) {
+    if (!text) return "";
+    return text
+        .replace(/<add_memory[\s\S]*?<\/add_memory>/gi, '')
+        .replace(/<add_belief[\s\S]*?<\/add_belief>/gi, '')
+        .replace(/<body_update>[\s\S]*?<\/body_update>/gi, '')
+        .replace(/<stat_update>[\s\S]*?<\/stat_update>/gi, '')
+        .replace(/<neuro_update>[\s\S]*?<\/neuro_update>/gi, '')
+        .replace(/<(?:env_)?change_location>[\s\S]*?<\/(?:env_)?change_location>/gi, '')
+        .replace(/<(?:env_)?update_item[\s\S]*?\/>/gi, '')
+        .replace(/<(?:env_)?delete_item[\s\S]*?\/>/gi, '')
+        .replace(/<(?:env_)?create_location[\s\S]*?<\/(?:env_)?create_location>/gi, '')
+        .trim();
+}
 
 export async function processAdminCommand(text, agent, activeEnvironment, callbacks = {}) {
     if (!agent || typeof SillyTavern === 'undefined') return "Không tìm thấy bộ não nhân vật đang hoạt động.";
@@ -68,19 +250,14 @@ export async function processAdminCommand(text, agent, activeEnvironment, callba
     const characterId = context.characterId;
     const characterName = context.characters[characterId]?.name || "Nhân vật";
 
-    const txt = text.toLowerCase().trim();
-
-    if (txt.includes("chữa vết thương") || txt.includes("hồi phục") || txt.includes("hồi máu") || txt.includes("chữa lành")) {
-        agent.body = 'Bình thường, khỏe mạnh. Cơ thể đã được khôi phục hoàn toàn.';
-        agent.body_status.pain = 0.0;
-        agent.body_status.energy = 10.0;
-        agent.body_status.nausea = 0.0;
-        agent.body_status.hunger = 0.0;
-        agent.body_status.thirst = 0.0;
-        agent.updateDynamicMentalState();
-        if (callbacks.saveState) callbacks.saveState();
-        if (callbacks.refreshUI) callbacks.refreshUI();
-        return "Hệ thống Somatosensory đã được phục hồi tối ưu: vết thương lành lặn, đau đớn biến mất hoàn toàn (0.0) và năng lượng đầy tràn (10.0)!";
+    // 1. Check local commands (BACKSTAGE_PARSERS)
+    for (const parser of BACKSTAGE_PARSERS) {
+        if (parser.match(text)) {
+            const response = parser.apply(agent);
+            if (callbacks.saveState) callbacks.saveState();
+            if (callbacks.refreshUI) callbacks.refreshUI();
+            return response;
+        }
     }
 
     // Lấy thông tin bối cảnh môi trường
@@ -114,17 +291,18 @@ Hãy phản hồi cực kỳ thân thiện, dí dỏm bằng tiếng Việt (xư
 - Điều chỉnh hormone (dopamine, adrenaline...): <neuro_update>tên_hormone: giá_trị, ...</neuro_update>
 - Thêm một ký ức dài hạn mới: <add_memory emotion="joy|sadness|fear|anger|nostalgia">Nội dung ký ức</add_memory>
 - Thêm niềm tin cốt lõi mới: <add_belief>Nội dung niềm tin</add_belief>
-- Di chuyển địa điểm hiện tại (nếu địa điểm đó đã tồn tại): <env_change_location>tên_địa_điểm</env_change_location>
-- Cập nhật hoặc Thêm vật phẩm ở địa điểm: <env_update_item location="tên địa điểm" name="Tên vật phẩm" state="Trạng thái" quantity="1"/>
-- Xóa một vật phẩm ở địa điểm: <env_delete_item location="tên địa điểm" name="Tên vật phẩm"/>
-- Tạo địa điểm mới hoặc cập nhật mô tả chi tiết địa điểm hiện tại: <env_create_location name="Tên địa điểm"><description>Mô tả chi tiết địa điểm sinh động</description></env_create_location>
+- Di chuyển địa điểm hiện tại (nếu địa điểm đó đã tồn tại): <change_location>tên_địa_điểm</change_location>
+- Cập nhật hoặc Thêm vật phẩm ở địa điểm: <update_item location="tên địa điểm" name="Tên vật phẩm" state="Trạng thái" quantity="1"/>
+- Xóa một vật phẩm ở địa điểm: <delete_item location="tên địa điểm" name="Tên vật phẩm"/>
+- Tạo địa điểm mới hoặc cập nhật mô tả chi tiết địa điểm hiện tại: <create_location name="Tên địa điểm"><description>Mô tả chi tiết địa điểm sinh động</description></create_location>
 
 Hãy trả lời Hitsuji thật chi tiết và chèn các thẻ thực thi thích hợp:`;
 
     try {
-        const reply = await SillyTavern.getContext().generateQuietPrompt({ quietPrompt: prompt, responseLength: 1000 });
+        const reply = await context.generateQuietPrompt({ quietPrompt: prompt, responseLength: 1000 });
         if (reply && reply.trim()) {
             let changed = false;
+            let envChanged = false;
 
             // Whitelist check: warn about any XML tags not in the known set
             const allTagsInReply = reply.match(/<\/?([a-z_][a-z0-9_]*)/gi) || [];
@@ -135,145 +313,24 @@ Hãy trả lời Hitsuji thật chi tiết và chèn các thẻ thực thi thíc
                 }
             }
 
-            // Parse add_memory
-            const addMemRegex = /<add_memory\s+emotion=["'](\w+)["']\s*>([\s\S]*?)<\/add_memory>/gi;
-            let addMatch;
-            while ((addMatch = addMemRegex.exec(reply)) !== null) {
-                const content = addMatch[2].trim();
-                if (content.length > 5) {
-                    const newCard = {
-                        id: 'mem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-                        content: content,
-                        timestamp: new Date().toISOString(),
-                        weight: 6.0,
-                        count: 1,
-                        emotions: { joy: 5, sadness: 1, fear: 1, anger: 1, nostalgia: 5 }
-                    };
-                    agent.memory.recallable_drawer.push(newCard);
-                    await syncVectorMemoryCard(characterId, newCard, 'insert');
-                    changed = true;
-                }
-            }
-
-            // Parse add_belief
-            const beliefMatch = /<add_belief>([\s\S]*?)<\/add_belief>/i.exec(reply);
-            if (beliefMatch) {
-                agent.memory.beliefs.push({
-                    id: 'belief_' + Date.now(),
-                    content: beliefMatch[1].trim(),
-                    timestamp: new Date().toISOString()
-                });
-                changed = true;
-            }
-
-            // Parse body_update
-            const bodyMatch = /<body_update>([\s\S]*?)<\/body_update>/i.exec(reply);
-            if (bodyMatch) {
-                agent.body = bodyMatch[1].trim();
-                changed = true;
-            }
-
-            // Parse stat_update
-            const statMatch = /<stat_update>([\s\S]*?)<\/stat_update>/i.exec(reply);
-            if (statMatch) {
-                const regex = /([a-z_]+)\s*:\s*([0-9.]+)/gi;
-                let sMatch;
-                while ((sMatch = regex.exec(statMatch[1])) !== null) {
-                    const key = sMatch[1].toLowerCase().trim();
-                    const val = parseFloat(sMatch[2]);
-                    if (agent.body_status[key] !== undefined && !isNaN(val)) {
-                        agent.body_status[key] = clampValue(val, 0.0, 10.0);
+            // Execute tag parsers
+            for (const [tagName, parser] of Object.entries(TAG_PARSERS)) {
+                parser.regex.lastIndex = 0;
+                let m;
+                while ((m = parser.regex.exec(reply)) !== null) {
+                    const result = await parser.apply(m, agent, activeEnvironment, characterId);
+                    if (result) {
                         changed = true;
-                    }
-                }
-            }
-
-            // Parse neuro_update
-            const neuroMatch = /<neuro_update>([\s\S]*?)<\/neuro_update>/i.exec(reply);
-            if (neuroMatch) {
-                const neuro = agent.hormones.levels;
-                const regex = /([a-z_]+)\s*:\s*([+-]?[0-9.]+)/gi;
-                let nMatch;
-                while ((nMatch = regex.exec(neuroMatch[1])) !== null) {
-                    const key = nMatch[1].toLowerCase().trim();
-                    const val = parseFloat(nMatch[2]);
-                    if (neuro[key] !== undefined && !isNaN(val)) {
-                        neuro[key] = clampValue(neuro[key] + val, 0.0, 10.0);
-                        changed = true;
-                    }
-                }
-            }
-
-            // Parse Environment Tags
-            let envChanged = false;
-            if (activeEnvironment) {
-                const envLocMatch = /<env_change_location>([\s\S]*?)<\/env_change_location>/i.exec(reply);
-                if (envLocMatch) {
-                    const newLoc = envLocMatch[1].trim();
-                    if (activeEnvironment.locations && activeEnvironment.locations[newLoc]) {
-                        activeEnvironment.active_location = newLoc;
-                        envChanged = true;
-                    }
-                }
-
-                const envUpdateItemRegex = /<env_update_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s+state=["']([^"']+)["']\s+quantity=["'](\d+)["']\s*\/>/gi;
-                let envItemMatch;
-                while ((envItemMatch = envUpdateItemRegex.exec(reply)) !== null) {
-                    const loc = envItemMatch[1].trim();
-                    const name = envItemMatch[2].trim();
-                    const state = envItemMatch[3].trim();
-                    const qty = parseInt(envItemMatch[4]) || 1;
-                    
-                    if (!activeEnvironment.locations) activeEnvironment.locations = {};
-                    if (!activeEnvironment.locations[loc]) {
-                        activeEnvironment.locations[loc] = { description: "Địa điểm mới", items: [] };
-                    }
-                    const locObj = activeEnvironment.locations[loc];
-                    if (!locObj.items) locObj.items = [];
-                    
-                    const existingItem = locObj.items.find(i => i.name.toLowerCase() === name.toLowerCase());
-                    if (existingItem) {
-                        existingItem.state = state;
-                        existingItem.quantity = qty;
-                    } else {
-                        locObj.items.push({ name, state, quantity: qty });
-                    }
-                    envChanged = true;
-                }
-
-                const envDeleteItemRegex = /<env_delete_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s*\/>/gi;
-                let envDelMatch;
-                while ((envDelMatch = envDeleteItemRegex.exec(reply)) !== null) {
-                    const loc = envDelMatch[1].trim();
-                    const name = envDelMatch[2].trim();
-                    const locObj = activeEnvironment.locations && activeEnvironment.locations[loc];
-                    if (locObj && locObj.items) {
-                        const idx = locObj.items.findIndex(i => i.name.toLowerCase() === name.toLowerCase());
-                        if (idx !== -1) {
-                            locObj.items.splice(idx, 1);
+                        if (tagName.startsWith('env_') || ['change_location', 'update_item', 'delete_item', 'create_location'].includes(tagName)) {
                             envChanged = true;
                         }
                     }
-                }
-
-                const envCreateLocRegex = /<env_create_location\s+name=["']([^"']+)["']\s*>([\s\S]*?)<\/env_create_location>/gi;
-                let envCreateMatch;
-                while ((envCreateMatch = envCreateLocRegex.exec(reply)) !== null) {
-                    const name = envCreateMatch[1].trim();
-                    const inner = envCreateMatch[2];
-                    const descMatch = /<description>([\s\S]*?)<\/description>/i.exec(inner);
-                    const description = descMatch ? descMatch[1].trim() : "Không có mô tả bối cảnh.";
-                    
-                    if (!activeEnvironment.locations) activeEnvironment.locations = {};
-                    activeEnvironment.locations[name] = { description, items: [] };
-                    envChanged = true;
                 }
             }
 
             if (envChanged && activeEnvironment && characterId !== undefined) {
                 await saveCharacterEnvironment(characterId, activeEnvironment);
                 refreshEnvironmentUI(activeEnvironment);
-                changed = true;
             }
 
             if (changed) {
@@ -282,17 +339,7 @@ Hãy trả lời Hitsuji thật chi tiết và chèn các thẻ thực thi thíc
                 if (callbacks.refreshUI) callbacks.refreshUI();
             }
 
-            return reply
-                .replace(/<add_memory[\s\S]*?<\/add_memory>/gi, '')
-                .replace(/<add_belief[\s\S]*?<\/add_belief>/gi, '')
-                .replace(/<body_update>[\s\S]*?<\/body_update>/gi, '')
-                .replace(/<stat_update>[\s\S]*?<\/stat_update>/gi, '')
-                .replace(/<neuro_update>[\s\S]*?<\/neuro_update>/gi, '')
-                .replace(/<env_change_location>[\s\S]*?<\/env_change_location>/gi, '')
-                .replace(/<env_update_item[\s\S]*?\/>/gi, '')
-                .replace(/<env_delete_item[\s\S]*?\/>/gi, '')
-                .replace(/<env_create_location[\s\S]*?<\/env_create_location>/gi, '')
-                .trim();
+            return stripAllTags(reply).trim();
         }
     } catch (err) {
         console.error("Anima Engine Backstage Chat LLM failed:", err);

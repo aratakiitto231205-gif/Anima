@@ -14,7 +14,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v10 + spec 001 + spec 002)
+## 📊 Current State (v11.0 — completed)
+
+> **v11.0** = v10.0 + spec 001 + spec 002 + spec 003 (bugfix + cleanup). Spec 003 đã hoàn thành.
 
 | Component | Status | Notes |
 |---|---|---|
@@ -40,9 +42,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | `docs/reviews/review_002_cognitive_architecture.md` | ✅ Done | Conditional greenlight + 3 open Q's |
 | `docs/ST_ANIMA_OVERVIEW.md` | ✅ Done (noob-friendly overview) | Replaces old technical overview at root |
 | `agent_handoff/` | ✅ Active | Cross-agent messages, numbered sequentially |
-| ESLint | ✅ Working (spec 001) | 5 pre-existing warnings, not growing |
+| ESLint | ✅ Clean (0 warnings/errors) | Cấu hình Flat Config chạy tốt |
 | Git | ✅ Pushed | Default branch `main`, repo: https://github.com/aratakiitto231205-gif/Anima |
-| Tests | ✅ 49→50 (spec 002 added 1) | `npm test` runs in <1s |
+| Tests | ✅ 111 tests pass | `npm test` chạy < 2.5s |
 
 
 ---
@@ -177,6 +179,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-05 | Fixed manifest.json loader crash | Removed `?v=10.0.0` from `js` and `css` fields because `fs.existsSync` on server was failing to locate files. |
 | 2026-06-05 | Removed fs/path static imports in CognitiveAgent.js | Browser threw module resolution error for Node.js modules; refactored to fetch in browser and dynamic imports in Vitest. |
 | 2026-06-05 | Replaced static ST imports with SillyTavern.getContext() | Avoided all relative/absolute path import issues by fetching events and scripts directly from the global ST context. |
+| 2026-06-07 | Spec 003 v2 drafted — **Option A: REWRITE** 6 file + PATCH 4 file, 1 v11 lớn | Hitsuji quyết: code smell nặng (CognitiveAgent 400 dòng, BackstageConsole 1 function 240 dòng, EventOrchestrator 70 dòng duplicate, DOMAutoHealing 50 dòng replace chuỗi) → rewrite tốt hơn patch chắp vá. Backup có sẵn. 20 blocks trong spec. |
+| 2026-06-07 | Version bump v10.0 → v11.0 | Hitsuji decision: spec 003 đủ lớn (5 fixes + cleanup + architecture touch) để warrant minor version bump. Antigravity scan tất cả "// v10.0" → "// v11.0" + index.js log + package.json. |
+| 2026-06-07 | Hoàn thành toàn bộ Spec 003 (v11.0) | Antigravity hoàn thành 20 blocks, tích hợp tests mới và sửa triệt để tất cả lỗi linter. |
 
 
 ---
@@ -191,6 +196,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | ✅ Done | Repo pushed to GitHub | Pushed to https://github.com/aratakiitto231205-gif/Anima |
 | 🟡 P1 | **Mobile test phase** — Hitsuji to install on Termux, use vài ngày, ghi feedback vào phone Notes, gửi raw cho agents | Repo **stays public** during test. Flip private **sau feedback** |
 | 🟡 P1 | After feedback review + spec 003 planned, flip repo to private | Next step after mobile test |
+| ✅ Done | **Spec 003 v2 completed** — v11.0: 6 file REWRITE + 4 file PATCH + 5 file NEW + 3 tests update | 20 blocks hoàn thành. Xem `docs/specs/003_bugfix_and_cleanup.md` |
 | 🟢 P2 | `costPerCall = 0.0001` in ADAgent is approximation, not real token accounting | Spec 003: parse `data.usage` from API response |
 | 🟢 P2 | `tokenSpendTracker` resets on extension reload (in-memory only) | Spec 003: persist to extension storage |
 | 🟢 P2 | Code duplication in `EventOrchestrator.js` (6-line AD call block copy-pasted in 2 hooks) | Next refactor pass — extract `_dispatchAD(agent, lastUserMsg)` helper |
@@ -209,4 +215,4 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-> **Last updated:** 2026-06-05 (v6 — spec 002 done, cleanup done, mobile loader and imports fixed, pushed)
+> **Last updated:** 2026-06-07 (v8 — spec 003 v2 completed: 20 blocks built and verified)

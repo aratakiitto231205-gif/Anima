@@ -1,5 +1,5 @@
 /**
- * VectorMemoryService.js - v10.0 (Vector DB & Semantic Recall Service)
+ * VectorMemoryService.js - v11.0 (Vector DB & Semantic Recall Service)
  * 
  * Quản lý đồng bộ hóa và tìm kiếm ngữ nghĩa các thẻ ký ức với Vector DB của SillyTavern.
  */

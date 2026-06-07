@@ -1,5 +1,5 @@
 /**
- * TimeJumpService.js - v10.0 (Narrative Time Jump Service)
+ * TimeJumpService.js - v11.0 (Narrative Time Jump Service)
  * 
  * Quản lý dịch chuyển thời gian kể chuyện động, áp dụng phân rã sinh học 
  * và củng cố nhận thức tương ứng với số phút tua nhanh.

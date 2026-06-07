@@ -1,5 +1,5 @@
 /**
- * ConsciousnessEngine.js - v10.0 (Modularized Consciousness Engine)
+ * ConsciousnessEngine.js - v11.0 (Modularized Consciousness Engine)
  * 
  * Quản lý ý thức nhân hóa, tự nhận thức ảo ảnh (self-awareness/4th-wall break)
  * và cấu hình chạy ngầm của tác tử.
@@ -8,7 +8,7 @@
 export class ConsciousnessEngine {
     constructor(config = null) {
         this.self_awareness = config?.self_awareness || false;
-        this.bg_consciousness = config?.bg_consciousness || false;
+        this.bg_consciousness = config?.bg_consciousness !== undefined ? config.bg_consciousness : true;
         this.split_physiological = config?.split_physiological || false;
     }
 

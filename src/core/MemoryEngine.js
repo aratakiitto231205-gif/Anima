@@ -1,5 +1,5 @@
 /**
- * MemoryEngine.js - v10.0 (Modularized Memory Engine)
+ * MemoryEngine.js - v11.0 (Modularized Memory Engine)
  * 
  * Quản lý cấu trúc bộ nhớ phân tầng:
  * STM Buffer (Short Term Memory) trôi theo Ebbinghaus,
@@ -186,4 +186,16 @@ export class MemoryEngine {
             in_crisis: this.in_crisis
         };
     }
+}
+
+export function findNewestMemory(agent) {
+    if (!agent || !agent.memory) return null;
+    const all = [
+        ...(agent.memory.recallable_drawer || []),
+        ...(agent.memory.stm_buffer || [])
+    ];
+    if (all.length === 0) return null;
+    return all.reduce((newest, m) => 
+        new Date(m.timestamp) > new Date(newest.timestamp) ? m : newest
+    );
 }
