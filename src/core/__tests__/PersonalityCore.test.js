@@ -11,7 +11,7 @@ describe('PersonalityCore', () => {
     it('throws error for out-of-range trait values', () => {
         expect(() => new PersonalityCore({ ambition: 11 })).toThrow(/0 and 10/);
         expect(() => new PersonalityCore({ ambition: -1 })).toThrow(/0 and 10/);
-        expect(() => new PersonalityCore({ ambition: "NaN_string" })).toThrow(/0 and 10/);
+        expect(() => new PersonalityCore({ ambition: 'NaN_string' })).toThrow(/0 and 10/);
     });
 
     it('returns default 5.0 for unknown trait', () => {

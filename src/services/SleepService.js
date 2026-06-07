@@ -6,7 +6,7 @@ export async function triggerSleepConsolidationLLM(agent, sleepDurationMinutes, 
     const context = SillyTavern.getContext();
     const characterId = context.characterId;
     if (characterId === undefined) return;
-    const characterName = context.characters[characterId]?.name || "Nhân vật";
+    const characterName = context.characters[characterId]?.name || 'Nhân vật';
 
     showSleepToast(characterName, wasInterrupted);
     const reply = await callDreamLLM(agent, sleepDurationMinutes, wasInterrupted, characterName);
@@ -24,29 +24,42 @@ export async function triggerSleepConsolidationLLM(agent, sleepDurationMinutes, 
 function showSleepToast(characterName, wasInterrupted) {
     if (typeof toastr !== 'undefined') {
         if (wasInterrupted) {
-            toastr.warning(`${characterName} bị đánh thức đột ngột giữa giấc ngủ! 😰`, "Cắt đứt Cơn mơ");
+            toastr.warning(`${characterName} bị đánh thức đột ngột giữa giấc ngủ! 😰`, 'Cắt đứt Cơn mơ');
         } else {
-            toastr.info(`${characterName} đang bắt đầu củng cố giấc ngủ dài và chuẩn bị thức dậy...`, "Củng cố Giấc ngủ 😴");
+            toastr.info(
+                `${characterName} đang bắt đầu củng cố giấc ngủ dài và chuẩn bị thức dậy...`,
+                'Củng cố Giấc ngủ 😴'
+            );
         }
     }
 }
 
 async function callDreamLLM(agent, sleepDurationMinutes, wasInterrupted, characterName) {
     const context = SillyTavern.getContext();
-    const stmList = agent.memory.stm_buffer.map((m, idx) => 
-        `${idx + 1}. [STM]: "${m.content}" (Cường độ: ${m.weight.toFixed(1)}, Lặp: ${m.count})`
-    ).join('\n') || "(Không có ký ức ngắn hạn nào hôm nay)";
+    const stmList =
+        agent.memory.stm_buffer
+            .map((m, idx) => `${idx + 1}. [STM]: "${m.content}" (Cường độ: ${m.weight.toFixed(1)}, Lặp: ${m.count})`)
+            .join('\n') || '(Không có ký ức ngắn hạn nào hôm nay)';
     const hormones = agent.hormones.levels;
-    const durationText = sleepDurationMinutes >= 60 
-        ? `${(sleepDurationMinutes / 60).toFixed(1)} tiếng` 
-        : `${Math.round(sleepDurationMinutes)} phút`;
+    const durationText =
+        sleepDurationMinutes >= 60
+            ? `${(sleepDurationMinutes / 60).toFixed(1)} tiếng`
+            : `${Math.round(sleepDurationMinutes)} phút`;
 
-    const prompt = buildDreamPrompt(agent, sleepDurationMinutes, wasInterrupted, stmList, durationText, hormones, characterName);
+    const prompt = buildDreamPrompt(
+        agent,
+        sleepDurationMinutes,
+        wasInterrupted,
+        stmList,
+        durationText,
+        hormones,
+        characterName
+    );
 
     try {
         return await context.generateQuietPrompt({ quietPrompt: prompt, responseLength: 400 });
     } catch (err) {
-        console.error("Sleep LLM consolidation failed, falling back:", err);
+        console.error('Sleep LLM consolidation failed, falling back:', err);
         return null;
     }
 }
@@ -75,7 +88,7 @@ CHỈ TRẢ VỀ CÁC THẺ SAU:
 }
 
 function parseDreamReply(reply, wasInterrupted) {
-    let dream = "";
+    let dream = '';
     let consolidated = [];
 
     if (reply && reply.trim()) {
@@ -84,14 +97,20 @@ function parseDreamReply(reply, wasInterrupted) {
 
         const consolidateMatch = /<consolidate>([\s\S]*?)<\/consolidate>/i.exec(reply);
         if (consolidateMatch) {
-            consolidated = consolidateMatch[1].split('\n')
-                .map(l => l.trim().replace(/^[*-\s]+/, '').trim())
-                .filter(l => l.length > 5);
+            consolidated = consolidateMatch[1]
+                .split('\n')
+                .map((l) =>
+                    l
+                        .trim()
+                        .replace(/^[*-\s]+/, '')
+                        .trim()
+                )
+                .filter((l) => l.length > 5);
         }
     }
 
     if (!dream) {
-        dream = wasInterrupted 
+        dream = wasInterrupted
             ? `Một giấc mơ chập chờn về những hình bóng mơ hồ... Đột nhiên tiếng động lớn vang lên cắt đứt cơn mơ làm giật mình tỉnh giấc.`
             : `Thả mình vào khoảng không êm đềm trôi nổi giữa ngàn sao lấp lánh, thức dậy vô cùng bình yên thư thái.`;
     }
@@ -111,7 +130,13 @@ async function consolidateMemories(agent, characterId, consolidated, hormones, d
                 anchored_message_index: context.chat.length - 1,
                 weight: 7.0,
                 count: 2,
-                emotions: { joy: hormones.dopamine, sadness: hormones.cortisol, fear: hormones.adrenaline, anger: 1, nostalgia: 5 }
+                emotions: {
+                    joy: hormones.dopamine,
+                    sadness: hormones.cortisol,
+                    fear: hormones.adrenaline,
+                    anger: 1,
+                    nostalgia: 5,
+                },
             };
             agent.memory.recallable_drawer.push(card);
             await syncVectorMemoryCard(characterId, card, 'insert');
@@ -125,7 +150,13 @@ async function consolidateMemories(agent, characterId, consolidated, hormones, d
         anchored_message_index: context.chat.length - 1,
         weight: wasInterrupted ? 2.5 : 1.2,
         count: 1,
-        emotions: { joy: wasInterrupted ? 1 : 6, sadness: wasInterrupted ? 4 : 1, fear: wasInterrupted ? 8 : 1, anger: 1, nostalgia: 8 }
+        emotions: {
+            joy: wasInterrupted ? 1 : 6,
+            sadness: wasInterrupted ? 4 : 1,
+            fear: wasInterrupted ? 8 : 1,
+            anger: 1,
+            nostalgia: 8,
+        },
     };
     agent.memory.recallable_drawer.push(dreamCard);
     await syncVectorMemoryCard(characterId, dreamCard, 'insert');
@@ -142,7 +173,10 @@ function applyWakeUpState(agent, wasInterrupted) {
         agent.body_status.energy = 5.5;
         agent.body = `Đầu óc uể oải tột độ do bị đánh thức đột ngột giữa giấc ngủ. Cơ thể mỏi mệt rã rời.`;
         if (typeof toastr !== 'undefined') {
-            toastr.warning(`Nhân vật thức giấc trong trạng thái uể oải cực độ và giật mình! Cơn mơ bị cắt đứt!`, "Đánh thức đột ngột 😨");
+            toastr.warning(
+                `Nhân vật thức giấc trong trạng thái uể oải cực độ và giật mình! Cơn mơ bị cắt đứt!`,
+                'Đánh thức đột ngột 😨'
+            );
         }
     } else {
         agent.hormones.levels.adrenaline = 2.0;
@@ -154,7 +188,10 @@ function applyWakeUpState(agent, wasInterrupted) {
         agent.body_status.pain = Math.max(agent.body_status.pain - 4.5, 0.0);
         agent.body = 'Bình thường, khỏe mạnh. Cơ thể sảng khoái và tràn ngập sinh khí sau một giấc ngủ ngon.';
         if (typeof toastr !== 'undefined') {
-            toastr.success(`Củng cố giấc ngủ trọn vẹn thành công! Ngủ dậy vô cùng sảng khoái!`, "Thức dậy sảng khoái 😴");
+            toastr.success(
+                `Củng cố giấc ngủ trọn vẹn thành công! Ngủ dậy vô cùng sảng khoái!`,
+                'Thức dậy sảng khoái 😴'
+            );
         }
     }
 

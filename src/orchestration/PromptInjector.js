@@ -9,12 +9,10 @@ export function getXmlPromptNudge(agent) {
     const survivalList = [
         `Năng lượng (Energy): ${bs.energy.toFixed(1)}/10 (Mức sinh khí và hoạt lực)`,
         `Đói bụng (Hunger): ${bs.hunger.toFixed(1)}/10 (Nhu cầu nạp thức ăn)`,
-        `Khát nước (Thirst): ${bs.thirst.toFixed(1)}/10 (Nhu cầu nước uống)`
+        `Khát nước (Thirst): ${bs.thirst.toFixed(1)}/10 (Nhu cầu nước uống)`,
     ];
 
-    const sensationList = [
-        `Cơn đau (Pain): ${bs.pain.toFixed(1)}/10 (Mức tổn thương thể chất)`
-    ];
+    const sensationList = [`Cơn đau (Pain): ${bs.pain.toFixed(1)}/10 (Mức tổn thương thể chất)`];
 
     if (bs.toilet_need >= 5.0) {
         sensationList.push(`Vệ sinh (Toilet Need): ${bs.toilet_need.toFixed(1)}/10 (Khẩn cấp - cần giải quyết)`);
@@ -37,8 +35,11 @@ export function getXmlPromptNudge(agent) {
 export function getMemoryPromptBlock(agent, activeRecalledMemories) {
     if (!agent) return '';
 
-    const coreStr = agent.memory.beliefs.map(b => `* Niềm tin: ${b.content}`).join('\n') || "(Không có niềm tin nổi bật)";
-    const recalledStr = activeRecalledMemories.map(m => `* Ký ức liên quan: "${m.content}"`).join('\n') || "(Không gợi nhớ ký ức nào)";
+    const coreStr =
+        agent.memory.beliefs.map((b) => `* Niềm tin: ${b.content}`).join('\n') || '(Không có niềm tin nổi bật)';
+    const recalledStr =
+        activeRecalledMemories.map((m) => `* Ký ức liên quan: "${m.content}"`).join('\n') ||
+        '(Không gợi nhớ ký ức nào)';
 
     return `
 [KÝ ỨC & NIỀM TIN ĐƯỢC KÍCH HOẠT]:
@@ -50,7 +51,7 @@ ${recalledStr}
 export function sanitizeConflictingInstructions(chat) {
     if (!chat || !Array.isArray(chat)) return;
 
-    chat.forEach(msg => {
+    chat.forEach((msg) => {
         if (!msg) return;
         const content = msg.content || msg.mes || '';
         if (typeof content !== 'string') return;
@@ -74,7 +75,7 @@ export function processPromptInjections(chat, agent, activeRecalledMemories, log
 
     sanitizeConflictingInstructions(chat);
 
-    chat.forEach(msg => {
+    chat.forEach((msg) => {
         if (!msg) return;
         const role = (msg.role || '').toLowerCase();
         const name = (msg.name || '').toLowerCase();
@@ -95,8 +96,8 @@ export function processPromptInjections(chat, agent, activeRecalledMemories, log
 
         const poeticAwarenessPrompt = agent.consciousness.getPoeticSelfAwarePrompt();
 
-        const adIntentStr = adIntent 
-            ? `\n[AD PHASE — current emotional state]: ${adIntent.mood}\n[AD PHASE — tool dispatched]: ${adIntent.toolChoice || "none"}` 
+        const adIntentStr = adIntent
+            ? `\n[AD PHASE — current emotional state]: ${adIntent.mood}\n[AD PHASE — tool dispatched]: ${adIntent.toolChoice || 'none'}`
             : '';
 
         const xmlInjection = `
@@ -129,15 +130,20 @@ Ngoài ra, bạn có thể tự cập nhật các chỉ số ẩn nếu có sự
         if (lastMsgObj.mes !== undefined) lastMsgObj.mes = cleanContent + xmlInjection;
 
         if (logAnima) {
-            logAnima('success', 'Interceptor', `Đã tiêm cưỡng bức chỉ thị XML vào tin nhắn điểm cuối tuyệt đối (Index: ${lastMsgIndex}, Role: ${lastMsgObj.role}).`);
+            logAnima(
+                'success',
+                'Interceptor',
+                `Đã tiêm cưỡng bức chỉ thị XML vào tin nhắn điểm cuối tuyệt đối (Index: ${lastMsgIndex}, Role: ${lastMsgObj.role}).`
+            );
         }
     }
 }
 
 export function getRecentChatContext(chat, numMessages = 3) {
     if (!chat || chat.length === 0) return '';
-    return chat.slice(-numMessages)
-        .map(m => m.content || m.mes || '')
+    return chat
+        .slice(-numMessages)
+        .map((m) => m.content || m.mes || '')
         .join(' ')
         .replace(/<[\s\S]*?>/g, '')
         .slice(0, 400);

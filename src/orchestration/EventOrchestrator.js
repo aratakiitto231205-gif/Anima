@@ -28,7 +28,7 @@ export class EventOrchestrator {
     getCallbacks() {
         return {
             saveState: this.saveActiveAgentState,
-            refreshUI: this.refreshMemoryUIWrapper
+            refreshUI: this.refreshMemoryUIWrapper,
         };
     }
 
@@ -42,10 +42,20 @@ export class EventOrchestrator {
             const lastUserMsg = getLastUserMessage(chat);
             const messageIndex = chat.length - 1;
 
-            const sleepResult = handleSleepInterruption(agent, lastUserMsg, this.lastProcessedUserMsg, this.getCallbacks());
+            const sleepResult = handleSleepInterruption(
+                agent,
+                lastUserMsg,
+                this.lastProcessedUserMsg,
+                this.getCallbacks()
+            );
 
             let adIntent = null;
-            if (sleepResult.shouldProcess && !sleepResult.wasSleeping && lastUserMsg && lastUserMsg !== this.lastProcessedUserMsg) {
+            if (
+                sleepResult.shouldProcess &&
+                !sleepResult.wasSleeping &&
+                lastUserMsg &&
+                lastUserMsg !== this.lastProcessedUserMsg
+            ) {
                 agent.processMessage(lastUserMsg, 'user', messageIndex);
                 const context = typeof SillyTavern !== 'undefined' ? SillyTavern.getContext() : {};
                 const charName = context?.characters?.[context?.characterId]?.name || 'itto';
@@ -78,11 +88,11 @@ export class EventOrchestrator {
             if (!this.activeRecalledMemories || this.activeRecalledMemories.length === 0) {
                 // Jaccard fallback - tăng threshold từ 0.05 → 0.10
                 this.activeRecalledMemories = agent.memory.recallable_drawer
-                    .map(card => ({ card, sim: getJaccardSimilarity(card.content, recentContext) }))
-                    .filter(item => item.sim > 0.10)
+                    .map((card) => ({ card, sim: getJaccardSimilarity(card.content, recentContext) }))
+                    .filter((item) => item.sim > 0.1)
                     .sort((a, b) => b.sim - a.sim)
                     .slice(0, 4)
-                    .map(item => item.card);
+                    .map((item) => item.card);
             }
         }
     }
@@ -95,15 +105,29 @@ export class EventOrchestrator {
         try {
             const context = SillyTavern.getContext();
             const chatLog = context.chat || [];
-            const lastUserMsgObj = chatLog.slice().reverse().find(m => m.is_user && m.mes) || {};
+            const lastUserMsgObj =
+                chatLog
+                    .slice()
+                    .reverse()
+                    .find((m) => m.is_user && m.mes) || {};
             const lastMsgText = lastUserMsgObj.mes || '';
 
             const agent = this.getActiveAgent();
             if (agent) {
                 applyTemporalAnchorFromChatLog(agent, chatLog);
                 const messageIndex = chatLog.length - 1;
-                const sleepResult = handleSleepInterruption(agent, lastMsgText, this.lastProcessedUserMsg, this.getCallbacks());
-                if (sleepResult.shouldProcess && !sleepResult.wasSleeping && lastMsgText && lastMsgText !== this.lastProcessedUserMsg) {
+                const sleepResult = handleSleepInterruption(
+                    agent,
+                    lastMsgText,
+                    this.lastProcessedUserMsg,
+                    this.getCallbacks()
+                );
+                if (
+                    sleepResult.shouldProcess &&
+                    !sleepResult.wasSleeping &&
+                    lastMsgText &&
+                    lastMsgText !== this.lastProcessedUserMsg
+                ) {
                     agent.processMessage(lastMsgText, 'user', messageIndex);
                     this.saveActiveAgentState();
                 }
@@ -132,7 +156,14 @@ export class EventOrchestrator {
         this.lastProcessedMessageId = messageId;
         this.lastProcessedMessageText = message.mes;
 
-        renderParsedMessage(messageId, message.mes, false, this.getActiveAgent, this.saveActiveAgentState, this.refreshMemoryUIWrapper);
+        renderParsedMessage(
+            messageId,
+            message.mes,
+            false,
+            this.getActiveAgent,
+            this.saveActiveAgentState,
+            this.refreshMemoryUIWrapper
+        );
     }
 
     onMessageRendered(messageId) {
@@ -142,7 +173,14 @@ export class EventOrchestrator {
 
         const message = context.chat[messageId];
         if (message && message.mes) {
-            renderParsedMessage(messageId, message.mes, true, this.getActiveAgent, this.saveActiveAgentState, this.refreshMemoryUIWrapper);
+            renderParsedMessage(
+                messageId,
+                message.mes,
+                true,
+                this.getActiveAgent,
+                this.saveActiveAgentState,
+                this.refreshMemoryUIWrapper
+            );
         }
     }
 

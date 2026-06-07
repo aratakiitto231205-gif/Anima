@@ -5,7 +5,7 @@ import { parseNarrativeXml } from '../utils/xmlParser.js';
 export function getFormattedMessageHtml(rawText) {
     const parsed = parseNarrativeXml(rawText);
     let htmlContent = '';
-    parsed.blocks.forEach(block => {
+    parsed.blocks.forEach((block) => {
         const safe = escapeHtml(block.content);
         if (block.type === 'environment') {
             htmlContent += `<div class="cog-system-environment"><i class="fa-solid fa-earth-americas"></i> ${safe}</div>`;

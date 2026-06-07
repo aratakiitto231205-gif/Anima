@@ -9,12 +9,12 @@ export class ADSettingsPanel {
         }
 
         const settings = ctxExtSettings.anima_engine;
-        
+
         // Defaults
         if (!settings.ad_api_key) settings.ad_api_key = '';
         if (!settings.ad_model) settings.ad_model = 'gemini-3.1-flash-lite';
         if (!settings.ad_api_url) settings.ad_api_url = 'https://api.shopaikey.com/v1/chat/completions';
-        if (!settings.ad_daily_budget_usd) settings.ad_daily_budget_usd = 0.50;
+        if (!settings.ad_daily_budget_usd) settings.ad_daily_budget_usd = 0.5;
 
         const updateStatus = () => {
             const statusEl = document.getElementById('anima_ad_status');
@@ -37,7 +37,7 @@ export class ADSettingsPanel {
                 if (settings[key] !== undefined) {
                     el.value = settings[key];
                 }
-                
+
                 el.addEventListener('input', () => {
                     let val = el.value;
                     if (el.type === 'number') val = parseFloat(val) || 0;

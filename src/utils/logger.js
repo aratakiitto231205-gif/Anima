@@ -10,7 +10,7 @@ try {
         animaLogs = JSON.parse(savedLogs);
     }
 } catch (e) {
-    console.warn("Anima Logger: Failed to load session logs:", e);
+    console.warn('Anima Logger: Failed to load session logs:', e);
 }
 
 export function logAnima(level, moduleName, message, detail = null) {
@@ -22,7 +22,7 @@ export function logAnima(level, moduleName, message, detail = null) {
         level: level.toUpperCase(),
         module: moduleName,
         message: message,
-        detail: detail ? (typeof detail === 'object' ? JSON.stringify(detail) : String(detail)) : null
+        detail: detail ? (typeof detail === 'object' ? JSON.stringify(detail) : String(detail)) : null,
     };
 
     animaLogs.push(logEntry);
@@ -37,11 +37,11 @@ export function logAnima(level, moduleName, message, detail = null) {
     }
 
     const colors = {
-        'INFO': 'color: #94a3b8;',
-        'SUCCESS': 'color: #10b981; font-weight: bold;',
-        'WARNING': 'color: #f59e0b; font-weight: bold;',
-        'ERROR': 'color: #ef4444; font-weight: bold; background: rgba(239, 68, 68, 0.1);',
-        'COGNITIVE': 'color: #a855f7; font-weight: bold;'
+        INFO: 'color: #94a3b8;',
+        SUCCESS: 'color: #10b981; font-weight: bold;',
+        WARNING: 'color: #f59e0b; font-weight: bold;',
+        ERROR: 'color: #ef4444; font-weight: bold; background: rgba(239, 68, 68, 0.1);',
+        COGNITIVE: 'color: #a855f7; font-weight: bold;',
     };
 
     const consoleColor = colors[logEntry.level] || 'color: #cbd5e1;';
@@ -59,7 +59,7 @@ export function refreshLogsUi() {
     const container = document.getElementById('cog_logs_container');
     if (!container) return;
     container.innerHTML = '';
-    animaLogs.forEach(log => appendLogToUi(log));
+    animaLogs.forEach((log) => appendLogToUi(log));
 }
 
 export function clearAnimaLogs() {
@@ -74,10 +74,12 @@ export function clearAnimaLogs() {
 }
 
 export function getAnimaLogsText() {
-    return animaLogs.map(log => {
-        const detail = log.detail ? `\n   ${log.detail}` : '';
-        return `[${log.time}] [${log.level}] [${log.module}] ${log.message}${detail}`;
-    }).join('\n');
+    return animaLogs
+        .map((log) => {
+            const detail = log.detail ? `\n   ${log.detail}` : '';
+            return `[${log.time}] [${log.level}] [${log.module}] ${log.message}${detail}`;
+        })
+        .join('\n');
 }
 
 export async function copyAnimaLogsToClipboard() {

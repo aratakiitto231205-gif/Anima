@@ -2,7 +2,7 @@ export function buildADSystemPrompt({ characterName, personalityTraits, moodWhit
     const traitsStr = Object.entries(personalityTraits)
         .map(([k, v]) => `${k}: ${v}/10`)
         .join(', ');
-        
+
     return `You are the Subconscious AD Agent for ${characterName}. 
 Your personality traits are: ${traitsStr}.
 Your job is NOT to talk to the user. Your job is to analyze the context and decide ${characterName}'s internal state and next action.

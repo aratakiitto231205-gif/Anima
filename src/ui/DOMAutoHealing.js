@@ -5,7 +5,14 @@ import { getFormattedMessageHtml } from './renderMessage.js';
 
 export { convertProseToXml } from '../utils/xmlParser.js';
 
-export async function renderParsedMessage(messageId, rawText, isHistory = false, getActiveAgentFn, saveAgentStateFn, refreshUIFn) {
+export async function renderParsedMessage(
+    messageId,
+    rawText,
+    isHistory = false,
+    getActiveAgentFn,
+    saveAgentStateFn,
+    refreshUIFn
+) {
     const parsed = parseNarrativeXml(rawText);
     if (typeof SillyTavern === 'undefined') return;
     const context = SillyTavern.getContext();
@@ -49,7 +56,7 @@ function updateEmotionDisplay(parsed) {
                 happy: 'Vui vẻ 😊',
                 sad: 'U sầu 😢',
                 fear: 'Lo sợ 😨',
-                neutral: 'Bình thường 😐'
+                neutral: 'Bình thường 😐',
             };
             emotionEl.innerText = emojis[parsed.emotion.toLowerCase()] || parsed.emotion;
         }
@@ -61,11 +68,17 @@ function renderToDom(messageId, rawText, parsed) {
     const messageTextEl = document.querySelector(`#chat .mes[mesid="${messageId}"] .mes_text`);
 
     if (messageEl && messageTextEl) {
-        if (messageTextEl.querySelector('textarea') || messageTextEl.querySelector('input') || messageEl.classList.contains('editing')) {
+        if (
+            messageTextEl.querySelector('textarea') ||
+            messageTextEl.querySelector('input') ||
+            messageEl.classList.contains('editing')
+        ) {
             return;
         }
 
-        const hasTags = ['animaing', 'emotion', 'dialogue', 'action', 'environment', 'sfx'].some(tag => rawText.includes(`<${tag}>`) || rawText.includes(`</${tag}>`));
+        const hasTags = ['animaing', 'emotion', 'dialogue', 'action', 'environment', 'sfx'].some(
+            (tag) => rawText.includes(`<${tag}>`) || rawText.includes(`</${tag}>`)
+        );
         if (!hasTags) return; // Do not touch DOM for non-Anima messages!
 
         messageEl.classList.remove('cog-emotion-anger', 'cog-emotion-happy', 'cog-emotion-sad', 'cog-emotion-fear');
@@ -93,13 +106,18 @@ export function startChatObserver(getActiveAgentFn, saveAgentStateFn, refreshUIF
         const context = SillyTavern.getContext();
         let needsRender = false;
 
-        mutations.forEach(mutation => {
+        mutations.forEach((mutation) => {
             if (mutation.addedNodes.length > 0 || mutation.type === 'childList') {
                 needsRender = true;
             }
             if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
                 const target = mutation.target;
-                if (target && target.classList && target.classList.contains('mes') && !target.classList.contains('editing')) {
+                if (
+                    target &&
+                    target.classList &&
+                    target.classList.contains('mes') &&
+                    !target.classList.contains('editing')
+                ) {
                     needsRender = true;
                 }
             }
@@ -107,14 +125,18 @@ export function startChatObserver(getActiveAgentFn, saveAgentStateFn, refreshUIF
 
         if (needsRender) {
             const messages = chatEl.querySelectorAll('.mes');
-            messages.forEach(messageEl => {
+            messages.forEach((messageEl) => {
                 const messageId = messageEl.getAttribute('mesid');
                 if (messageId === null || messageId === undefined) return;
 
                 const messageTextEl = messageEl.querySelector('.mes_text');
                 if (!messageTextEl) return;
 
-                if (messageTextEl.querySelector('textarea') || messageTextEl.querySelector('input') || messageEl.classList.contains('editing')) {
+                if (
+                    messageTextEl.querySelector('textarea') ||
+                    messageTextEl.querySelector('input') ||
+                    messageEl.classList.contains('editing')
+                ) {
                     return;
                 }
 
@@ -124,20 +146,32 @@ export function startChatObserver(getActiveAgentFn, saveAgentStateFn, refreshUIF
                 if (msgObj && (msgObj.is_user || msgObj.is_system)) return;
 
                 if (msgObj && msgObj.mes) {
-                    const hasTags = ['animaing', 'emotion', 'dialogue', 'action', 'environment', 'sfx'].some(tag => msgObj.mes.includes(`<${tag}>`) || msgObj.mes.includes(`</${tag}>`));
+                    const hasTags = ['animaing', 'emotion', 'dialogue', 'action', 'environment', 'sfx'].some(
+                        (tag) => msgObj.mes.includes(`<${tag}>`) || msgObj.mes.includes(`</${tag}>`)
+                    );
                     if (!hasTags) return; // Do not touch DOM if it has no Anima XML tags!
                 }
 
-                const hasVnStyle = messageTextEl.querySelector('.cog-dialogue-text') || messageTextEl.querySelector('.cog-action-caption') || messageTextEl.querySelector('.cog-system-environment');
+                const hasVnStyle =
+                    messageTextEl.querySelector('.cog-dialogue-text') ||
+                    messageTextEl.querySelector('.cog-action-caption') ||
+                    messageTextEl.querySelector('.cog-system-environment');
                 if (!hasVnStyle && msgObj && msgObj.mes) {
                     chatObserver.disconnect();
                     setTimeout(() => {
-                        renderParsedMessage(messageId, msgObj.mes, true, getActiveAgentFn, saveAgentStateFn, refreshUIFn);
+                        renderParsedMessage(
+                            messageId,
+                            msgObj.mes,
+                            true,
+                            getActiveAgentFn,
+                            saveAgentStateFn,
+                            refreshUIFn
+                        );
                         chatObserver.observe(chatEl, {
                             childList: true,
                             subtree: true,
                             attributes: true,
-                            attributeFilter: ['class']
+                            attributeFilter: ['class'],
                         });
                     }, 50);
                 }
@@ -149,6 +183,6 @@ export function startChatObserver(getActiveAgentFn, saveAgentStateFn, refreshUIF
         childList: true,
         subtree: true,
         attributes: true,
-        attributeFilter: ['class']
+        attributeFilter: ['class'],
     });
 }

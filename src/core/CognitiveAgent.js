@@ -15,7 +15,7 @@ export class CognitiveAgent {
             comt: 'Val/Met',
             serotonin_transporter: 'S/L',
             oxtr: 'A/G',
-            drd4: '7R-'
+            drd4: '7R-',
         };
 
         this.hormones = new HormoneEngine(memoryData?.neuro_chemistry);
@@ -35,7 +35,7 @@ export class CognitiveAgent {
             toilet_need: 0.0,
             nausea: 0.0,
             dyspnea: 0.0,
-            temp_sensation: 'Bình thường'
+            temp_sensation: 'Bình thường',
         };
 
         if (memoryData?.body_status?.bladder !== undefined && this.body_status.toilet_need === undefined) {
@@ -49,7 +49,7 @@ export class CognitiveAgent {
             blood_pressure_sys: 120,
             blood_pressure_dia: 80,
             body_temp: 36.8,
-            resp_rate: 16
+            resp_rate: 16,
         };
 
         this.mental_state = memoryData?.mental_state || 'Cân bằng / Yên bình 😐';
@@ -60,7 +60,7 @@ export class CognitiveAgent {
             forgetting: 5,
             sensitivity: 5,
             healing: 5,
-            habit_threshold: 3
+            habit_threshold: 3,
         };
 
         if (this.genetics.drd4 === '7R+') {
@@ -162,7 +162,9 @@ export class CognitiveAgent {
                     // Quiet fallback to default path
                 }
 
-                const response = await fetch(`/extensions/${moduleName}/characters/${characterName.toLowerCase()}/personality.json`);
+                const response = await fetch(
+                    `/extensions/${moduleName}/characters/${characterName.toLowerCase()}/personality.json`
+                );
                 if (response.ok) {
                     charPersonality = await response.json();
                 }
@@ -186,11 +188,13 @@ export class CognitiveAgent {
             userInput,
             availableTools,
             personality: mergedTraits,
-            characterName
+            characterName,
         });
 
         if (result) {
-            console.log(`[AD] mood=${result.mood} tool=${result.toolChoice || 'none'} spend=$${this.adAgent.getTokenSpendToday().toFixed(4)}`);
+            console.log(
+                `[AD] mood=${result.mood} tool=${result.toolChoice || 'none'} spend=$${this.adAgent.getTokenSpendToday().toFixed(4)}`
+            );
         }
         return result;
     }
@@ -210,7 +214,7 @@ export class CognitiveAgent {
             personality: this.personality,
             biomarker_triggers: this.biomarker_triggers,
             neuro_history: this.neuro_history,
-            personality_traits: this.personalityCore.serialize()
+            personality_traits: this.personalityCore.serialize(),
         };
     }
 }

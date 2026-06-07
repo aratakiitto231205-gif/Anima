@@ -8,7 +8,7 @@ import { MemoryEngine, getKeywords, getJaccardSimilarity, findNewestMemory } fro
 describe('MemoryEngine - Helper Functions', () => {
     describe('getKeywords', () => {
         it('should extract keywords from text', () => {
-            const text = "Tôi yêu lập trình JavaScript";
+            const text = 'Tôi yêu lập trình JavaScript';
             const keywords = getKeywords(text);
             expect(keywords).toContain('yêu');
             expect(keywords).toContain('lập');
@@ -17,7 +17,7 @@ describe('MemoryEngine - Helper Functions', () => {
         });
 
         it('should filter out stop words', () => {
-            const text = "Tôi là một lập trình viên";
+            const text = 'Tôi là một lập trình viên';
             const keywords = getKeywords(text);
             expect(keywords).not.toContain('tôi');
             expect(keywords).not.toContain('là');
@@ -31,7 +31,7 @@ describe('MemoryEngine - Helper Functions', () => {
         });
 
         it('should normalize punctuation', () => {
-            const text = "Hello, world! How are you?";
+            const text = 'Hello, world! How are you?';
             const keywords = getKeywords(text);
             expect(keywords).toContain('hello');
             expect(keywords).toContain('world');
@@ -41,15 +41,15 @@ describe('MemoryEngine - Helper Functions', () => {
 
     describe('getJaccardSimilarity', () => {
         it('should calculate similarity between similar texts', () => {
-            const text1 = "I love programming in JavaScript";
-            const text2 = "I enjoy programming with JavaScript";
+            const text1 = 'I love programming in JavaScript';
+            const text2 = 'I enjoy programming with JavaScript';
             const similarity = getJaccardSimilarity(text1, text2);
             expect(similarity).toBeGreaterThan(0.3);
         });
 
         it('should return 0 for completely different texts', () => {
-            const text1 = "I love programming";
-            const text2 = "The weather is nice";
+            const text1 = 'I love programming';
+            const text2 = 'The weather is nice';
             const similarity = getJaccardSimilarity(text1, text2);
             expect(similarity).toBeLessThan(0.2);
         });
@@ -60,7 +60,7 @@ describe('MemoryEngine - Helper Functions', () => {
         });
 
         it('should return high similarity for identical texts', () => {
-            const text = "programming JavaScript";
+            const text = 'programming JavaScript';
             const similarity = getJaccardSimilarity(text, text);
             expect(similarity).toBe(1.0);
         });
@@ -79,24 +79,20 @@ describe('MemoryEngine - Memory Creation', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 2.0
+            melatonin: 2.0,
         };
     });
 
     it('should create STM entry with normal emotional intensity', () => {
-        const result = engine.learnMemoryDynamically(
-            "I learned something new today",
-            0,
-            mockHormones
-        );
+        const result = engine.learnMemoryDynamically('I learned something new today', 0, mockHormones);
 
         expect(result).toBe('STM_CREATED');
         expect(engine.stm_buffer).toHaveLength(1);
-        expect(engine.stm_buffer[0].content).toBe("I learned something new today");
+        expect(engine.stm_buffer[0].content).toBe('I learned something new today');
     });
 
     it('should create memory with required fields', () => {
-        engine.learnMemoryDynamically("Test memory", 0, mockHormones);
+        engine.learnMemoryDynamically('Test memory', 0, mockHormones);
 
         const memory = engine.stm_buffer[0];
         expect(memory).toHaveProperty('id');
@@ -109,7 +105,7 @@ describe('MemoryEngine - Memory Creation', () => {
     });
 
     it('should include emotion stamps in memory', () => {
-        engine.learnMemoryDynamically("Emotional memory", 0, mockHormones);
+        engine.learnMemoryDynamically('Emotional memory', 0, mockHormones);
 
         const memory = engine.stm_buffer[0];
         expect(memory.emotions).toHaveProperty('joy');
@@ -120,13 +116,13 @@ describe('MemoryEngine - Memory Creation', () => {
     });
 
     it('should not create memory for very short text', () => {
-        const result = engine.learnMemoryDynamically("Hi", 0, mockHormones);
+        const result = engine.learnMemoryDynamically('Hi', 0, mockHormones);
         expect(result).toBe(false);
         expect(engine.stm_buffer).toHaveLength(0);
     });
 
     it('should not create memory for empty text', () => {
-        const result = engine.learnMemoryDynamically("", 0, mockHormones);
+        const result = engine.learnMemoryDynamically('', 0, mockHormones);
         expect(result).toBe(false);
         expect(engine.stm_buffer).toHaveLength(0);
     });
@@ -138,14 +134,10 @@ describe('MemoryEngine - Memory Creation', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 1.0
+            melatonin: 1.0,
         };
 
-        const result = engine.learnMemoryDynamically(
-            "Traumatic event",
-            0,
-            extremeHormones
-        );
+        const result = engine.learnMemoryDynamically('Traumatic event', 0, extremeHormones);
 
         expect(result).toBe('LTM');
         expect(engine.recallable_drawer).toHaveLength(1);
@@ -166,12 +158,12 @@ describe('MemoryEngine - STM to LTM Consolidation', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 2.0
+            melatonin: 2.0,
         };
     });
 
     it('should consolidate STM to LTM after reaching habit threshold', () => {
-        const text = "I practice coding every day";
+        const text = 'I practice coding every day';
 
         // Learn the same memory multiple times
         for (let i = 0; i < 3; i++) {
@@ -183,7 +175,7 @@ describe('MemoryEngine - STM to LTM Consolidation', () => {
     });
 
     it('should apply Hebbian strengthening on repeated exposure', () => {
-        const text = "Important concept";
+        const text = 'Important concept';
 
         engine.learnMemoryDynamically(text, 0, mockHormones);
         const initialWeight = engine.stm_buffer[0].weight;
@@ -196,14 +188,14 @@ describe('MemoryEngine - STM to LTM Consolidation', () => {
     });
 
     it('should return STM_REINFORCED when strengthening existing memory', () => {
-        engine.learnMemoryDynamically("Repeated memory", 0, mockHormones);
-        const result = engine.learnMemoryDynamically("Repeated memory", 1, mockHormones);
+        engine.learnMemoryDynamically('Repeated memory', 0, mockHormones);
+        const result = engine.learnMemoryDynamically('Repeated memory', 1, mockHormones);
 
         expect(result).toBe('STM_REINFORCED');
     });
 
     it('should return LTM_CONSOLIDATED when moving to long-term', () => {
-        const text = "Habitual thought";
+        const text = 'Habitual thought';
 
         engine.learnMemoryDynamically(text, 0, mockHormones);
         engine.learnMemoryDynamically(text, 1, mockHormones);
@@ -218,7 +210,7 @@ describe('MemoryEngine - STM to LTM Consolidation', () => {
 
         expect(engine.habit_threshold).toBe(5);
 
-        const text = "Novelty seeking behavior";
+        const text = 'Novelty seeking behavior';
         for (let i = 0; i < 4; i++) {
             engine.learnMemoryDynamically(text, i, mockHormones);
         }
@@ -229,8 +221,8 @@ describe('MemoryEngine - STM to LTM Consolidation', () => {
     });
 
     it('should consolidate similar memories using Jaccard similarity', () => {
-        engine.learnMemoryDynamically("I love programming in JavaScript", 0, mockHormones);
-        const result = engine.learnMemoryDynamically("I enjoy programming with JavaScript", 1, mockHormones);
+        engine.learnMemoryDynamically('I love programming in JavaScript', 0, mockHormones);
+        const result = engine.learnMemoryDynamically('I enjoy programming with JavaScript', 1, mockHormones);
 
         expect(result).toBe('STM_REINFORCED');
         expect(engine.stm_buffer).toHaveLength(1);
@@ -250,12 +242,12 @@ describe('MemoryEngine - Forgetting Curve (Ebbinghaus)', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 2.0
+            melatonin: 2.0,
         };
     });
 
     it('should decay STM weight over time', () => {
-        engine.learnMemoryDynamically("Temporary memory", 0, mockHormones);
+        engine.learnMemoryDynamically('Temporary memory', 0, mockHormones);
         const initialWeight = engine.stm_buffer[0].weight;
 
         engine.decayShortTermMemory(10); // 10 minutes elapsed
@@ -265,7 +257,7 @@ describe('MemoryEngine - Forgetting Curve (Ebbinghaus)', () => {
     });
 
     it('should remove memories below threshold after decay', () => {
-        engine.learnMemoryDynamically("Weak memory", 0, mockHormones);
+        engine.learnMemoryDynamically('Weak memory', 0, mockHormones);
 
         engine.decayShortTermMemory(30); // 30 minutes elapsed
 
@@ -273,7 +265,7 @@ describe('MemoryEngine - Forgetting Curve (Ebbinghaus)', () => {
     });
 
     it('should not decay with very small time intervals', () => {
-        engine.learnMemoryDynamically("Recent memory", 0, mockHormones);
+        engine.learnMemoryDynamically('Recent memory', 0, mockHormones);
         const initialWeight = engine.stm_buffer[0].weight;
 
         engine.decayShortTermMemory(0.01); // Very small interval
@@ -286,7 +278,7 @@ describe('MemoryEngine - Forgetting Curve (Ebbinghaus)', () => {
             id: 'test_mem',
             content: 'Old memory',
             weight: 8.0,
-            count: 5
+            count: 5,
         });
 
         engine.decayLongTermMemory();
@@ -300,7 +292,7 @@ describe('MemoryEngine - Forgetting Curve (Ebbinghaus)', () => {
             id: 'test_mem',
             content: 'Stable memory',
             weight: 2.5,
-            count: 3
+            count: 3,
         });
 
         for (let i = 0; i < 10; i++) {
@@ -311,10 +303,10 @@ describe('MemoryEngine - Forgetting Curve (Ebbinghaus)', () => {
     });
 
     it('should preserve memories with rehearsal', () => {
-        engine.learnMemoryDynamically("Rehearsed memory", 0, mockHormones);
+        engine.learnMemoryDynamically('Rehearsed memory', 0, mockHormones);
 
         // Rehearse before decay
-        engine.learnMemoryDynamically("Rehearsed memory", 1, mockHormones);
+        engine.learnMemoryDynamically('Rehearsed memory', 1, mockHormones);
         const weightAfterRehearsal = engine.stm_buffer[0].weight;
         expect(weightAfterRehearsal).toBeGreaterThan(0);
 
@@ -339,14 +331,14 @@ describe('MemoryEngine - Memory Associations', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 2.0
+            melatonin: 2.0,
         };
 
         // These two texts share enough keywords (>= 0.3 Jaccard) to be treated as
         // the same memory — the engine's association mechanism merges them into one
         // reinforced STM entry rather than storing duplicates.
-        engine.learnMemoryDynamically("JavaScript is a programming language", 0, mockHormones);
-        const result = engine.learnMemoryDynamically("Python is also a programming language", 1, mockHormones);
+        engine.learnMemoryDynamically('JavaScript is a programming language', 0, mockHormones);
+        const result = engine.learnMemoryDynamically('Python is also a programming language', 1, mockHormones);
 
         // The engine recognises the association and reinforces the existing entry
         expect(result).toBe('STM_REINFORCED');
@@ -361,18 +353,18 @@ describe('MemoryEngine - Memory Associations', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 2.0
+            melatonin: 2.0,
         };
 
         // These texts share no keywords, so Jaccard similarity is 0 — stored separately
-        engine.learnMemoryDynamically("JavaScript excels at frontend web development", 0, mockHormones);
-        engine.learnMemoryDynamically("Cooking pasta requires boiling water", 1, mockHormones);
+        engine.learnMemoryDynamically('JavaScript excels at frontend web development', 0, mockHormones);
+        engine.learnMemoryDynamically('Cooking pasta requires boiling water', 1, mockHormones);
 
         expect(engine.stm_buffer).toHaveLength(2);
 
         const similarity = getJaccardSimilarity(
-            "JavaScript excels at frontend web development",
-            "Cooking pasta requires boiling water"
+            'JavaScript excels at frontend web development',
+            'Cooking pasta requires boiling water'
         );
         expect(similarity).toBeLessThan(0.3);
     });
@@ -384,10 +376,10 @@ describe('MemoryEngine - Memory Associations', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 2.0
+            melatonin: 2.0,
         };
 
-        const relatedText = "Coffee helps me code better";
+        const relatedText = 'Coffee helps me code better';
 
         engine.learnMemoryDynamically(relatedText, 0, mockHormones);
         engine.learnMemoryDynamically(relatedText, 1, mockHormones);
@@ -423,18 +415,18 @@ describe('MemoryEngine - Serialization', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 2.0
+            melatonin: 2.0,
         };
 
-        engine.learnMemoryDynamically("Test memory", 0, mockHormones);
-        engine.beliefs.push({ belief: "Testing is important" });
+        engine.learnMemoryDynamically('Test memory', 0, mockHormones);
+        engine.beliefs.push({ belief: 'Testing is important' });
         engine.in_crisis = true;
 
         const serialized = engine.serialize();
         const newEngine = new MemoryEngine(serialized);
 
         expect(newEngine.stm_buffer).toHaveLength(1);
-        expect(newEngine.stm_buffer[0].content).toBe("Test memory");
+        expect(newEngine.stm_buffer[0].content).toBe('Test memory');
         expect(newEngine.beliefs).toHaveLength(1);
         expect(newEngine.in_crisis).toBe(true);
     });
@@ -446,11 +438,11 @@ describe('MemoryEngine - Serialization', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 2.0
+            melatonin: 2.0,
         };
 
-        engine.learnMemoryDynamically("Important memory", 0, mockHormones);
-        engine.learnMemoryDynamically("Important memory", 1, mockHormones);
+        engine.learnMemoryDynamically('Important memory', 0, mockHormones);
+        engine.learnMemoryDynamically('Important memory', 1, mockHormones);
 
         const serialized = engine.serialize();
         const newEngine = new MemoryEngine(serialized);
@@ -487,7 +479,7 @@ describe('MemoryEngine - Temporal Anchoring', () => {
 
     it('should maintain crisis state when shattered beliefs exist', () => {
         engine.in_crisis = true;
-        engine.shattered_beliefs = [{ belief: "Trust is broken" }];
+        engine.shattered_beliefs = [{ belief: 'Trust is broken' }];
 
         engine.applyTemporalAnchor(5);
 
@@ -498,12 +490,12 @@ describe('MemoryEngine - Temporal Anchoring', () => {
         const hormones = {
             adrenaline: 5.0,
             cortisol: 5.0,
-            dopamine: 5.0
+            dopamine: 5.0,
         };
 
         const neuro_history = {
             3: { adrenaline: 2.0, cortisol: 2.0, dopamine: 8.0 },
-            5: { adrenaline: 3.0, cortisol: 3.0, dopamine: 7.0 }
+            5: { adrenaline: 3.0, cortisol: 3.0, dopamine: 7.0 },
         };
 
         engine.applyTemporalAnchor(4, hormones, neuro_history);
@@ -535,14 +527,10 @@ describe('MemoryEngine - Emotional Intensity', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 1.0
+            melatonin: 1.0,
         };
 
-        const result = engine.learnMemoryDynamically(
-            "High intensity event",
-            0,
-            highIntensityHormones
-        );
+        const result = engine.learnMemoryDynamically('High intensity event', 0, highIntensityHormones);
 
         expect(result).toBe('LTM');
     });
@@ -554,14 +542,10 @@ describe('MemoryEngine - Emotional Intensity', () => {
             oxytocin: 5.0,
             dopamine: 5.0,
             sex_hormones: 5.0,
-            melatonin: 8.0
+            melatonin: 8.0,
         };
 
-        const result = engine.learnMemoryDynamically(
-            "Drowsy memory",
-            0,
-            drowsyHormones
-        );
+        const result = engine.learnMemoryDynamically('Drowsy memory', 0, drowsyHormones);
 
         // High melatonin should reduce emotional intensity
         expect(result).toBe('STM_CREATED');
@@ -574,12 +558,12 @@ describe('MemoryEngine - Emotional Intensity', () => {
             oxytocin: 5.5,
             dopamine: 6.0,
             sex_hormones: 5.0,
-            melatonin: 2.0
+            melatonin: 2.0,
         };
 
         // emotionalIntensity = max(2.0, 2.0, 5.5, 6.0, 5.0) - (2.0 * 0.5) = 6.0 - 1.0 = 5.0
         // This is < 7.0, so memory goes to STM
-        engine.learnMemoryDynamically("Happy moment", 0, joyfulHormones);
+        engine.learnMemoryDynamically('Happy moment', 0, joyfulHormones);
 
         const memory = engine.stm_buffer[0];
         // joy = min(dopamine + (oxytocin * 0.3), 10.0) = min(6.0 + 1.65, 10.0) = 7.65
@@ -592,12 +576,10 @@ describe('MemoryEngine - findNewestMemory', () => {
         const agent = {
             memory: {
                 recallable_drawer: [
-                    { content: 'Old LTM memory', timestamp: new Date('2026-06-07T10:00:00Z').toISOString() }
+                    { content: 'Old LTM memory', timestamp: new Date('2026-06-07T10:00:00Z').toISOString() },
                 ],
-                stm_buffer: [
-                    { content: 'New STM memory', timestamp: new Date('2026-06-07T12:00:00Z').toISOString() }
-                ]
-            }
+                stm_buffer: [{ content: 'New STM memory', timestamp: new Date('2026-06-07T12:00:00Z').toISOString() }],
+            },
         };
         const newest = findNewestMemory(agent);
         expect(newest.content).toBe('New STM memory');
@@ -608,8 +590,8 @@ describe('MemoryEngine - findNewestMemory', () => {
         const agentEmpty = {
             memory: {
                 recallable_drawer: [],
-                stm_buffer: []
-            }
+                stm_buffer: [],
+            },
         };
         expect(findNewestMemory(agentNull)).toBeNull();
         expect(findNewestMemory(agentEmpty)).toBeNull();

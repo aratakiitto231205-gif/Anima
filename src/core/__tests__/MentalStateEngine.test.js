@@ -5,7 +5,7 @@ describe('MentalStateEngine', () => {
     it('returns crisis state when inCrisis is true', () => {
         const engine = new MentalStateEngine({}, {});
         const result = engine.compute(true);
-        expect(result).toBe("Khủng hoảng Nhận thức (Hệ niềm tin vỡ vụn) ⚠️");
+        expect(result).toBe('Khủng hoảng Nhận thức (Hệ niềm tin vỡ vụn) ⚠️');
     });
 
     it('computes vitals correctly from hormones and body status', () => {
@@ -13,12 +13,12 @@ describe('MentalStateEngine', () => {
             levels: {
                 adrenaline: 5.0,
                 cortisol: 5.0,
-                melatonin: 2.0
-            }
+                melatonin: 2.0,
+            },
         };
         const bodyStatus = {
             pain: 3.0,
-            dyspnea: 2.0
+            dyspnea: 2.0,
         };
         const vitals = {};
         const engine = new MentalStateEngine(hormones, bodyStatus, vitals);
@@ -41,12 +41,12 @@ describe('MentalStateEngine', () => {
             levels: {
                 adrenaline: 40.0, // extremely high
                 cortisol: 20.0,
-                melatonin: 0.1
-            }
+                melatonin: 0.1,
+            },
         };
         const bodyStatus = {
             pain: 10.0,
-            dyspnea: 10.0
+            dyspnea: 10.0,
         };
         const vitals = {};
         const engine = new MentalStateEngine(hormones, bodyStatus, vitals);
@@ -64,14 +64,14 @@ describe('MentalStateEngine', () => {
                 cortisol: 1.0,
                 dopamine: 8.5,
                 serotonin: 8.5,
-                melatonin: 2.0
-            }
+                melatonin: 2.0,
+            },
         };
         const bodyStatus = {};
         const engine = new MentalStateEngine(hormones, bodyStatus);
         const state = engine.compute(false);
         // Serene happy test: dopamine >= 6.5 && serotonin >= 6.5 && adrenaline < 2.5
-        expect(state).toContain("Hài lòng / Bình yên");
+        expect(state).toContain('Hài lòng / Bình yên');
     });
 
     it('obeys priority order (first matching rule wins)', () => {
@@ -82,14 +82,14 @@ describe('MentalStateEngine', () => {
                 oxytocin: 8.0, // compassionate_sad requires cortisol >= 5.0 && oxytocin >= 6.5
                 dopamine: 1.0,
                 serotonin: 1.0,
-                melatonin: 1.0
-            }
+                melatonin: 1.0,
+            },
         };
         const bodyStatus = {};
         const engine = new MentalStateEngine(hormones, bodyStatus);
         const state = engine.compute(false);
         // Since compassionate_sad rule is at index 0 (very high priority), it should win over other rules
-        expect(state).toContain("Buồn bã Đồng cảm");
+        expect(state).toContain('Buồn bã Đồng cảm');
     });
 
     it('returns default balanced state when no rules match', () => {
@@ -100,12 +100,12 @@ describe('MentalStateEngine', () => {
                 dopamine: 4.0,
                 serotonin: 4.0,
                 oxytocin: 1.0,
-                melatonin: 1.0
-            }
+                melatonin: 1.0,
+            },
         };
         const bodyStatus = {};
         const engine = new MentalStateEngine(hormones, bodyStatus);
         const state = engine.compute(false);
-        expect(state).toBe("Cân bằng / Yên bình 😐");
+        expect(state).toBe('Cân bằng / Yên bình 😐');
     });
 });

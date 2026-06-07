@@ -36,7 +36,7 @@ export async function applyParsedToAgent(agent, parsed, messageId, context) {
             }
         }
         if (typeof toastr !== 'undefined') {
-            toastr.success(`Đã ghi nhận ký ức dài hạn: "${parsed.auxTags.memory_update}"`, "Học hỏi 🧠");
+            toastr.success(`Đã ghi nhận ký ức dài hạn: "${parsed.auxTags.memory_update}"`, 'Học hỏi 🧠');
         }
         changed = true;
     }

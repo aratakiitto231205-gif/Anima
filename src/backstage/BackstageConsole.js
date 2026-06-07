@@ -8,23 +8,23 @@ export async function handleAdminMessage(agent, activeEnvironment, callbacks = {
     if (!inputEl) return;
     const text = inputEl.value.trim();
     if (!text) return;
-    
+
     inputEl.value = '';
     appendAdminChatLog('user', text);
-    
+
     try {
         const response = await processAdminCommand(text, agent, activeEnvironment, callbacks);
         appendAdminChatLog('admin', response);
     } catch (err) {
-        console.error("Admin Agent Console error:", err);
-        appendAdminChatLog('admin', "Đã xảy ra lỗi hệ thống khi xử lý mệnh lệnh của bạn.");
+        console.error('Admin Agent Console error:', err);
+        appendAdminChatLog('admin', 'Đã xảy ra lỗi hệ thống khi xử lý mệnh lệnh của bạn.');
     }
 }
 
 export function appendAdminChatLog(sender, text) {
     const chatLogEl = document.getElementById('cog_admin_chat_log');
     if (!chatLogEl) return;
-    
+
     const bubble = document.createElement('div');
     bubble.style.marginBottom = '6px';
     if (sender === 'user') {
@@ -52,9 +52,9 @@ const BACKSTAGE_PARSERS = [
             agent.body_status.dyspnea = 0.0;
             agent.body_status.temp_sensation = 'Bình thường';
             agent.updateDynamicMentalState();
-            return "Hệ thống Somatosensory đã được phục hồi tối ưu: vết thương lành lặn, đau đớn biến mất hoàn toàn (0.0) và năng lượng đầy tràn (10.0)!";
-        }
-    }
+            return 'Hệ thống Somatosensory đã được phục hồi tối ưu: vết thương lành lặn, đau đớn biến mất hoàn toàn (0.0) và năng lượng đầy tràn (10.0)!';
+        },
+    },
 ];
 
 function applyChangeLocation(match, env) {
@@ -74,12 +74,12 @@ function applyUpdateItem(match, env) {
 
     if (!env.locations) env.locations = {};
     if (!env.locations[loc]) {
-        env.locations[loc] = { description: "Địa điểm mới", items: [] };
+        env.locations[loc] = { description: 'Địa điểm mới', items: [] };
     }
     const locObj = env.locations[loc];
     if (!locObj.items) locObj.items = [];
 
-    const existingItem = locObj.items.find(i => i.name.toLowerCase() === name.toLowerCase());
+    const existingItem = locObj.items.find((i) => i.name.toLowerCase() === name.toLowerCase());
     if (existingItem) {
         existingItem.state = state;
         existingItem.quantity = qty;
@@ -94,7 +94,7 @@ function applyDeleteItem(match, env) {
     const name = match[2].trim();
     const locObj = env.locations && env.locations[loc];
     if (locObj && locObj.items) {
-        const idx = locObj.items.findIndex(i => i.name.toLowerCase() === name.toLowerCase());
+        const idx = locObj.items.findIndex((i) => i.name.toLowerCase() === name.toLowerCase());
         if (idx !== -1) {
             locObj.items.splice(idx, 1);
             return true;
@@ -107,7 +107,7 @@ function applyCreateLocation(match, env) {
     const name = match[1].trim();
     const inner = match[2];
     const descMatch = /<description>([\s\S]*?)<\/description>/i.exec(inner);
-    const description = descMatch ? descMatch[1].trim() : "Không có mô tả bối cảnh.";
+    const description = descMatch ? descMatch[1].trim() : 'Không có mô tả bối cảnh.';
 
     if (!env.locations) env.locations = {};
     env.locations[name] = { description, items: [] };
@@ -126,14 +126,14 @@ const TAG_PARSERS = {
                     timestamp: new Date().toISOString(),
                     weight: 6.0,
                     count: 1,
-                    emotions: { joy: 5, sadness: 1, fear: 1, anger: 1, nostalgia: 5 }
+                    emotions: { joy: 5, sadness: 1, fear: 1, anger: 1, nostalgia: 5 },
                 };
                 agent.memory.recallable_drawer.push(newCard);
                 await syncVectorMemoryCard(characterId, newCard, 'insert');
                 return true;
             }
             return false;
-        }
+        },
     },
     add_belief: {
         regex: /<add_belief>([\s\S]*?)<\/add_belief>/gi,
@@ -141,17 +141,17 @@ const TAG_PARSERS = {
             agent.memory.beliefs.push({
                 id: 'belief_' + Date.now(),
                 content: match[1].trim(),
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
             });
             return true;
-        }
+        },
     },
     body_update: {
         regex: /<body_update>([\s\S]*?)<\/body_update>/gi,
         apply: async (match, agent) => {
             agent.body = match[1].trim();
             return true;
-        }
+        },
     },
     stat_update: {
         regex: /<stat_update>([\s\S]*?)<\/stat_update>/gi,
@@ -168,7 +168,7 @@ const TAG_PARSERS = {
                 }
             }
             return changed;
-        }
+        },
     },
     neuro_update: {
         regex: /<neuro_update>([\s\S]*?)<\/neuro_update>/gi,
@@ -186,50 +186,61 @@ const TAG_PARSERS = {
                 }
             }
             return changed;
-        }
+        },
     },
     env_change_location: {
         regex: /<env_change_location>([\s\S]*?)<\/env_change_location>/gi,
-        apply: async (match, agent, env) => applyChangeLocation(match, env)
+        apply: async (match, agent, env) => applyChangeLocation(match, env),
     },
     env_update_item: {
         regex: /<env_update_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s+state=["']([^"']+)["']\s+quantity=["'](\d+)["']\s*\/>/gi,
-        apply: async (match, agent, env) => applyUpdateItem(match, env)
+        apply: async (match, agent, env) => applyUpdateItem(match, env),
     },
     env_delete_item: {
         regex: /<env_delete_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s*\/>/gi,
-        apply: async (match, agent, env) => applyDeleteItem(match, env)
+        apply: async (match, agent, env) => applyDeleteItem(match, env),
     },
     env_create_location: {
         regex: /<env_create_location\s+name=["']([^"']+)["']\s*>([\s\S]*?)<\/env_create_location>/gi,
-        apply: async (match, agent, env) => applyCreateLocation(match, env)
+        apply: async (match, agent, env) => applyCreateLocation(match, env),
     },
     change_location: {
         regex: /<change_location>([\s\S]*?)<\/change_location>/gi,
-        apply: async (match, agent, env) => applyChangeLocation(match, env)
+        apply: async (match, agent, env) => applyChangeLocation(match, env),
     },
     update_item: {
         regex: /<update_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s+state=["']([^"']+)["']\s+quantity=["'](\d+)["']\s*\/>/gi,
-        apply: async (match, agent, env) => applyUpdateItem(match, env)
+        apply: async (match, agent, env) => applyUpdateItem(match, env),
     },
     delete_item: {
         regex: /<delete_item\s+location=["']([^"']+)["']\s+name=["']([^"']+)["']\s*\/>/gi,
-        apply: async (match, agent, env) => applyDeleteItem(match, env)
+        apply: async (match, agent, env) => applyDeleteItem(match, env),
     },
     create_location: {
         regex: /<create_location\s+name=["']([^"']+)["']\s*>([\s\S]*?)<\/create_location>/gi,
-        apply: async (match, agent, env) => applyCreateLocation(match, env)
-    }
+        apply: async (match, agent, env) => applyCreateLocation(match, env),
+    },
 };
 
 const KNOWN_XML_TAGS = new Set([
-    'add_memory', 'add_belief', 'body_update', 'stat_update', 'neuro_update',
-    'env_change_location', 'env_update_item', 'env_delete_item', 'env_create_location',
-    'change_location', 'update_item', 'delete_item', 'create_location', 'description'
+    'add_memory',
+    'add_belief',
+    'body_update',
+    'stat_update',
+    'neuro_update',
+    'env_change_location',
+    'env_update_item',
+    'env_delete_item',
+    'env_create_location',
+    'change_location',
+    'update_item',
+    'delete_item',
+    'create_location',
+    'description',
 ]);
 
 function stripAllTags(text) {
-    if (!text) return "";
+    if (!text) return '';
     return text
         .replace(/<add_memory[\s\S]*?<\/add_memory>/gi, '')
         .replace(/<add_belief[\s\S]*?<\/add_belief>/gi, '')
@@ -244,11 +255,11 @@ function stripAllTags(text) {
 }
 
 export async function processAdminCommand(text, agent, activeEnvironment, callbacks = {}) {
-    if (!agent || typeof SillyTavern === 'undefined') return "Không tìm thấy bộ não nhân vật đang hoạt động.";
-    
+    if (!agent || typeof SillyTavern === 'undefined') return 'Không tìm thấy bộ não nhân vật đang hoạt động.';
+
     const context = SillyTavern.getContext();
     const characterId = context.characterId;
-    const characterName = context.characters[characterId]?.name || "Nhân vật";
+    const characterName = context.characters[characterId]?.name || 'Nhân vật';
 
     // 1. Check local commands (BACKSTAGE_PARSERS)
     for (const parser of BACKSTAGE_PARSERS) {
@@ -261,13 +272,16 @@ export async function processAdminCommand(text, agent, activeEnvironment, callba
     }
 
     // Lấy thông tin bối cảnh môi trường
-    let envSummary = "(Không có bối cảnh môi trường nào được ghi nhận)";
+    let envSummary = '(Không có bối cảnh môi trường nào được ghi nhận)';
     if (activeEnvironment && activeEnvironment.active_location) {
         const activeLoc = activeEnvironment.active_location;
         const locData = activeEnvironment.locations && activeEnvironment.locations[activeLoc];
         if (locData) {
             const itemsList = (locData.items || [])
-                .map(item => `* ${item.name} | Trạng thái: ${item.state || 'Bình thường'} | Số lượng: ${item.quantity || 1}`)
+                .map(
+                    (item) =>
+                        `* ${item.name} | Trạng thái: ${item.state || 'Bình thường'} | Số lượng: ${item.quantity || 1}`
+                )
                 .join('\n');
             envSummary = `Địa điểm hiện tại: "${activeLoc}"\nMô tả: "${locData.description || ''}"\nVật phẩm:\n${itemsList || '(Không có vật phẩm)'}`;
         }
@@ -321,7 +335,10 @@ Hãy trả lời Hitsuji thật chi tiết và chèn các thẻ thực thi thíc
                     const result = await parser.apply(m, agent, activeEnvironment, characterId);
                     if (result) {
                         changed = true;
-                        if (tagName.startsWith('env_') || ['change_location', 'update_item', 'delete_item', 'create_location'].includes(tagName)) {
+                        if (
+                            tagName.startsWith('env_') ||
+                            ['change_location', 'update_item', 'delete_item', 'create_location'].includes(tagName)
+                        ) {
                             envChanged = true;
                         }
                     }
@@ -342,7 +359,7 @@ Hãy trả lời Hitsuji thật chi tiết và chèn các thẻ thực thi thíc
             return stripAllTags(reply).trim();
         }
     } catch (err) {
-        console.error("Anima Engine Backstage Chat LLM failed:", err);
+        console.error('Anima Engine Backstage Chat LLM failed:', err);
     }
-    return "Tui đang bận chút việc dưới tiềm thức, ní nói lại sau nha!";
+    return 'Tui đang bận chút việc dưới tiềm thức, ní nói lại sau nha!';
 }
