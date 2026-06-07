@@ -1,6 +1,6 @@
 {
     "display_name": "Anima Engine",
-    "version": "10.0.0",
+    "version": "11.0.0",
     "description": "Hệ thống nhận thức sinh lý học thần kinh và tự trị liên tưởng cho nhân vật AI",
     "js": "index.js",
     "css": "style.css",
