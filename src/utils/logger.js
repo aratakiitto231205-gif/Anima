@@ -1,5 +1,19 @@
 // v0.11.0 skeleton — sketch stage
-const appendLogToUi = () => {};
+let appendLogToUiCallback = null;
+
+export function registerAppendLogCallback(callback) {
+    appendLogToUiCallback = callback;
+}
+
+const appendLogToUi = (logEntry) => {
+    if (appendLogToUiCallback) {
+        try {
+            appendLogToUiCallback(logEntry);
+        } catch (e) {
+            console.error('Anima Logger: Failed to append log to UI:', e);
+        }
+    }
+};
 
 const MAX_LOG_SIZE = 150;
 let animaLogs = [];

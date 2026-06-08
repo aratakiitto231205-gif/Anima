@@ -19,6 +19,12 @@
 
             <!-- Tab 1: Nội tâm (Status, Emotion, Thoughts, Tools) -->
             <div id="cog_tab_status_content" class="cog-tab-content flex-container flexFlowColumn gap12">
+                <!-- Đồng hồ thế giới tĩnh (Tránh layout shift) -->
+                <div id="anima_live_clock" style="display: flex; justify-content: space-between; align-items: center; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 6px; padding: 8px 12px;">
+                    <span style="font-size: 0.85em; opacity: 0.85;">🕐 Thời gian thế giới (verify wire):</span>
+                    <span id="anima_live_clock_value" style="font-weight: bold; color: #818cf8; font-family: monospace;">—</span>
+                </div>
+
                 <!-- Hộp Trạng thái chính -->
                 <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 8px 12px;">
                     <span style="font-size: 0.9em; opacity: 0.85; color: var(--SmartThemeTextColor);">Trạng thái Tác tử:</span>
