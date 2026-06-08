@@ -14,25 +14,29 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v0.12.2 — Dashboard UI Shell)
+## 📊 Current State (v0.12.2 — Modular Skeleton)
 
-> **v0.12.2** = v0.11.0 (reset) + spec 004 (sketch stubs) + spec 005 (wire check) + v0.12.2 (placeholder shell).
+> **v0.12.2** = v0.11.0 (reset) + spec 004 (sketch stubs) + spec 005 (wire check) + v0.12.2 (modular skeleton & tests).
 
 | Component | Status | Notes |
 |---|---|---|
-| `index.js` | ✅ Entry point | Boot jQuery, dynamically resolves `MODULE_NAME`, mounts panel, live clock, placeholder states |
-| `panel.html` | ✅ UI shell | Full layout for tab panel (Status, Memory, Chronicles, Backstage) with placeholders |
+| `index.js` | ✅ Entry point | Boot jQuery, dynamically resolves `MODULE_NAME`, mounts panel, initializes `AnimaUI` & `AnimaOrchestrator` |
+| `panel.html` | ✅ UI shell | Full layout for tab panel (Status, Memory, Chronicles, Backstage) with static clock to prevent layout shift |
 | `style.css` | ✅ CSS styling | Minimal styling for the dashboard |
-| `src/utils/logger.js` | ✅ Active | Logger system kept from archive |
+| `src/ui/dashboard.js` | ✅ UI Manager | Handles all DOM updates, tabs switching, clock, and hormone indicators |
+| `src/core/state.js` | ✅ State Manager | Centralized physiological state container, linear decay with cap to prevent bladder accidents |
+| `src/core/orchestrator.js` | ✅ Orchestrator | SillyTavern event bindings & prompt interceptors |
+| `src/agents/` | ✅ Brain Stubs | GM Agent (plan & appraisal), RP Agent (prompt nudger), AD Agent (backstage console command handler) |
+| `src/utils/logger.js` | ✅ Active | Logger system with dynamic UI callback binding (Dependency Injection) |
 | `src/utils/constants.js` | ✅ Active | Constants kept from archive |
 | `characters/itto/personality.json` | ✅ Done | Itto's CoALA traits config |
-| `docs/specs/` | ✅ Specs | 003 (archived cleanup info), 004 (skeleton), 005 (hello anima) |
+| `docs/specs/` | ✅ Specs | 003 (archived info), 004 (skeleton), 005 (hello wire), 006 (implementation plan) |
 | `docs/VISION.md` | ✅ Vision | Long term vision (moved from root) |
 | `docs/ST_ANIMA_OVERVIEW.md` | ✅ Overview | Noob-friendly project overview |
 | `agent_handoff/` | ✅ Active | Cross-agent messages, numbered sequentially |
 | ESLint | ✅ Clean (0 warnings/errors) | Cấu hình Flat Config chạy tốt trên `src/` |
 | Git | ✅ Pushed | Default branch `main`, repo: https://github.com/aratakiitto231205-gif/Anima |
-| Tests | ⏸️ None | Currently no test files in active `src/` |
+| Tests | ✅ 13 Passed | Vitest unit tests for State Manager, GM Agent, and AD commands |
 
 
 ---
@@ -77,6 +81,11 @@ This project uses **Arataki Itto** as the test character. Character definition (
 ├── style.css              ← dashboard minimal styling
 ├── manifest.json          ← extension manifest metadata
 ├── src/
+│   ├── agents/            ← GM, RP, AD brain stubs & contracts
+│   │   └── __tests__/     ← unit tests for agents
+│   ├── core/              ← state.js, orchestrator.js
+│   │   └── __tests__/     ← unit tests for state decay/updates
+│   ├── ui/                ← dashboard.js DOM renderer
 │   └── utils/             ← logger.js, constants.js
 ├── characters/
 │   └── itto/              ← personality.json + README (test character config)
