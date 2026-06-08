@@ -33,7 +33,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | `docs/specs/` | ✅ Specs | 003 (archived info), 004 (skeleton), 005 (hello wire), 006 (implementation plan) |
 | `docs/VISION.md` | ✅ Vision | Long term vision (moved from root) |
 | `docs/ST_ANIMA_OVERVIEW.md` | ✅ Overview | Noob-friendly project overview |
-| `agent_handoff/` | ✅ Active | Cross-agent messages, numbered sequentially |
+| `agent_handoff/` | ✅ Cleaned | Rebooted empty directory for future handoffs |
 | ESLint | ✅ Clean (0 warnings/errors) | Cấu hình Flat Config chạy tốt trên `src/` |
 | Git | ✅ Pushed | Default branch `main`, repo: https://github.com/aratakiitto231205-gif/Anima |
 | Tests | ✅ 10 Passed | Vitest unit tests for streamlined states, plans, and terminal commands |
@@ -94,7 +94,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 │   ├── history/           ← historical logs (e.g. CHANGELOG_0.11.0.md)
 │   ├── VISION.md          ← long-term project vision (moved)
 │   └── ST_ANIMA_OVERVIEW.md  ← noob-friendly project overview
-├── agent_handoff/         ← cross-agent messages, numbered sequentially
+├── agent_handoff/         ← cross-agent messages (empty directory after reboot)
 ├── archive/               ← historical archived code/docs, don't delete
 └── node_modules/          ← gitignored dependencies
 ```
@@ -172,6 +172,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-07 | Version bump v10.0 → v11.0 | Hitsuji decision: spec 003 đủ lớn (5 fixes + cleanup + architecture touch) để warrant minor version bump. Antigravity scan tất cả "// v10.0" → "// v11.0" + index.js log + package.json. |
 | 2026-06-07 | Hoàn thành toàn bộ Spec 003 (v11.0) | Antigravity hoàn thành 20 blocks, tích hợp tests mới và sửa triệt để tất cả lỗi linter. |
 | 2026-06-09 | Sửa lỗi template 404 & dọn dẹp thư mục gốc | Khắc phục lỗi nạp template bằng phân giải `MODULE_NAME` động. Xóa file trùng lặp `template.html`, dời `VISION.md` vào `docs/` và `CHANGELOG_0.11.0.md` vào `docs/history/`. |
+| 2026-06-09 | Rebooted project & cleaned workspace | Cleared `agent_handoff/` and removed old research files from `docs/` to keep focus 100% minimal. |
 
 
 ---
