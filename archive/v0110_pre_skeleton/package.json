@@ -1,7 +1,7 @@
 {
   "name": "st-anima",
-  "version": "0.11.1",
-  "description": "SillyTavern extension — Anima Engine v0.11.1 (Hello Anima wire check)",
+  "version": "0.11.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "vitest run",

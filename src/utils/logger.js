@@ -1,5 +1,5 @@
-// v11.0
-import { appendLogToUi } from '../ui/DashboardUI.js';
+// v0.11.0 skeleton — sketch stage
+const appendLogToUi = () => {};
 
 const MAX_LOG_SIZE = 150;
 let animaLogs = [];

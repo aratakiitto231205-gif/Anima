@@ -1,10 +1,11 @@
 {
-    "display_name": "Anima Engine",
-    "version": "11.0.0",
-    "description": "Hệ thống nhận thức sinh lý học thần kinh và tự trị liên tưởng cho nhân vật AI",
+    "display_name": "Anima",
+    "loading_order": 50,
+    "requires": [],
+    "optional": [],
     "js": "index.js",
     "css": "style.css",
-    "author": "Hitsuji",
-    "loading_order": 5,
-    "generate_interceptor": "animaCognitiveInterceptor"
+    "author": "Anima Engine",
+    "version": "0.11.1",
+    "homePage": "https://github.com/anima-engine/st-anima"
 }

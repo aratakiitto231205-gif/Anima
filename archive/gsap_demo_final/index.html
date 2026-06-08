@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ST Anima — Cognitive Telemetry Lab</title>
+    <!-- Premium Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- GSAP Core CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+    <div class="space-background">
+        <div class="stars"></div>
+        <div class="nebula nebula-1"></div>
+        <div class="nebula nebula-2"></div>
+    </div>
+
+    <main class="lab-container">
+        <!-- Header Section -->
+        <header class="lab-header">
+            <div class="badge">ST Anima v11.0 // GSAP Core</div>
+            <h1>Cognitive Telemetry Deck</h1>
+            <p>Bảng điều khiển tương tác mô phỏng kiến trúc não bộ của Arataki Itto.</p>
+        </header>
+
+        <!-- Main Workspace -->
+        <section class="lab-workspace">
+            <!-- Left Panel: Controls -->
+            <div class="control-panel glass">
+                <h2>Cấu Trúc Tác Tử</h2>
+                <div class="btn-group">
+                    <button id="btn-stagger" class="control-btn active">
+                        <span class="btn-glow"></span>
+                        <span class="btn-text">Memory Matrix (Stagger)</span>
+                    </button>
+                    <button id="btn-ease" class="control-btn">
+                        <span class="btn-glow"></span>
+                        <span class="btn-text">Hormone Decay (Ease)</span>
+                    </button>
+                    <button id="btn-3d" class="control-btn">
+                        <span class="btn-glow"></span>
+                        <span class="btn-text">Core Engines (3D Space)</span>
+                    </button>
+                    <button id="btn-reset" class="control-btn reset-btn">
+                        <span class="btn-text">Tái Khởi Động Lab</span>
+                    </button>
+                </div>
+
+                <!-- Detailed Controls -->
+                <div class="panel-details">
+                    <div class="detail-section active" id="detail-stagger">
+                        <h3>Memory Matrix</h3>
+                        <p>Mô phỏng 16 phân vùng Bộ nhớ ngắn hạn (STM). Khi kích hoạt, tín hiệu thần kinh sẽ quét lệch tông (stagger) từ tâm ra rìa để củng cố ký ức dài hạn.</p>
+                        <div class="indicator-bar"><div class="fill" style="width: 75%"></div></div>
+                    </div>
+                    <div class="detail-section" id="detail-ease">
+                        <h3>Hormone Decay Curve</h3>
+                        <p>Trực quan hóa tốc độ phân rã của Hormone (Adrenaline & Dopamine). Easing phản ánh đường cong hồi quy sinh học thực tế thay vì tuyến tính máy móc.</p>
+                        <div class="ease-selector">
+                            <div class="ease-opt active" data-ease="power4.out">Power4 Out (Spike)</div>
+                            <div class="ease-opt" data-ease="elastic.out(1, 0.4)">Elastic Out (Wave)</div>
+                            <div class="ease-opt" data-ease="back.out(1.5)">Back Out (Overshoot)</div>
+                            <div class="ease-opt" data-ease="none">Linear (Tuyến tính)</div>
+                        </div>
+                    </div>
+                    <div class="detail-section" id="detail-3d">
+                        <h3>3D Hologram Carousel</h3>
+                        <p>Xoay không gian 3D của 3 phân khu kiến trúc CoALA: Personality Core, Hormone Engine và Memory Engine. Di chuột để nghiêng mô hình.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Screen/Canvas -->
+            <div class="display-canvas glass">
+                <div class="canvas-glow"></div>
+                
+                <!-- View 1: Stagger Grid (Memory Nodes) -->
+                <div class="screen-view active" id="view-stagger">
+                    <div class="stagger-grid">
+                        <!-- 16 nodes for a clean 4x4 matrix -->
+                        <div class="grid-node" data-index="1"><span>STM-01</span></div>
+                        <div class="grid-node" data-index="2"><span>STM-02</span></div>
+                        <div class="grid-node" data-index="3"><span>STM-03</span></div>
+                        <div class="grid-node" data-index="4"><span>STM-04</span></div>
+                        <div class="grid-node" data-index="5"><span>STM-05</span></div>
+                        <div class="grid-node" data-index="6"><span>STM-06</span></div>
+                        <div class="grid-node" data-index="7"><span>STM-07</span></div>
+                        <div class="grid-node" data-index="8"><span>STM-08</span></div>
+                        <div class="grid-node" data-index="9"><span>STM-09</span></div>
+                        <div class="grid-node" data-index="10"><span>STM-10</span></div>
+                        <div class="grid-node" data-index="11"><span>STM-11</span></div>
+                        <div class="grid-node" data-index="12"><span>STM-12</span></div>
+                        <div class="grid-node" data-index="13"><span>STM-13</span></div>
+                        <div class="grid-node" data-index="14"><span>STM-14</span></div>
+                        <div class="grid-node" data-index="15"><span>STM-15</span></div>
+                        <div class="grid-node" data-index="16"><span>STM-16</span></div>
+                    </div>
+                </div>
+
+                <!-- View 2: Ease Explorer (Decay Ball and SVG Curve) -->
+                <div class="screen-view" id="view-ease">
+                    <div class="decay-monitor">
+                        <div class="monitor-line">
+                            <span class="label">NỒNG ĐỘ HORMONE:</span>
+                            <span class="value" id="hormone-level">1.00</span>
+                        </div>
+                        <div class="decay-track">
+                            <div class="decay-ball">
+                                <div class="ball-glow"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="curve-container">
+                        <svg viewBox="0 0 500 220" class="curve-svg">
+                            <!-- Background Grid Lines -->
+                            <line x1="50" y1="20" x2="450" y2="20" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4"/>
+                            <line x1="50" y1="100" x2="450" y2="100" stroke="rgba(255,255,255,0.05)" stroke-dasharray="4"/>
+                            <line x1="50" y1="180" x2="450" y2="180" stroke="rgba(255,255,255,0.1)" />
+                            
+                            <!-- Graph curve -->
+                            <path d="M 50,20 Q 250,180 450,180" fill="none" stroke="url(#cyan-grad)" stroke-width="4" id="curve-path"/>
+                            <circle cx="50" cy="20" r="10" fill="hsl(320, 100%, 50%)" id="curve-indicator" />
+                            
+                            <defs>
+                                <linearGradient id="cyan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="hsl(190, 100%, 50%)" />
+                                    <stop offset="100%" stop-color="hsl(265, 100%, 60%)" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- View 3: 3D Hologram Carousel -->
+                <div class="screen-view" id="view-3d">
+                    <div class="carousel-container">
+                        <!-- Card 1: Personality Core -->
+                        <div class="carousel-card card-personality">
+                            <div class="card-inner">
+                                <div class="card-glow-bg"></div>
+                                <div class="card-header">
+                                    <span class="icon">🎭</span>
+                                    <span class="badge-mini">trait core</span>
+                                </div>
+                                <div class="card-body">
+                                    <h3>Personality Core</h3>
+                                    <p>Quản lý 7 chiều tính cách của Itto độc lập với engine.</p>
+                                    <div class="stat-row">
+                                        <span>Dũng cảm</span>
+                                        <div class="stat-bar"><div class="fill" style="width: 95%"></div></div>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span>Tinh quái</span>
+                                        <div class="stat-bar"><div class="fill" style="width: 85%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Hormone Engine -->
+                        <div class="carousel-card card-hormone">
+                            <div class="card-inner">
+                                <div class="card-glow-bg"></div>
+                                <div class="card-header">
+                                    <span class="icon">🧪</span>
+                                    <span class="badge-mini">neurochemical</span>
+                                </div>
+                                <div class="card-body">
+                                    <h3>Hormone Engine</h3>
+                                    <p>Tính toán nồng độ của 8 hoạt chất dẫn truyền thần kinh.</p>
+                                    <div class="stat-row">
+                                        <span>Adrenaline</span>
+                                        <div class="stat-bar"><div class="fill" style="width: 70%"></div></div>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span>Dopamine</span>
+                                        <div class="stat-bar"><div class="fill" style="width: 90%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Memory Engine -->
+                        <div class="carousel-card card-memory">
+                            <div class="card-inner">
+                                <div class="card-glow-bg"></div>
+                                <div class="card-header">
+                                    <span class="icon">💾</span>
+                                    <span class="badge-mini">vector ltm</span>
+                                </div>
+                                <div class="card-body">
+                                    <h3>Memory Engine</h3>
+                                    <p>Bộ nhớ đệm STM và LTM định hướng Vector ngữ nghĩa.</p>
+                                    <div class="stat-row">
+                                        <span>Hồi tưởng</span>
+                                        <div class="stat-bar"><div class="fill" style="width: 80%"></div></div>
+                                    </div>
+                                    <div class="stat-row">
+                                        <span>Hebbian</span>
+                                        <div class="stat-bar"><div class="fill" style="width: 60%"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -22,6 +22,7 @@ module.exports = [
                 navigator: 'readonly',
                 location: 'readonly',
                 fetch: 'readonly',
+                crypto: 'readonly',
                 setTimeout: 'readonly',
                 setInterval: 'readonly',
                 clearTimeout: 'readonly',
@@ -57,7 +58,10 @@ module.exports = [
             },
         },
         rules: {
-            'no-unused-vars': ['warn', { args: 'after-used', ignoreRestSiblings: true }],
+            'no-unused-vars': [
+                'warn',
+                { args: 'after-used', argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+            ],
             'no-undef': 'error',
             'eqeqeq': ['warn', 'always', { null: 'ignore' }],
             'no-console': 'off',
