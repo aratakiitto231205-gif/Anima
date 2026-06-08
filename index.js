@@ -20,8 +20,18 @@
 import { eventSource, event_types, saveSettingsDebounced } from '../../../../script.js';
 import { renderExtensionTemplateAsync, getContext, extension_settings } from '../../../extensions.js';
 
-const MODULE_NAME = 'st-anima'; // FIX: bỏ 'third-party/' prefix, ST tự thêm
+let MODULE_NAME = 'third-party/st-anima';
 const EXT_NAME = 'st-anima';
+
+try {
+    const extensionPath = new URL('.', import.meta.url).pathname;
+    const extIdx = extensionPath.indexOf('/extensions/');
+    if (extIdx !== -1) {
+        MODULE_NAME = extensionPath.substring(extIdx + 12).replace(/\/$/, '');
+    }
+} catch (e) {
+    console.error("Anima Engine: Failed to resolve MODULE_NAME dynamically, using default:", e);
+}
 
 const defaultSettings = {
     enabled: true,
