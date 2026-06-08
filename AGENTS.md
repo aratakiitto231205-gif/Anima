@@ -14,19 +14,19 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v0.12.2 — Modular Skeleton)
+## 📊 Current State (v0.12.3 — Bare Skeleton)
 
-> **v0.12.2** = v0.11.0 (reset) + spec 004 (sketch stubs) + spec 005 (wire check) + v0.12.2 (modular skeleton & tests).
+> **v0.12.3** = v0.11.0 (reset) + spec 004 (sketch stubs) + spec 005 (wire check) + v0.12.3 (bare skeleton & tests).
 
 | Component | Status | Notes |
 |---|---|---|
 | `index.js` | ✅ Entry point | Boot jQuery, dynamically resolves `MODULE_NAME`, mounts panel, initializes `AnimaUI` & `AnimaOrchestrator` |
-| `panel.html` | ✅ UI shell | Full layout for tab panel (Status, Memory, Chronicles, Backstage) with static clock to prevent layout shift |
+| `panel.html` | ✅ UI shell | Sleek minimal layout (status, emotion, narrative plan, logs stream, console terminal) with clock |
 | `style.css` | ✅ CSS styling | Minimal styling for the dashboard |
-| `src/ui/dashboard.js` | ✅ UI Manager | Handles all DOM updates, tabs switching, clock, and hormone indicators |
-| `src/core/state.js` | ✅ State Manager | Centralized physiological state container, linear decay with cap to prevent bladder accidents |
-| `src/core/orchestrator.js` | ✅ Orchestrator | SillyTavern event bindings & prompt interceptors |
-| `src/agents/` | ✅ Brain Stubs | GM Agent (plan & appraisal), RP Agent (prompt nudger), AD Agent (backstage console command handler) |
+| `src/ui/dashboard.js` | ✅ UI Manager | Simplified DOM updater (renders status, emotion badge, thoughts plan, clock, and terminal submit) |
+| `src/core/state.js` | ✅ State Manager | Bare-bones state container: enabled, active_emotion, activePlan, lastUpdateTimestamp |
+| `src/core/orchestrator.js` | ✅ Orchestrator | Streamlined ST event bindings: CHAT_CHANGED, CHAT_COMPLETION_PROMPT_READY, MESSAGE_RECEIVED |
+| `src/agents/` | ✅ Brain Stubs | GM Agent (plan & appraisal), RP Agent (prompt nudger), AD Agent (backstage console commands: help, status, set, reset) |
 | `src/utils/logger.js` | ✅ Active | Logger system with dynamic UI callback binding (Dependency Injection) |
 | `src/utils/constants.js` | ✅ Active | Constants kept from archive |
 | `characters/itto/personality.json` | ✅ Done | Itto's CoALA traits config |
@@ -36,7 +36,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | `agent_handoff/` | ✅ Active | Cross-agent messages, numbered sequentially |
 | ESLint | ✅ Clean (0 warnings/errors) | Cấu hình Flat Config chạy tốt trên `src/` |
 | Git | ✅ Pushed | Default branch `main`, repo: https://github.com/aratakiitto231205-gif/Anima |
-| Tests | ✅ 13 Passed | Vitest unit tests for State Manager, GM Agent, and AD commands |
+| Tests | ✅ 10 Passed | Vitest unit tests for streamlined states, plans, and terminal commands |
 
 
 ---
