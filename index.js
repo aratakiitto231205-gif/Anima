@@ -1,14 +1,18 @@
-// v0.12.0 — Dashboard UI Shell
-// Approach: dùng panel.html (template v10 đã verified) + renderExtensionTemplateAsync
-// theo ST official docs. Wire tabs, status display, thời gian thật (1 feature verify).
-// Bỏ tất cả logic v10 (CognitiveAgent, hormone, memory, sleep, prompt injection...)
+// v0.12.1 — Dashboard UI Shell (FIXED)
+// Root cause v0.12.0: dùng SillyTavern global khi extension boot quá sớm
+// (global chưa ready khi load từ GitHub). v10 work vì import trực tiếp
+// từ script.js (ST expose module ngay từ đầu). Fix: dùng import tương đối
+// cho eventSource, event_types, saveSettingsDebounced + dùng getContext()
+// qua getContext function imported từ extensions.js.
+
+import { eventSource, event_types, saveSettingsDebounced } from '../../../../script.js';
+import { renderExtensionTemplateAsync, getContext, extension_settings } from '../../../extensions.js';
 
 const MODULE_NAME = 'third-party/st-anima';
 const EXT_NAME = 'st-anima';
 
 const defaultSettings = {
     enabled: true,
-    // Mỗi feature: false = "Coming soon", true = chạy thật
     feature_time: true,
     feature_character: false,
     feature_mood: false,
@@ -45,30 +49,30 @@ function setupTabs() {
 // PLACEHOLDER RENDER — "—" / "Coming soon"
 // ==========================================
 function renderPlaceholders() {
-    const ctx = SillyTavern.getContext();
+    const ctx = getContext();
     const settings = ctx.extension_settings[EXT_NAME] || defaultSettings;
 
-    // 1. Status box — chỉ enabled/disconnected
+    // 1. Status box
     const statusEl = document.getElementById('cog_dash_status');
     if (statusEl) {
         statusEl.innerText = settings.enabled ? 'Active ✓' : 'Disabled';
         statusEl.style.color = settings.enabled ? '#10b981' : '#94a3b8';
     }
 
-    // 2. Psychology — Coming soon
+    // 2. Psychology
     const psychEl = document.getElementById('cog_dash_psych');
     if (psychEl) {
         psychEl.innerText = settings.feature_mood ? '—' : 'Coming soon';
         psychEl.style.color = settings.feature_mood ? '#10b981' : '#64748b';
     }
 
-    // 3. Vitals — hardcode "—" (no live data)
+    // 3. Vitals
     ['cog_vital_heart_rate', 'cog_vital_blood_pressure', 'cog_vital_body_temp', 'cog_vital_resp_rate'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerText = '—';
     });
 
-    // 4. Somatosensory bars — set to 0
+    // 4. Somatosensory bars
     ['energy', 'pain', 'hunger', 'thirst', 'toilet_need', 'nausea'].forEach(k => {
         const valEl = document.getElementById(`cog_sens_${k}`);
         const barEl = document.getElementById(`cog_bar_${k}`);
@@ -78,7 +82,7 @@ function renderPlaceholders() {
     const tempSens = document.getElementById('cog_sens_temp');
     if (tempSens) tempSens.innerText = 'Coming soon';
 
-    // 5. Hormones — Coming soon
+    // 5. Hormones
     ['adrenaline', 'cortisol', 'melatonin', 'dopamine', 'serotonin', 'oxytocin', 'endorphins', 'sex_hormones'].forEach(k => {
         const valEl = document.getElementById(`cog_val_${k}`);
         const barEl = document.getElementById(`cog_bar_${k}`);
@@ -86,7 +90,7 @@ function renderPlaceholders() {
         if (barEl) barEl.style.width = '0%';
     });
 
-    // 6. Environment — Coming soon
+    // 6. Environment
     const locLabel = document.getElementById('cog_active_location_label');
     if (locLabel) locLabel.innerText = 'Coming soon';
     const locBadge = document.getElementById('cog_active_location_badge');
@@ -96,13 +100,11 @@ function renderPlaceholders() {
     const locItems = document.getElementById('cog_active_location_items');
     if (locItems) locItems.innerHTML = '<i style="color: #64748b; font-size: 0.85em;">—</i>';
 
-    // 7. Emotion — Coming soon
+    // 7. Emotion
     const emoEl = document.getElementById('cog_dash_emotion');
-    if (emoEl) {
-        emoEl.innerHTML = '<span style="color: #64748b;">—</span>';
-    }
+    if (emoEl) emoEl.innerHTML = '<span style="color: #64748b;">—</span>';
 
-    // 8. Active recall / thoughts / tools — Coming soon
+    // 8. Active recall / thoughts / tools
     const thoughtsEl = document.getElementById('cog_dash_thoughts');
     if (thoughtsEl) thoughtsEl.innerHTML = '<i style="color: #64748b;">—</i>';
     const recallEl = document.getElementById('cog_dash_active_recall');
@@ -110,35 +112,34 @@ function renderPlaceholders() {
     const toolsEl = document.getElementById('cog_dash_tools');
     if (toolsEl) toolsEl.innerHTML = '<i style="color: #64748b;">—</i>';
 
-    // 9. Memory tab — Coming soon
+    // 9. Memory lists
     const lists = ['cog_db_triggers_list', 'cog_db_beliefs_list', 'cog_db_core_list', 'cog_db_drawer_list', 'cog_db_chronicles_list'];
     lists.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = '<i style="color: #64748b; font-size: 0.85em;">Coming soon</i>';
     });
 
-    // 10. Chronicles tab — Coming soon
+    // 10. Chronicles
     const chroniclesEl = document.getElementById('cog_dash_idle_chronicles');
     if (chroniclesEl) chroniclesEl.innerHTML = '<i style="color: #64748b;">—</i>';
 
-    // 11. Backstage tab — Coming soon
+    // 11. Backstage
     const adminLog = document.getElementById('cog_admin_chat_log');
     if (adminLog) adminLog.innerHTML = '<i style="color: #64748b; font-size: 0.85em;">Coming soon</i>';
 
-    // 12. Logs container
+    // 12. Logs
     const logsEl = document.getElementById('cog_logs_container');
     if (logsEl) logsEl.innerHTML = '<i style="color: #64748b;">—</i>';
 }
 
 // ==========================================
-// FEATURE 1: Thời gian hiện tại (verify wire)
+// FEATURE: Live clock (verify wire)
 // ==========================================
 function renderLiveClock() {
-    const ctx = SillyTavern.getContext();
+    const ctx = getContext();
     const settings = ctx.extension_settings[EXT_NAME] || defaultSettings;
     if (!settings.feature_time) return;
 
-    // Thêm div live clock vào đầu status tab nếu chưa có
     let clockEl = document.getElementById('anima_live_clock');
     if (!clockEl) {
         const statusTab = document.getElementById('cog_tab_status_content');
@@ -151,9 +152,8 @@ function renderLiveClock() {
     }
 
     function tick() {
-        const now = new Date();
         const valEl = document.getElementById('anima_live_clock_value');
-        if (valEl) valEl.innerText = now.toLocaleString('vi-VN');
+        if (valEl) valEl.innerText = new Date().toLocaleString('vi-VN');
     }
     tick();
     setInterval(tick, 1000);
@@ -164,29 +164,28 @@ function renderLiveClock() {
 // INIT
 // ==========================================
 async function init() {
-    logAnima('info', 'System', `Khởi chạy Anima Engine v0.12.0 (Dashboard Shell)...`);
+    logAnima('info', 'System', 'Khởi chạy Anima Engine v0.12.1 (Dashboard Shell + fixed imports)...');
 
-    // Init settings defaults
-    const ctx = SillyTavern.getContext();
+    // Init settings defaults qua getContext() imported (an toàn)
+    const ctx = getContext();
     ctx.extension_settings[EXT_NAME] = ctx.extension_settings[EXT_NAME] || {};
     if (Object.keys(ctx.extension_settings[EXT_NAME]).length === 0) {
         Object.assign(ctx.extension_settings[EXT_NAME], defaultSettings);
-        ctx.saveSettingsDebounced();
+        saveSettingsDebounced();
     }
 
-    // Render panel từ template (ST tự resolve path, work cho cả local + GitHub install)
+    // Render panel từ template
     const container = document.createElement('div');
     container.id = 'cognitive_dashboard_container';
     container.classList.add('extension_container');
-    container.innerHTML = await ctx.renderExtensionTemplateAsync(MODULE_NAME, 'panel');
+    container.innerHTML = await renderExtensionTemplateAsync(MODULE_NAME, 'panel');
 
-    // Mount vào #extensions_settings (cột trái, system functions) — theo v10 pattern
+    // Mount panel
     const extSettings = document.getElementById('extensions_settings');
     if (extSettings) {
         extSettings.appendChild(container);
         logAnima('success', 'Init', 'Panel mounted to #extensions_settings');
     } else {
-        // Fallback: append vào #extensions_settings2
         const extSettings2 = document.getElementById('extensions_settings2');
         if (extSettings2) {
             extSettings2.appendChild(container);
@@ -196,16 +195,11 @@ async function init() {
         }
     }
 
-    // Setup tabs
     setupTabs();
-
-    // Render placeholders
     renderPlaceholders();
-
-    // Wire 1 feature thật: live clock
     renderLiveClock();
 
-    logAnima('success', 'Init', 'v0.12.0 ready (placeholder shell + 1 live feature)');
+    logAnima('success', 'Init', 'v0.12.1 ready');
 }
 
 jQuery(function () {
