@@ -31,15 +31,14 @@
 Người dùng đã lựa chọn **Lựa chọn 1: Hệ thống Ngoại cảnh (Environment Engine)** làm phát súng đầu tiên. 
 
 ### Thiết kế Tác nhân cho Cột trụ 1:
-Để vận hành ngoại cảnh tương tác như một game, chúng ta cần phối hợp cả 3 Tác nhân:
+Để vận hành ngoại cảnh tương tác như một game, chúng ta phối hợp các vai trò cực kỳ rõ ràng:
 1. **GM Agent (Game Master):** 
-   - Đóng vai trò trọng tài thế giới vật lý.
-   - Nhận diện các sự kiện trong tin nhắn chat để cập nhật **Đồng hồ ảo** (ví dụ: người dùng rủ đi ngủ -> nhảy thời gian tới sáng mai) và **Bản đồ ảo** (ví dụ: thời tiết mưa/nắng, cảnh vật thay đổi, các vật thể xuất hiện).
-2. **AD Agent (Tiềm thức/Phản hồi):**
-   - Đọc trạng thái Ngoại cảnh từ bộ nhớ và so sánh với lịch sử chat.
-   - Sinh ra các chỉ dẫn và quy tắc ứng xử cụ thể bắt buộc cho turn thoại tiếp theo (Ví dụ: *"Itto phải lạnh run người vì thời tiết đang mưa bão lớn, sấm sét đánh bên ngoài"*).
-3. **RP Agent (Roleplay Writer):**
-   - Định hình chỉ thị Nudge từ AD Agent dưới dạng System Note để tiêm trực tiếp vào prompt chính gửi lên LLM của SillyTavern.
+   - Đóng vai trò trọng tài của thế giới vật lý và diễn biến nội tâm.
+   - Nhận diện các sự kiện trong tin nhắn chat để cập nhật **Đồng hồ ảo** và **Bản đồ ảo**, đồng thời xác định cảm xúc đích và ý đồ thoại tiếp theo.
+2. **RP Agent (Roleplay Writer):**
+   - Đóng vai trò biên kịch, đóng gói trực tiếp các thông số thực tại và ý đồ từ GM Agent thành System Note (Narrative Nudge) để tiêm vào cuộc trò chuyện chính của SillyTavern.
+3. **AD Agent (Admin/Project Assistant):**
+   - Đóng vai trò là trợ lý quản trị dự án ở hậu trường (Backstage). Nhiệm vụ duy nhất là cập nhật, thay đổi sâu sắc các thông số hệ thống khi cần hoặc khi được yêu cầu (ví dụ: qua console commands, settings panel hoặc khi cần can thiệp thông số sâu). Không can thiệp vào luồng sinh nudge thoại thông thường của GM và RP.
 
 ### Các bước cần làm ngay ở phiên sau:
 1. **Dựng giao diện và lưu trữ tĩnh:**
