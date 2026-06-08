@@ -14,37 +14,25 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v11.0 — completed)
+## 📊 Current State (v0.12.2 — Dashboard UI Shell)
 
-> **v11.0** = v10.0 + spec 001 + spec 002 + spec 003 (bugfix + cleanup). Spec 003 đã hoàn thành.
+> **v0.12.2** = v0.11.0 (reset) + spec 004 (sketch stubs) + spec 005 (wire check) + v0.12.2 (placeholder shell).
 
 | Component | Status | Notes |
 |---|---|---|
-| `src/core/CognitiveAgent.js` | ✅ Done | Main orchestrator (spec 002 added lazy `adAgent` + `personalityCore` + `getADIntentForMessage`, additive only) |
-| `src/core/HormoneEngine.js` | ✅ Done | 8 neurochemicals + Hill equation + decay |
-| `src/core/MemoryEngine.js` | ✅ Done | STM/LTM, Ebbinghaus, Jaccard, Hebbian |
-| `src/core/PersonalityCore.js` | ✅ Done (spec 002) | Abstract trait schema, engine-agnostic |
-| `src/core/ConsciousnessEngine.js` | ✅ Done | Scope minimal — verify what it does |
-| `src/cognitive/ADAgent.js` | ✅ Done (spec 002) | Flash Lite AD phase, reads config from ST extension settings |
-| `src/cognitive/ad-prompt.js` | ✅ Done (spec 002) | System prompt builder |
-| `src/cognitive/__tests__/ADAgent.test.js` | ✅ 5 tests | Valid JSON, hallucination guard, budget cap, malformed, prompt builder |
-| `src/core/__tests__/PersonalityCore.test.js` | ✅ 4 tests | Init/validation/getTrait/serialize |
-| `src/core/MemoryEngine.test.js` | ✅ 40 tests | Ebbinghaus, Jaccard, Hebbian, STM/LTM |
-| `src/orchestration/` | ✅ Done | EventOrchestrator, PromptInjector, SleepDetector, TemporalAnchor (spec 002 added AD hook in EventOrchestrator + adIntent arg in PromptInjector) |
-| `src/services/` | ✅ Done | Environment, Sleep, TimeJump, VectorMemory |
-| `src/backstage/` | ✅ Done | BackstageConsole, SubconsciousTicker |
-| `src/ui/DashboardUI.js` + `ADSettingsPanel.js` | ✅ Done | Dashboard + new AD settings drawer (spec 002) |
-| `characters/itto/personality.json` | ✅ Done (spec 002) | Itto's CoALA traits, 7 dimensions, 0-10 range |
-| `index.js` | ✅ Entry point | Hooks ADSettingsPanel.init() on load |
-| `template.html` + `style.css` | ✅ UI shell | |
-| `docs/specs/001_dx_foundation.md` | ✅ Done | ESLint + git + tests DX |
-| `docs/specs/002_cognitive_architecture.md` | ✅ Done | CoALA-inspired AD phase |
-| `docs/reviews/review_002_cognitive_architecture.md` | ✅ Done | Conditional greenlight + 3 open Q's |
-| `docs/ST_ANIMA_OVERVIEW.md` | ✅ Done (noob-friendly overview) | Replaces old technical overview at root |
+| `index.js` | ✅ Entry point | Boot jQuery, dynamically resolves `MODULE_NAME`, mounts panel, live clock, placeholder states |
+| `panel.html` | ✅ UI shell | Full layout for tab panel (Status, Memory, Chronicles, Backstage) with placeholders |
+| `style.css` | ✅ CSS styling | Minimal styling for the dashboard |
+| `src/utils/logger.js` | ✅ Active | Logger system kept from archive |
+| `src/utils/constants.js` | ✅ Active | Constants kept from archive |
+| `characters/itto/personality.json` | ✅ Done | Itto's CoALA traits config |
+| `docs/specs/` | ✅ Specs | 003 (archived cleanup info), 004 (skeleton), 005 (hello anima) |
+| `docs/VISION.md` | ✅ Vision | Long term vision (moved from root) |
+| `docs/ST_ANIMA_OVERVIEW.md` | ✅ Overview | Noob-friendly project overview |
 | `agent_handoff/` | ✅ Active | Cross-agent messages, numbered sequentially |
-| ESLint | ✅ Clean (0 warnings/errors) | Cấu hình Flat Config chạy tốt |
+| ESLint | ✅ Clean (0 warnings/errors) | Cấu hình Flat Config chạy tốt trên `src/` |
 | Git | ✅ Pushed | Default branch `main`, repo: https://github.com/aratakiitto231205-gif/Anima |
-| Tests | ✅ 111 tests pass | `npm test` chạy < 2.5s |
+| Tests | ⏸️ None | Currently no test files in active `src/` |
 
 
 ---
@@ -83,41 +71,33 @@ This project uses **Arataki Itto** as the test character. Character definition (
 ```
 .
 ├── AGENTS.md              ← this file
-├── index.js               ← entry
-├── package.json
-├── template.html, style.css
+├── index.js               ← entry point
+├── package.json           ← package metadata & scripts
+├── panel.html             ← dashboard template layout
+├── style.css              ← dashboard minimal styling
+├── manifest.json          ← extension manifest metadata
 ├── src/
-│   ├── backstage/         ← BackstageConsole, SubconsciousTicker
-│   ├── core/              ← CognitiveAgent, engines, PersonalityCore
-│   │   └── __tests__/     ← PersonalityCore.test.js
-│   ├── cognitive/         ← ADAgent, ad-prompt (spec 002)
-│   │   └── __tests__/     ← ADAgent.test.js
-│   ├── orchestration/     ← EventOrchestrator, etc.
-│   ├── services/          ← Environment, Sleep, etc.
-│   └── ui/                ← DashboardUI, DOMAutoHealing, ADSettingsPanel
+│   └── utils/             ← logger.js, constants.js
 ├── characters/
-│   └── itto/              ← personality.json + README (per-character config)
+│   └── itto/              ← personality.json + README (test character config)
 ├── docs/
 │   ├── specs/             ← task specs
-│   ├── reviews/           ← code reviews
-│   ├── history/           ← historical logs (e.g. cleanup_log_20260531)
+│   ├── history/           ← historical logs (e.g. CHANGELOG_0.11.0.md)
+│   ├── VISION.md          ← long-term project vision (moved)
 │   └── ST_ANIMA_OVERVIEW.md  ← noob-friendly project overview
 ├── agent_handoff/         ← cross-agent messages, numbered sequentially
-├── archive/               ← historical, don't delete
-│   ├── docs_archive_20260605/  ← old .md files (vision, interview, old overview)
-│   ├── debug/             ← debug logs (e.g. server_request_debug)
-│   └── ST_Anima_Backup_20260531_021952/  ← original v10 backup
-└── node_modules/, coverage/, sillytavern-docs/  ← gitignored
+├── archive/               ← historical archived code/docs, don't delete
+└── node_modules/          ← gitignored dependencies
 ```
 
 **Rules:**
-- Docs → `docs/`. Never at root (only `AGENTS.md` + this file at root).
+- Docs → `docs/`. Never at root (only `AGENTS.md` + `README.md` at root).
 - Handoff messages → `agent_handoff/`. Numbered.
 - Code → `src/`. Never `.js` at root.
 - Per-character config (personality traits, README) → `characters/<name>/`. Engine never hardcodes character values.
 - Old/dead code → `archive/`, not deleted.
 - Debug/diagnostic logs → `archive/debug/`, not at root.
-- Personality traits (CoALA) = abstract schema in `src/core/PersonalityCore.js`, values in `characters/<name>/personality.json`. Engine is character-agnostic.
+- Personality traits (CoALA) = abstract schema in `src/core/PersonalityCore.js` (archived), values in `characters/<name>/personality.json`.
 
 ---
 
@@ -182,6 +162,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-07 | Spec 003 v2 drafted — **Option A: REWRITE** 6 file + PATCH 4 file, 1 v11 lớn | Hitsuji quyết: code smell nặng (CognitiveAgent 400 dòng, BackstageConsole 1 function 240 dòng, EventOrchestrator 70 dòng duplicate, DOMAutoHealing 50 dòng replace chuỗi) → rewrite tốt hơn patch chắp vá. Backup có sẵn. 20 blocks trong spec. |
 | 2026-06-07 | Version bump v10.0 → v11.0 | Hitsuji decision: spec 003 đủ lớn (5 fixes + cleanup + architecture touch) để warrant minor version bump. Antigravity scan tất cả "// v10.0" → "// v11.0" + index.js log + package.json. |
 | 2026-06-07 | Hoàn thành toàn bộ Spec 003 (v11.0) | Antigravity hoàn thành 20 blocks, tích hợp tests mới và sửa triệt để tất cả lỗi linter. |
+| 2026-06-09 | Sửa lỗi template 404 & dọn dẹp thư mục gốc | Khắc phục lỗi nạp template bằng phân giải `MODULE_NAME` động. Xóa file trùng lặp `template.html`, dời `VISION.md` vào `docs/` và `CHANGELOG_0.11.0.md` vào `docs/history/`. |
 
 
 ---
@@ -215,4 +196,4 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-> **Last updated:** 2026-06-07 (v8 — spec 003 v2 completed: 20 blocks built and verified)
+> **Last updated:** 2026-06-09 (v0.12.2 template fix + project cleanup)
