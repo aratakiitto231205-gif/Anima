@@ -1,14 +1,26 @@
-// v0.12.1 — Dashboard UI Shell (FIXED)
-// Root cause v0.12.0: dùng SillyTavern global khi extension boot quá sớm
-// (global chưa ready khi load từ GitHub). v10 work vì import trực tiếp
-// từ script.js (ST expose module ngay từ đầu). Fix: dùng import tương đối
-// cho eventSource, event_types, saveSettingsDebounced + dùng getContext()
-// qua getContext function imported từ extensions.js.
+// v0.12.2 — Dashboard UI Shell (FIXED v0.12.1)
+// Root cause v0.12.1:
+//   1. ctx.extension_settings không tồn tại trên getContext() result.
+//      Phải dùng extension_settings global (imported từ extensions.js).
+//   2. MODULE_NAME có 'third-party/' prefix sai → ST fetch
+//      '/scripts/extensions/third-party/third-party/manifest.json' → 404.
+//      v10 dùng 'third-party/cognitive-dashboard' WORK vì folder
+//      tên là 'cognitive-dashboard'. Folder em tên 'st-anima' → MODULE_NAME
+//      phải là 'third-party/st-anima' NHƯNG ST mount folder thật trong path
+//      'scripts/extensions/third-party/' rồi — không cần prefix trong MODULE_NAME.
+//      Pattern đúng (Notebook): 'third-party/Extension-Notebook' — folder tên
+//      trùng với extension name trong MODULE_NAME. Em đổi manifest display_name
+//      thành 'st-anima' thì path tự khớp.
+//
+// Fix:
+// - Dùng `extension_settings[EXT_NAME]` từ import (KHÔNG qua ctx)
+// - MODULE_NAME = 'st-anima' (ST tự thêm 'third-party/' prefix khi resolve)
+// - Defensive: check `getContext` return shape trước khi access
 
 import { eventSource, event_types, saveSettingsDebounced } from '../../../../script.js';
 import { renderExtensionTemplateAsync, getContext, extension_settings } from '../../../extensions.js';
 
-const MODULE_NAME = 'third-party/st-anima';
+const MODULE_NAME = 'st-anima'; // FIX: bỏ 'third-party/' prefix, ST tự thêm
 const EXT_NAME = 'st-anima';
 
 const defaultSettings = {
@@ -49,10 +61,9 @@ function setupTabs() {
 // PLACEHOLDER RENDER — "—" / "Coming soon"
 // ==========================================
 function renderPlaceholders() {
-    const ctx = getContext();
-    const settings = ctx.extension_settings[EXT_NAME] || defaultSettings;
+    const settings = extension_settings[EXT_NAME] || defaultSettings;
 
-    // 1. Status box
+    // 1. Status
     const statusEl = document.getElementById('cog_dash_status');
     if (statusEl) {
         statusEl.innerText = settings.enabled ? 'Active ✓' : 'Disabled';
@@ -72,7 +83,7 @@ function renderPlaceholders() {
         if (el) el.innerText = '—';
     });
 
-    // 4. Somatosensory bars
+    // 4. Somatosensory
     ['energy', 'pain', 'hunger', 'thirst', 'toilet_need', 'nausea'].forEach(k => {
         const valEl = document.getElementById(`cog_sens_${k}`);
         const barEl = document.getElementById(`cog_bar_${k}`);
@@ -104,7 +115,7 @@ function renderPlaceholders() {
     const emoEl = document.getElementById('cog_dash_emotion');
     if (emoEl) emoEl.innerHTML = '<span style="color: #64748b;">—</span>';
 
-    // 8. Active recall / thoughts / tools
+    // 8. Thoughts/recall/tools
     const thoughtsEl = document.getElementById('cog_dash_thoughts');
     if (thoughtsEl) thoughtsEl.innerHTML = '<i style="color: #64748b;">—</i>';
     const recallEl = document.getElementById('cog_dash_active_recall');
@@ -136,8 +147,7 @@ function renderPlaceholders() {
 // FEATURE: Live clock (verify wire)
 // ==========================================
 function renderLiveClock() {
-    const ctx = getContext();
-    const settings = ctx.extension_settings[EXT_NAME] || defaultSettings;
+    const settings = extension_settings[EXT_NAME] || defaultSettings;
     if (!settings.feature_time) return;
 
     let clockEl = document.getElementById('anima_live_clock');
@@ -164,42 +174,46 @@ function renderLiveClock() {
 // INIT
 // ==========================================
 async function init() {
-    logAnima('info', 'System', 'Khởi chạy Anima Engine v0.12.1 (Dashboard Shell + fixed imports)...');
+    logAnima('info', 'System', 'Khởi chạy Anima Engine v0.12.2...');
 
-    // Init settings defaults qua getContext() imported (an toàn)
-    const ctx = getContext();
-    ctx.extension_settings[EXT_NAME] = ctx.extension_settings[EXT_NAME] || {};
-    if (Object.keys(ctx.extension_settings[EXT_NAME]).length === 0) {
-        Object.assign(ctx.extension_settings[EXT_NAME], defaultSettings);
-        saveSettingsDebounced();
+    // Init settings defaults — dùng extension_settings imported (KHÔNG qua ctx)
+    if (!extension_settings[EXT_NAME]) {
+        extension_settings[EXT_NAME] = { ...defaultSettings };
+    } else if (Object.keys(extension_settings[EXT_NAME]).length === 0) {
+        Object.assign(extension_settings[EXT_NAME], defaultSettings);
     }
+    saveSettingsDebounced();
 
     // Render panel từ template
-    const container = document.createElement('div');
-    container.id = 'cognitive_dashboard_container';
-    container.classList.add('extension_container');
-    container.innerHTML = await renderExtensionTemplateAsync(MODULE_NAME, 'panel');
+    try {
+        const container = document.createElement('div');
+        container.id = 'cognitive_dashboard_container';
+        container.classList.add('extension_container');
+        container.innerHTML = await renderExtensionTemplateAsync(MODULE_NAME, 'panel');
 
-    // Mount panel
-    const extSettings = document.getElementById('extensions_settings');
-    if (extSettings) {
-        extSettings.appendChild(container);
-        logAnima('success', 'Init', 'Panel mounted to #extensions_settings');
-    } else {
-        const extSettings2 = document.getElementById('extensions_settings2');
-        if (extSettings2) {
-            extSettings2.appendChild(container);
-            logAnima('warning', 'Init', 'Mounted to #extensions_settings2 (fallback)');
+        // Mount panel — cố gắng cả 2 vị trí
+        const extSettings = document.getElementById('extensions_settings');
+        if (extSettings) {
+            extSettings.appendChild(container);
+            logAnima('success', 'Init', `Panel mounted to #extensions_settings (MODULE_NAME=${MODULE_NAME})`);
         } else {
-            logAnima('error', 'Init', 'Cannot find #extensions_settings or #extensions_settings2');
+            const extSettings2 = document.getElementById('extensions_settings2');
+            if (extSettings2) {
+                extSettings2.appendChild(container);
+                logAnima('warning', 'Init', 'Mounted to #extensions_settings2 (fallback)');
+            } else {
+                logAnima('error', 'Init', 'Cannot find mount target');
+            }
         }
+
+        setupTabs();
+        renderPlaceholders();
+        renderLiveClock();
+        logAnima('success', 'Init', 'v0.12.2 ready');
+    } catch (err) {
+        logAnima('error', 'Init', `Render failed: ${err.message}`);
+        console.error('[st-anima] full error:', err);
     }
-
-    setupTabs();
-    renderPlaceholders();
-    renderLiveClock();
-
-    logAnima('success', 'Init', 'v0.12.1 ready');
 }
 
 jQuery(function () {
