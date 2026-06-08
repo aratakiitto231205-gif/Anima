@@ -1,551 +1,75 @@
 <div class="inline-drawer">
+    <!-- Header: Drawer toggle -->
     <div class="inline-drawer-toggle inline-drawer-header userSettingsInnerExpandable" style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.15)); border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
         <b style="color: var(--SmartThemeTextAccentColor); font-size: 1.05em; display: flex; align-items: center; gap: 8px;">
             <i class="fa-solid fa-brain" style="color: #6366f1; animation: pulseBrain 2s infinite;"></i>
-            <span>Anima Engine</span>
+            <span>Anima Engine v0.12.3</span>
         </b>
         <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down" style="transition: transform 0.3s ease;"></div>
     </div>
-    <div class="inline-drawer-content" style="padding: 15px; background: rgba(0, 0, 0, 0.15); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0 0 6px 6px; margin-top: -1px; backdrop-filter: blur(10px);">
-        <div class="flex-container flexFlowColumn gap12">
-            
-            <!-- Bộ chọn Tab (Tab Bar Selector) -->
-            <div class="cog-dashboard-tabs" style="display: flex; gap: 6px; margin-bottom: 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 8px;">
-                <button class="cog-tab-btn active" data-tab="status" style="flex: 1; padding: 6px 4px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(30, 41, 59, 0.5); color: #94a3b8; font-size: 0.8em; cursor: pointer; transition: all 0.2s; white-space: nowrap; text-align: center;">🎭 Nội tâm</button>
-                <button class="cog-tab-btn" data-tab="memory" style="flex: 1; padding: 6px 4px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(30, 41, 59, 0.5); color: #94a3b8; font-size: 0.8em; cursor: pointer; transition: all 0.2s; white-space: nowrap; text-align: center;">🧠 Ký ức</button>
-                <button class="cog-tab-btn" data-tab="chronicles" style="flex: 1; padding: 6px 4px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(30, 41, 59, 0.5); color: #94a3b8; font-size: 0.8em; cursor: pointer; transition: all 0.2s; white-space: nowrap; text-align: center;">🏕️ Nhật ký</button>
-                <button class="cog-tab-btn" data-tab="backstage" style="flex: 1; padding: 6px 4px; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(30, 41, 59, 0.5); color: #94a3b8; font-size: 0.8em; cursor: pointer; transition: all 0.2s; white-space: nowrap; text-align: center;">🛰️ Tiềm thức</button>
-            </div>
 
-            <!-- Tab 1: Nội tâm (Status, Emotion, Thoughts, Tools) -->
-            <div id="cog_tab_status_content" class="cog-tab-content flex-container flexFlowColumn gap12">
-                <!-- Đồng hồ thế giới tĩnh (Tránh layout shift) -->
-                <div id="anima_live_clock" style="display: flex; justify-content: space-between; align-items: center; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 6px; padding: 8px 12px;">
-                    <span style="font-size: 0.85em; opacity: 0.85;">🕐 Thời gian thế giới (verify wire):</span>
-                    <span id="anima_live_clock_value" style="font-weight: bold; color: #818cf8; font-family: monospace;">—</span>
-                </div>
-
-                <!-- Hộp Trạng thái chính -->
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 8px 12px;">
-                    <span style="font-size: 0.9em; opacity: 0.85; color: var(--SmartThemeTextColor);">Trạng thái Tác tử:</span>
-                    <div id="cog_dash_status" style="font-weight: bold; color: #10b981; text-shadow: 0 0 5px rgba(16, 185, 129, 0.5); font-size: 0.95em;">Idle</div>
-                </div>
-
-                <!-- Trạng thái Tâm thần (Psychological State) -->
-                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 8px 12px; margin-top: -8px;">
-                    <span style="font-size: 0.9em; opacity: 0.85; color: var(--SmartThemeTextColor);">Tâm lý nhân vật:</span>
-                    <div id="cog_dash_psych" style="font-weight: bold; color: #10b981; text-shadow: 0 0 5px rgba(16, 185, 129, 0.5); font-size: 0.95em;">Bình thường 😊</div>
-                </div>
-
-                <!-- Bảng Sinh tồn Lâm sàng (Clinical Vital Signs Panel) v7.0 -->
-                <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 10px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-heart-pulse" style="color: #f43f5e; animation: pulseBrain 1.5s infinite;"></i>
-                        <span>Chỉ số sinh tồn Lâm sàng (Vital Signs)</span>
-                    </h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center;">
-                        <!-- Heart Rate -->
-                        <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 8px;">
-                            <div style="font-size: 0.78em; color: #94a3b8;"><i class="fa-solid fa-heart" id="cog_heart_icon" style="color: #ef4444; animation: heartBeat 1s infinite; display: inline-block;"></i> Nhịp tim</div>
-                            <div style="font-size: 1.25em; font-weight: bold; color: #f43f5e; font-family: monospace;" id="cog_vital_heart_rate">75 bpm</div>
-                        </div>
-                        <!-- Blood Pressure -->
-                        <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 8px;">
-                            <div style="font-size: 0.78em; color: #94a3b8;"><i class="fa-solid fa-gauge-simple-high" style="color: #3b82f6;"></i> Huyết áp</div>
-                            <div style="font-size: 1.15em; font-weight: bold; color: #60a5fa; font-family: monospace; margin-top: 2px;" id="cog_vital_blood_pressure">120/80</div>
-                        </div>
-                        <!-- Body Temp -->
-                        <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 8px;">
-                            <div style="font-size: 0.78em; color: #94a3b8;"><i class="fa-solid fa-thermometer" style="color: #eab308;"></i> Thân nhiệt</div>
-                            <div style="font-size: 1.25em; font-weight: bold; color: #f59e0b; font-family: monospace;" id="cog_vital_body_temp">36.8°C</div>
-                        </div>
-                        <!-- Resp Rate -->
-                        <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 8px;">
-                            <div style="font-size: 0.78em; color: #94a3b8;"><i class="fa-solid fa-wind" style="color: #10b981;"></i> Nhịp thở</div>
-                            <div style="font-size: 1.25em; font-weight: bold; color: #34d399; font-family: monospace;" id="cog_vital_resp_rate">16/m</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cảm giác thể trạng Trục Thể chất v7.0 -->
-                <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 10px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-person-running" style="color: #10b981;"></i>
-                        <span>Cảm giác Thể trạng (Somatosensory)</span>
-                    </h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <!-- Energy -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>⚡ Năng lượng</span>
-                                <span id="cog_sens_energy">10.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_energy" class="cog-hormone-fill" style="width: 100%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
-                            </div>
-                        </div>
-                        <!-- Pain -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>💥 Cơn đau</span>
-                                <span id="cog_sens_pain">0.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_pain" class="cog-hormone-fill" style="width: 0%; background: linear-gradient(90deg, #f87171, #ef4444);"></div>
-                            </div>
-                        </div>
-                        <!-- Hunger -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>🍖 Cơn đói</span>
-                                <span id="cog_sens_hunger">0.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_hunger" class="cog-hormone-fill" style="width: 0%; background: linear-gradient(90deg, #fb923c, #f97316);"></div>
-                            </div>
-                        </div>
-                        <!-- Thirst -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>💧 Cơn khát</span>
-                                <span id="cog_sens_thirst">0.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_thirst" class="cog-hormone-fill" style="width: 0%; background: linear-gradient(90deg, #60a5fa, #3b82f6);"></div>
-                            </div>
-                        </div>
-                        <!-- Toilet Need -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>🚽 Vệ sinh</span>
-                                <span id="cog_sens_toilet_need">0.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_toilet_need" class="cog-hormone-fill" style="width: 0%; background: linear-gradient(90deg, #fbbf24, #f59e0b);"></div>
-                            </div>
-                        </div>
-                        <!-- Nausea -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>🤢 Buồn nôn</span>
-                                <span id="cog_sens_nausea">0.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_nausea" class="cog-hormone-fill" style="width: 0%; background: linear-gradient(90deg, #a7f3d0, #10b981);"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="font-size: 0.8em; margin-top: 8px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center;">
-                        <span>Cảm giác nhiệt:</span>
-                        <span id="cog_sens_temp" style="font-weight: bold; color: #cbd5e1;">Bình thường 🧘</span>
-                    </div>
-                </div>
-
-                <!-- Bảng Môi trường Vật lý Cố định (Persistent Physical Environment) v9.1 -->
-                <div style="background: rgba(0, 0, 0, 0.22); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
-                    <h4 style="margin: 0 0 4px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <i class="fa-solid fa-tree-city" style="color: #10b981;"></i>
-                            <span>Môi trường: <span id="cog_active_location_label" style="color: #34d399;">Chưa rõ</span></span>
-                        </span>
-                        <span id="cog_active_location_badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 0.75em; padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.25); font-weight: 600;">Cố định</span>
-                    </h4>
-                    
-                    <div id="cog_active_location_desc" style="font-size: 0.82em; line-height: 1.4; color: #94a3b8; font-style: italic; background: rgba(255,255,255,0.02); padding: 6px 10px; border-radius: 4px; border-left: 2px solid #10b981;">
-                        Chưa có mô tả địa điểm...
-                    </div>
-                    
-                    <div id="cog_active_location_items" style="display: flex; flex-direction: column; gap: 6px; max-height: 140px; overflow-y: auto; padding-right: 4px; font-size: 0.82em; color: #cbd5e1;">
-                        <!-- Vật phẩm load động -->
-                    </div>
-                </div>
-
-                <!-- Chỉ số Cảm xúc -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-masks-theater"></i>
-                        <span>Cảm xúc Hiện tại (Emotion)</span>
-                    </h4>
-                    <div id="cog_dash_emotion" style="font-size: 1.1em; font-weight: bold; color: var(--SmartThemeTextColor); transition: all 0.3s ease; display: flex; align-items: center; gap: 8px;">
-                        <span>Neutral 😐</span>
-                    </div>
-                </div>
-
-                <!-- Bộ chỉ số Sinh-Hóa Thần Kinh -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 10px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-flask" style="color: #a855f7;"></i>
-                        <span>Chất Sinh-Hóa Thần Kinh (Neuro-Chemicals)</span>
-                    </h4>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <!-- Adrenaline -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>⚡ Adrenaline</span>
-                                <span id="cog_val_adrenaline">2.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_adrenaline" class="cog-hormone-fill" style="width: 20%; background: linear-gradient(90deg, #f97316, #ef4444);"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Cortisol -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>💀 Cortisol</span>
-                                <span id="cog_val_cortisol">2.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_cortisol" class="cog-hormone-fill" style="width: 20%; background: linear-gradient(90deg, #8b5cf6, #6366f1);"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Melatonin -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>🌙 Melatonin</span>
-                                <span id="cog_val_melatonin">2.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_melatonin" class="cog-hormone-fill" style="width: 20%; background: linear-gradient(90deg, #3b82f6, #1e3a8a);"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Dopamine -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>🍬 Dopamine</span>
-                                <span id="cog_val_dopamine">5.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_dopamine" class="cog-hormone-fill" style="width: 50%; background: linear-gradient(90deg, #ec4899, #d946ef);"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Serotonin -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>🍃 Serotonin</span>
-                                <span id="cog_val_serotonin">5.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_serotonin" class="cog-hormone-fill" style="width: 50%; background: linear-gradient(90deg, #10b981, #059669);"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Oxytocin -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>💕 Oxytocin</span>
-                                <span id="cog_val_oxytocin">5.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_oxytocin" class="cog-hormone-fill" style="width: 50%; background: linear-gradient(90deg, #f472b6, #fb7185);"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Endorphins -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>🌟 Endorphins</span>
-                                <span id="cog_val_endorphins">3.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_endorphins" class="cog-hormone-fill" style="width: 30%; background: linear-gradient(90deg, #eab308, #f59e0b);"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Sex Hormones -->
-                        <div class="cog-hormone-bar-wrapper">
-                            <div class="cog-hormone-label">
-                                <span>🔥 Drive / Confidence</span>
-                                <span id="cog_val_sex_hormones">5.0</span>
-                            </div>
-                            <div class="cog-hormone-track">
-                                <div id="cog_bar_sex_hormones" class="cog-hormone-fill" style="width: 50%; background: linear-gradient(90deg, #ef4444, #f43f5e);"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Ký ức vừa gợi nhớ (Active Recall) -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-lightbulb" style="color: #fbbf24; animation: glowLight 2.5s infinite alternate;"></i>
-                        <span>Ký ức vừa gợi nhớ (Active Recall)</span>
-                    </h4>
-                    <div id="cog_dash_active_recall" style="font-size: 0.85em; line-height: 1.4; max-height: 120px; overflow-y: auto; padding: 6px 10px; background: rgba(0, 0, 0, 0.25); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; word-break: break-word;">
-                        <i style="color: #64748b;">Đầu óc trống rỗng, không liên tưởng gì...</i>
-                    </div>
-                </div>
-
-                <!-- Chain of Thought (Dòng suy nghĩ nội tâm) -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-code-branch"></i>
-                        <span>Dòng Suy nghĩ (Chain of Thought)</span>
-                    </h4>
-                    <div id="cog_dash_thoughts" style="font-size: 0.88em; line-height: 1.45; max-height: 180px; overflow-y: auto; padding: 8px 12px; background: rgba(0, 0, 0, 0.3); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; font-family: monospace; white-space: pre-wrap; word-break: break-word;">
-                        <i style="color: #64748b;">Chưa có suy nghĩ nội tâm nào...</i>
-                    </div>
-                </div>
-
-                <!-- Công cụ & Function Calling -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-cube"></i>
-                        <span>Công cụ đã sử dụng (Tool Calls)</span>
-                    </h4>
-                    <div id="cog_dash_tools" style="font-size: 0.88em; line-height: 1.45; max-height: 120px; overflow-y: auto; padding: 8px 12px; background: rgba(0, 0, 0, 0.3); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; font-family: monospace;">
-                        <i style="color: #64748b;">Chưa sử dụng công cụ nào.</i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tab 2: Trí tuệ & Ký ức (Psychological Memory Database & Sliders) -->
-            <div id="cog_tab_memory_content" class="cog-tab-content flex-container flexFlowColumn gap12" style="display: none;">
-                
-                <!-- Nút Tóm tắt Biên niên sử phòng chat -->
-                <button id="cog_consolidate_btn" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.12); color: #34d399; font-size: 0.85em; font-weight: bold; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);">
-                    <i class="fa-solid fa-scroll"></i> <span>Tóm tắt & Đóng dấu Chương Chat 📜</span>
-                </button>
-
-                <!-- Đồng hồ Dịch chuyển Thời gian (Narrative Time Jump Controller) -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
-                    <h4 style="margin: 0 0 4px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-hourglass-half" style="color: #60a5fa;"></i> <span>Dịch chuyển Thời gian Kể chuyện (Narrative Time Jump)</span>
-                    </h4>
-                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                        <button class="cog-time-jump-btn" data-minutes="480" style="flex: 1; min-width: 90px; padding: 6px; font-size: 0.78em; border-radius: 4px; border: 1px solid rgba(96,165,250,0.25); background: rgba(96,165,250,0.1); color: #60a5fa; cursor: pointer; transition: all 0.2s;">Sáng hôm sau 🌅</button>
-                        <button class="cog-time-jump-btn" data-minutes="4320" style="flex: 1; min-width: 90px; padding: 6px; font-size: 0.78em; border-radius: 4px; border: 1px solid rgba(96,165,250,0.25); background: rgba(96,165,250,0.1); color: #60a5fa; cursor: pointer; transition: all 0.2s;">3 ngày sau 📅</button>
-                        <button class="cog-time-jump-btn" data-minutes="43200" style="flex: 1; min-width: 90px; padding: 6px; font-size: 0.78em; border-radius: 4px; border: 1px solid rgba(96,165,250,0.25); background: rgba(96,165,250,0.1); color: #60a5fa; cursor: pointer; transition: all 0.2s;">1 tháng sau 🗓️</button>
-                        <button class="cog-time-jump-btn" data-minutes="525600" style="flex: 1; min-width: 90px; padding: 6px; font-size: 0.78em; border-radius: 4px; border: 1px solid rgba(96,165,250,0.25); background: rgba(96,165,250,0.1); color: #60a5fa; cursor: pointer; transition: all 0.2s;">1 năm sau ⏳</button>
-                    </div>
-                    <div style="display: flex; gap: 6px; align-items: center; margin-top: 4px;">
-                        <input type="number" id="cog_custom_time_jump" style="flex-grow: 1; padding: 6px 10px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.35); color: #f8fafc; font-size: 0.85em;" placeholder="Số phút dịch chuyển..." min="1" />
-                        <button id="cog_custom_time_jump_btn" style="padding: 6px 12px; font-size: 0.8em; font-weight: 600; border-radius: 5px; border: 1px solid rgba(96, 165, 250, 0.3); background: rgba(96, 165, 250, 0.15); color: #60a5fa; cursor: pointer; flex-shrink: 0; transition: all 0.2s;">Nhảy thời gian</button>
-                    </div>
-                </div>
-
-                <!-- Phản xạ Amygdala Tự thích ứng Đã Học Được -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
-                    <h4 style="margin: 0 0 4px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-brain" style="color: #f43f5e;"></i> <span>Phản xạ Amygdala Đã Học</span>
-                    </h4>
-                    <div id="cog_db_triggers_list" style="display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; padding-right: 4px;">
-                        <i style="color: #64748b; font-size: 0.8em;">Chưa học được phản xạ tùy biến nào...</i>
-                    </div>
-                </div>
-
-                <!-- Trạng thái Cơ thể -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
-                        <span><i class="fa-solid fa-heart-pulse"></i> Trạng thái Cơ thể & Thể chất</span>
-                        <button id="cog_save_body" style="padding: 2px 8px; font-size: 0.75em; font-weight: 600; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.3); background: rgba(16, 185, 129, 0.1); color: #34d399; cursor: pointer; transition: all 0.2s;">Lưu 💾</button>
-                    </h4>
-                    <textarea id="cog_db_body" style="width: 100%; min-height: 40px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; color: #cbd5e1; font-size: 0.88em; padding: 6px 10px; font-family: sans-serif; resize: vertical; box-sizing: border-box;" placeholder="Bình thường, khỏe mạnh..."></textarea>
-                </div>
-
-
-                <!-- Hệ thống Niềm tin cốt lõi (Core Beliefs) -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-shield-halved" style="color: #3b82f6;"></i> <span>Hệ thống Niềm tin (Beliefs)</span>
-                    </h4>
-                    <div id="cog_db_beliefs_list" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; max-height: 120px; overflow-y: auto; padding-right: 4px;">
-                        <i style="color: #64748b; font-size: 0.8em;">Chưa có niềm tin cốt lõi nào...</i>
-                    </div>
-                    
-                    <!-- Vùng hiển thị Niềm tin đã vỡ vụn -->
-                    <div id="cog_db_shattered_list" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; border-top: 1px dashed rgba(239, 68, 68, 0.25); padding-top: 6px; display: none;">
-                        <span style="font-size: 0.78em; color: #fca5a5; font-weight: bold;"><i class="fa-solid fa-heart-crack"></i> Niềm tin đã vỡ vụn (Crisis):</span>
-                        <div id="cog_db_shattered_beliefs" style="display: flex; flex-direction: column; gap: 4px;"></div>
-                    </div>
-
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                        <input type="text" id="cog_new_belief_input" style="flex-grow: 1; padding: 6px 10px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.35); color: #f8fafc; font-size: 0.85em;" placeholder="Thêm niềm tin cốt lõi mới..." />
-                        <button id="cog_add_belief_btn" style="padding: 6px 12px; font-size: 0.8em; font-weight: 600; border-radius: 5px; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.15); color: #818cf8; cursor: pointer; transition: all 0.2s; flex-shrink: 0;">Thêm</button>
-                    </div>
-                </div>
-
-                <!-- Ký ức Cốt lõi & Phản xạ (Core Memories) -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-brain" style="color: #a855f7;"></i> <span>Ký ức Cốt lõi & Phản xạ (Core)</span>
-                    </h4>
-                    <div id="cog_db_core_list" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; max-height: 120px; overflow-y: auto; padding-right: 4px;">
-                        <i style="color: #64748b; font-size: 0.8em;">Chưa học được bài học nào.</i>
-                    </div>
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                        <input type="text" id="cog_new_core_input" style="flex-grow: 1; padding: 6px 10px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.35); color: #f8fafc; font-size: 0.85em;" placeholder="Thêm ký ức cốt lõi..." />
-                        <button id="cog_add_core_btn" style="padding: 6px 12px; font-size: 0.8em; font-weight: 600; border-radius: 5px; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.15); color: #818cf8; cursor: pointer; transition: all 0.2s; flex-shrink: 0;">Thêm</button>
-                    </div>
-                </div>
-
-                <!-- Ngăn kéo Ký ức Gợi nhớ (Recallable Memory Drawer) -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-box-archive" style="color: #eab308;"></i> <span>Ngăn kéo Ký ức Gợi nhớ (Drawer)</span>
-                    </h4>
-                    <div id="cog_db_drawer_list" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; max-height: 180px; overflow-y: auto; padding-right: 4px;">
-                        <i style="color: #64748b; font-size: 0.8em;">Ngăn kéo trống, chưa học ký ức...</i>
-                    </div>
-                    <div style="display: flex; gap: 6px; align-items: center; flex-direction: column;">
-                        <textarea id="cog_new_drawer_input" style="width: 100%; min-height: 40px; padding: 6px 10px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.35); color: #f8fafc; font-size: 0.85em; box-sizing: border-box; resize: vertical;" placeholder="Nhập ký ức gợi nhớ mới..."></textarea>
-                        <div style="display: flex; gap: 6px; width: 100%;">
-                            <input type="text" id="cog_new_drawer_keywords" style="flex-grow: 1; padding: 6px 10px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.35); color: #f8fafc; font-size: 0.8em;" placeholder="Từ khóa kích hoạt (cách nhau dấu phẩy)..." />
-                            <button id="cog_add_drawer_btn" style="padding: 6px 12px; font-size: 0.8em; font-weight: 600; border-radius: 5px; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.15); color: #818cf8; cursor: pointer; transition: all 0.2s; flex-shrink: 0;">Lưu thẻ</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Biên niên sử mối quan hệ (Chronicles) -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-timeline" style="color: #10b981;"></i> <span>Biên niên sử Mối quan hệ</span>
-                    </h4>
-                    <div id="cog_db_chronicles_list" class="cog-timeline-container" style="display: flex; flex-direction: column; gap: 10px; max-height: 180px; overflow-y: auto; padding-right: 4px;">
-                        <i style="color: #64748b; font-size: 0.8em;">Chưa ghi nhận chương Biên niên sử nào.</i>
-                    </div>
-                </div>
-
-                <!-- Cấu hình Ý thức & Chạy ngầm (Agent Consciousness Options) -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-gears" style="color: #6366f1;"></i> <span>Cấu hình Ý thức & Chạy ngầm</span>
-                    </h4>
-                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.82em; color: #cbd5e1;">
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                            <input type="checkbox" id="cog_opt_self_aware" style="cursor: pointer;" />
-                            <span><b>Nhận thức Ảo ảnh (Self-Awareness)</b>: Nhân vật tự nhận biết mình là AI và hiểu cơ chế hoạt động sinh học thần kinh của bản thân.</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 4px;">
-                            <input type="checkbox" id="cog_opt_bg_conscious" style="cursor: pointer;" />
-                            <span><b>Ý thức Chạy ngầm (Idle Consciousness)</b>: Cho phép nhân vật tự do mơ mộng, suy tư và nhắc nhở thầm kín khi bạn không tương tác.</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 4px;">
-                            <input type="checkbox" id="cog_opt_split_physiological" style="cursor: pointer;" />
-                            <span><b>Phản hồi Sinh lý Phân tách (Split Response Mode)</b>: Sử dụng 2 lượt gọi API nối tiếp cho mỗi tin nhắn (Lượt 1: AI Quản trị cập nhật sinh lý -> Lượt 2: Character LLM phản hồi). Bật toggle để tăng độ chính xác sinh học!</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Hộp Dòng Tiềm Thức Ngầm (Subconscious Idle Ticker UI) -->
-                <div id="cog_subconscious_box" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: none;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-ghost" style="color: #cbd5e1; animation: floatGhost 3s infinite ease-in-out;"></i>
-                        <span>Tiềm thức Ngầm (Subconscious Stream)</span>
-                    </h4>
-                    <div id="cog_subconscious_thought" style="font-size: 0.85em; line-height: 1.4; padding: 8px 10px; background: rgba(99, 102, 241, 0.08); border: 1px dashed rgba(99, 102, 241, 0.25); color: #cbd5e1; border-radius: 5px; font-style: italic; white-space: pre-wrap;">
-                        Nhân vật đang chìm vào trạng thái ngủ đông...
-                    </div>
-                </div>
-
-                <!-- Nút Xóa toàn bộ Trí nhớ của nhân vật -->
-                <button id="cog_clear_memory" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.25); background: rgba(239, 68, 68, 0.08); color: #fca5a5; font-size: 0.85em; font-weight: bold; cursor: pointer; transition: all 0.2s;">⚠️ RESET TOÀN BỘ KÝ ỨC CỦA NHÂN VẬT</button>
-            </div>
-            <!-- Tab 3: Đời sống Tự trị -->
-            <div id="cog_tab_chronicles_content" class="cog-tab-content flex-container flexFlowColumn gap12" style="display: none;">
-                <!-- Hộp tự hành của nhân vật khi vắng mặt (Nhật ký Tự trị) -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-campground" style="color: #10b981;"></i>
-                        <span>Chu kỳ Vắng mặt Hữu cơ (Organic Chronicles)</span>
-                    </h4>
-                    <div id="cog_dash_idle_chronicles" style="font-size: 0.85em; line-height: 1.45; max-height: 250px; overflow-y: auto; padding: 8px 12px; background: rgba(0, 0, 0, 0.25); color: #cbd5e1; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; word-break: break-word; font-style: italic;">
-                        <i style="color: #64748b;">Chưa có câu chuyện tự hành nào phát sinh...</i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tab 4: Backstage Chat -->
-            <div id="cog_tab_backstage_content" class="cog-tab-content flex-container flexFlowColumn gap12" style="display: none;">
-                <!-- Chat console trực tiếp với Brain Admin Agent -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px;">
-                    <h4 style="margin: 0 0 4px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-terminal" style="color: #6366f1;"></i>
-                        <span>Backstage Chat (Hội thoại Tiềm thức)</span>
-                    </h4>
-                    <span style="font-size: 0.78em; color: #94a3b8; margin-bottom: 8px; display: block;">Đối thoại trực tiếp với AI Quản trị sau cánh gà bằng ngôn ngữ tự nhiên để ra lệnh điều chỉnh nhận thức, ký ức, thể trạng và môi trường của nhân vật.</span>
-                    
-                    <div id="cog_admin_chat_log" style="font-size: 0.82em; line-height: 1.4; height: 220px; overflow-y: auto; padding: 8px 12px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
-                        <div style="color: #38bdf8;"><b>[Admin Agent]</b>: Chào ní! Tui là AI Quản trị sau cánh gà đây. Ní cứ tha hồ ra lệnh bằng tiếng Việt tự nhiên nha, tui có đủ quyền điều chỉnh nhận thức, ký ức, vết thương thể chất hay môi trường của nhân vật đó!</div>
-                    </div>
-                    
-                    <div style="display: flex; gap: 6px; align-items: center;">
-                        <input type="text" id="cog_admin_chat_input" style="flex-grow: 1; padding: 6px 10px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.35); color: #f8fafc; font-size: 0.85em;" placeholder="Nhập lệnh tự nhiên (ví dụ: gán chỉ số đau chân lên 8.0, xóa ký ức cãi nhau...)" />
-                        <button id="cog_admin_send_btn" style="padding: 6px 12px; font-size: 0.8em; font-weight: 600; border-radius: 5px; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.15); color: #818cf8; cursor: pointer; transition: all 0.2s; flex-shrink: 0;">Gửi</button>
-                    </div>
-                </div>
-
-                <!-- Cognitive Logs Console -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; margin-top: 10px;">
-                    <h4 style="margin: 0 0 6px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; justify-content: space-between;">
-                        <span style="display: flex; align-items: center; gap: 6px;">
-                            <i class="fa-solid fa-list-check" style="color: #10b981;"></i>
-                            <span>Nhật ký Nhận thức (Anima Logger)</span>
-                        </span>
-                        <div style="display: flex; gap: 4px;">
-                            <button id="cog_logs_copy_btn" title="Sao chép nhật ký vào clipboard" style="padding: 2px 6px; font-size: 0.75em; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #94a3b8; cursor: pointer; transition: all 0.2s;">📋 Copy</button>
-                            <button id="cog_logs_download_btn" title="Tải nhật ký về máy (.txt)" style="padding: 2px 6px; font-size: 0.75em; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #94a3b8; cursor: pointer; transition: all 0.2s;">⬇ Tải</button>
-                            <button id="cog_logs_clear_btn" style="padding: 2px 6px; font-size: 0.75em; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #94a3b8; cursor: pointer; transition: all 0.2s;">Xóa</button>
-                        </div>
-                    </h4>
-                    <div id="cog_logs_container" style="font-size: 0.78em; line-height: 1.45; height: 180px; overflow-y: auto; padding: 8px 12px; background: rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 5px; font-family: 'Courier New', Courier, monospace; word-break: break-all; white-space: pre-wrap;"></div>
-                </div>
-                <!-- AD Agent Settings Panel -->
-                <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; margin-top: 10px;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-robot" style="color: #f43f5e;"></i>
-                        <span>AD Agent Settings (Nhận thức Vô thức)</span>
-                    </h4>
-                    <div class="flex-container flexFlowColumn gap12">
-                        <div class="flex-container">
-                            <label for="anima_ad_api_key" style="font-size: 0.85em; color: #cbd5e1;">AD API Key:</label>
-                            <input id="anima_ad_api_key" type="password" class="text_pole" placeholder="sk-..." style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); color: #f8fafc; padding: 6px 10px; border-radius: 5px; flex-grow: 1;">
-                        </div>
-                        <div class="flex-container">
-                            <label for="anima_ad_model" style="font-size: 0.85em; color: #cbd5e1;">Model:</label>
-                            <input id="anima_ad_model" type="text" class="text_pole" value="gemini-3.1-flash-lite" style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); color: #f8fafc; padding: 6px 10px; border-radius: 5px; flex-grow: 1;">
-                        </div>
-                        <div class="flex-container">
-                            <label for="anima_ad_api_url" style="font-size: 0.85em; color: #cbd5e1;">API URL:</label>
-                            <input id="anima_ad_api_url" type="text" class="text_pole" value="https://api.shopaikey.com/v1/chat/completions" style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); color: #f8fafc; padding: 6px 10px; border-radius: 5px; flex-grow: 1;">
-                        </div>
-                        <div class="flex-container">
-                            <label for="anima_ad_daily_budget_usd" style="font-size: 0.85em; color: #cbd5e1;">Daily Budget (USD):</label>
-                            <input id="anima_ad_daily_budget_usd" type="number" step="0.01" class="text_pole" value="0.50" style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.05); color: #f8fafc; padding: 6px 10px; border-radius: 5px; flex-grow: 1;">
-                        </div>
-                        <div class="flex-container" style="margin-top: 4px;">
-                            <span id="anima_ad_status" style="font-style: italic; color: #94a3b8; font-size: 0.8em;">
-                                AD Agent status: not configured
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
+    <!-- Content Area (Glassmorphic look) -->
+    <div class="inline-drawer-content" style="padding: 15px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0 0 6px 6px; margin-top: -1px; backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 12px;">
+        
+        <!-- Section 1: Time Clock -->
+        <div id="anima_live_clock" style="display: flex; justify-content: space-between; align-items: center; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 6px; padding: 8px 12px;">
+            <span style="font-size: 0.82em; opacity: 0.85; color: var(--SmartThemeTextColor);">🕐 Thời gian thế giới:</span>
+            <span id="anima_live_clock_value" style="font-weight: bold; color: #818cf8; font-family: monospace; font-size: 0.85em;">—</span>
         </div>
+
+        <!-- Section 2: Vitals Status (Status & Emotion) -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; justify-content: center; align-items: center; text-align: center;">
+                <span style="font-size: 0.75em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Tác tử</span>
+                <div id="cog_dash_status" style="font-weight: bold; color: #10b981; font-size: 1.1em; text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);">Active</div>
+            </div>
+            
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; justify-content: center; align-items: center; text-align: center;">
+                <span style="font-size: 0.75em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Cảm xúc đích</span>
+                <div id="cog_dash_emotion" style="font-weight: bold; color: #38bdf8; font-size: 1.1em; text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);">Neutral 😐</div>
+            </div>
+        </div>
+
+        <!-- Section 3: Narrative Plan Box (GM Output) -->
+        <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+            <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-map" style="color: #fbbf24;"></i>
+                <span>Kịch bản kể chuyện (Narrative Plan)</span>
+            </h4>
+            <div id="cog_dash_thoughts" style="font-size: 0.82em; line-height: 1.45; background: rgba(0, 0, 0, 0.2); border-radius: 4px; padding: 8px 10px; color: #e2e8f0; font-family: monospace; border-left: 2px solid #fbbf24; word-break: break-word;">
+                <i style="color: #64748b;">Chưa có kế hoạch kể chuyện nào...</i>
+            </div>
+        </div>
+
+        <!-- Section 4: Cognitive Logger Container -->
+        <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
+            <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-terminal" style="color: #a855f7;"></i>
+                    <span>Nhật ký nhận thức (Logs)</span>
+                </span>
+                <div style="display: flex; gap: 6px;">
+                    <i id="cog_btn_copy_logs" class="fa-solid fa-copy" style="cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" title="Sao chép log"></i>
+                    <i id="cog_btn_download_logs" class="fa-solid fa-download" style="cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" title="Tải log"></i>
+                    <i id="cog_btn_clear_logs" class="fa-solid fa-trash" style="cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" title="Xóa log"></i>
+                </div>
+            </h4>
+            <div id="cog_logs_container" style="background: rgba(0, 0, 0, 0.3); border-radius: 4px; padding: 8px; height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; font-family: monospace; border: 1px solid rgba(255, 255, 255, 0.03);">
+                <i style="color: #64748b; font-size: 0.82em;">Chưa có log nhận thức nào...</i>
+            </div>
+        </div>
+
+        <!-- Section 5: Backstage Console Terminal Terminal -->
+        <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
+            <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-circle-nodes" style="color: #6366f1;"></i>
+                <span>Hậu trường (Backstage Terminal)</span>
+            </h4>
+            <div style="display: flex; gap: 6px; align-items: center;">
+                <input type="text" id="cog_admin_chat_input" style="flex-grow: 1; padding: 6px 10px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.35); color: #f8fafc; font-size: 0.82em; font-family: monospace;" placeholder="Nhập lệnh (ví dụ: help, status)..." />
+                <button id="cog_admin_send_btn" style="padding: 6px 12px; font-size: 0.8em; font-weight: 600; border-radius: 5px; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.15); color: #818cf8; cursor: pointer; transition: all 0.2s; font-family: monospace;">Gửi</button>
+            </div>
+        </div>
+
     </div>
 </div>
-
-<style>
-@keyframes pulseBrain {
-    0% { transform: scale(1); opacity: 0.8; }
-    50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 8px #6366f1; }
-    100% { transform: scale(1); opacity: 0.8; }
-}
-@keyframes floatGhost {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-4px); }
-    100% { transform: translateY(0px); }
-}
-@keyframes heartBeat {
-    0% { transform: scale(1); }
-    14% { transform: scale(1.25); }
-    28% { transform: scale(1); }
-    42% { transform: scale(1.25); }
-    70% { transform: scale(1); }
-}
-</style>

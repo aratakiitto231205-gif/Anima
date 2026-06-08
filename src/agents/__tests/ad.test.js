@@ -17,42 +17,32 @@ describe('ADAgent Command Handler Tests', () => {
     it('should print physiological status for /status', () => {
         const result = ADAgent.handleUserCommand('/status', AnimaState);
         expect(result.status).toBe('success');
-        expect(result.message).toContain('Nhịp tim: 75 bpm');
+        expect(result.message).toContain('Cảm xúc: Neutral');
     });
 
-    it('should set state properties using /set command', () => {
-        // Test setting a body status property
-        const resultBody = ADAgent.handleUserCommand('/set energy 4.5', AnimaState);
-        expect(resultBody.status).toBe('success');
-        expect(AnimaState.body_status.energy).toBe(4.5);
+    it('should set state properties using set command', () => {
+        // Test setting enabled
+        const resultEnabled = ADAgent.handleUserCommand('set enabled false', AnimaState);
+        expect(resultEnabled.status).toBe('success');
+        expect(AnimaState.enabled).toBe(false);
 
-        // Test setting a hormone level
-        const resultHormone = ADAgent.handleUserCommand('/set adrenaline 6.8', AnimaState);
-        expect(resultHormone.status).toBe('success');
-        expect(AnimaState.hormones.adrenaline).toBe(6.8);
+        // Test setting emotion
+        const resultEmotion = ADAgent.handleUserCommand('set emotion Excited', AnimaState);
+        expect(resultEmotion.status).toBe('success');
+        expect(AnimaState.active_emotion).toBe('Excited');
 
         // Test error handling for invalid keys
-        const resultInvalid = ADAgent.handleUserCommand('/set invalid_key 10', AnimaState);
+        const resultInvalid = ADAgent.handleUserCommand('set invalid_key 10', AnimaState);
         expect(resultInvalid.status).toBe('error');
     });
 
-    it('should reset state using /reset', () => {
-        AnimaState.body_status.energy = 2.0;
-        AnimaState.vitals.heart_rate = 120;
+    it('should reset state using reset', () => {
+        AnimaState.enabled = false;
+        AnimaState.active_emotion = 'Sad';
 
-        const result = ADAgent.handleUserCommand('/reset', AnimaState);
+        const result = ADAgent.handleUserCommand('reset', AnimaState);
         expect(result.status).toBe('success');
-        expect(AnimaState.body_status.energy).toBe(10.0);
-        expect(AnimaState.vitals.heart_rate).toBe(75);
-    });
-
-    it('should trigger sleep correctly using /sleep', () => {
-        AnimaState.body_status.energy = 1.0;
-        AnimaState.hormones.cortisol = 8.0;
-
-        const result = ADAgent.handleUserCommand('/sleep 120', AnimaState);
-        expect(result.status).toBe('success');
-        expect(AnimaState.body_status.energy).toBe(10.0);
-        expect(AnimaState.hormones.cortisol).toBe(6.0); // Cortisol decreases
+        expect(AnimaState.enabled).toBe(true);
+        expect(AnimaState.active_emotion).toBe('Neutral 😐');
     });
 });
