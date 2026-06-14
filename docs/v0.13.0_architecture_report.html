@@ -216,17 +216,22 @@
         /* Force readable text colors inside SVG */
         .diagram-container svg text {
             font-family: 'Inter', sans-serif !important;
+            fill: #f3f4f6 !important;
         }
-        .diagram-container svg text.actor {
-            fill: #f8fafc !important;
-        }
-        .diagram-container svg rect.actor {
+        .diagram-container svg .actor rect {
             fill: #1e293b !important;
             stroke: #475569 !important;
+        }
+        .diagram-container svg .actor text {
+            fill: #f8fafc !important;
         }
         .diagram-container svg .messageText {
             fill: #cbd5e1 !important;
             stroke: none !important;
+        }
+        .diagram-container svg .note rect {
+            fill: #fef08a !important;
+            stroke: #eab308 !important;
         }
         .diagram-container svg .note text {
             fill: #0f172a !important;
