@@ -17,10 +17,33 @@
             theme: 'dark',
             securityLevel: 'loose',
             flowchart: { useMaxWidth: false, htmlLabels: true },
-            sequence: { useMaxWidth: false, width: 800, height: 550, boxMargin: 10, boxTextMargin: 5 },
+            sequence: { 
+                useMaxWidth: false, 
+                width: 800, 
+                height: 550, 
+                boxMargin: 10, 
+                boxTextMargin: 5,
+                actorFontFamily: 'Inter, sans-serif',
+                actorFontSize: '13px',
+                actorFontWeight: '600',
+                noteFontFamily: 'Inter, sans-serif',
+                noteFontSize: '12px',
+                messageFontFamily: 'Inter, sans-serif',
+                messageFontSize: '13px'
+            },
             themeVariables: {
+                fontFamily: 'Inter, sans-serif',
                 fontSize: '13px',
-                fontFamily: 'Inter, sans-serif'
+                actorBkg: '#1e293b',
+                actorBorder: '#475569',
+                actorTextColor: '#f8fafc',
+                actorLineColor: '#475569',
+                signalColor: '#94a3b8',
+                signalTextColor: '#cbd5e1',
+                labelTextColor: '#cbd5e1',
+                loopTextColor: '#f3f4f6',
+                noteBkgColor: '#fef08a',
+                noteTextColor: '#0f172a'
             }
         });
     </script>
@@ -188,6 +211,25 @@
             height: auto !important;
             margin: 0 auto;
             display: block;
+        }
+
+        /* Force readable text colors inside SVG */
+        .diagram-container svg text {
+            font-family: 'Inter', sans-serif !important;
+        }
+        .diagram-container svg text.actor {
+            fill: #f8fafc !important;
+        }
+        .diagram-container svg rect.actor {
+            fill: #1e293b !important;
+            stroke: #475569 !important;
+        }
+        .diagram-container svg .messageText {
+            fill: #cbd5e1 !important;
+            stroke: none !important;
+        }
+        .diagram-container svg .note text {
+            fill: #0f172a !important;
         }
 
         /* Step Card Styling */
