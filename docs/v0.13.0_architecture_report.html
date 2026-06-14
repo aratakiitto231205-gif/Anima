@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo cáo Kiến trúc Hệ thống Anima v0.13.0</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Mermaid CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'dark',
+            securityLevel: 'loose',
+            flowchart: { useMaxWidth: true, htmlLabels: true }
+        });
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: #111827;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --primary: #818cf8;
+            --primary-glow: rgba(129, 140, 248, 0.15);
+            --accent-green: #34d399;
+            --accent-green-glow: rgba(52, 211, 153, 0.15);
+            --accent-purple: #c084fc;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Basic Setup */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Glassmorphism Header */
+        header {
+            background: linear-gradient(135deg, rgba(17, 24, 39, 0.7), rgba(11, 15, 25, 0.8));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow-premium);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            background: linear-gradient(to right, #ffffff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .version-badge {
+            background-color: var(--primary-glow);
+            color: var(--primary);
+            border: 1px solid rgba(129, 140, 248, 0.3);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .meta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .meta-table td {
+            padding: 6px 0;
+        }
+
+        .meta-table td.label {
+            color: var(--text-muted);
+            width: 120px;
+            font-weight: 500;
+        }
+
+        .meta-table td.value {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        /* Sections */
+        section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-premium);
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-main);
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        /* Mermaid Wrapper */
+        .diagram-container {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 30px 0;
+            display: flex;
+            justify-content: center;
+            overflow-x: auto;
+        }
+
+        /* Step Card Styling */
+        .step-list {
+            margin: 20px 0;
+            display: grid;
+            gap: 20px;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .step-num {
+            background-color: var(--primary);
+            color: #000;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            flex-shrink: 0;
+        }
+
+        .step-body h4 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .step-body p {
+            margin-bottom: 0;
+            font-size: 0.92rem;
+        }
+
+        /* Table */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+
+        table.data-table th, table.data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        table.data-table th {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            color: var(--text-main);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        table.data-table td {
+            color: var(--text-muted);
+        }
+
+        table.data-table td code {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+
+        /* Printable setup */
+        @media print {
+            body {
+                background-color: #fff;
+                color: #000;
+                padding: 0;
+            }
+
+            :root {
+                --bg-color: #fff;
+                --card-bg: #fff;
+                --text-main: #000;
+                --text-muted: #333;
+                --primary: #4f46e5;
+                --border-color: #ddd;
+                --shadow-premium: none;
+            }
+
+            header, section {
+                border: 1px solid #ccc;
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+
+            .diagram-container {
+                border: 1px solid #ccc;
+                background-color: #fff;
+            }
+
+            .step-card {
+                border: 1px solid #ccc;
+                background: #fff;
+                page-break-inside: avoid;
+            }
+            
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- BÁO CÁO HEADER -->
+        <header>
+            <div class="logo-area">
+                <span class="logo-text">Anima Engine Specs</span>
+                <span class="version-badge">v0.13.0 (Official Release)</span>
+            </div>
+            <table class="meta-table">
+                <tr>
+                    <td class="label">BÁO CÁO:</td>
+                    <td class="value">MÔ HÌNH VẬN HÀNH & KIẾN TRÚC ANIMA ENGINE</td>
+                </tr>
+                <tr>
+                    <td class="label">NGƯỜI NHẬN:</td>
+                    <td class="value">Hitsuji (Project Director / Boss)</td>
+                </tr>
+                <tr>
+                    <td class="label">NGƯỜI GỬI:</td>
+                    <td class="value">Antigravity (Lead Architecture Agent)</td>
+                </tr>
+                <tr>
+                    <td class="label">NGÀY BÁO CÁO:</td>
+                    <td class="value">14 tháng 6, 2026</td>
+                </tr>
+            </table>
+        </header>
+
+        <!-- PHẦN 1: MỞ ĐẦU -->
+        <section>
+            <h2>1. Tóm tắt Hệ thống (Executive Summary)</h2>
+            <p>Bản phát hành <strong>v0.13.0</strong> đánh dấu bước tiến chuyển dịch cấu trúc từ xử lý theo luật cứng (Heuristic Rules) sang <strong>trí tuệ nhân tạo hỗn hợp (Multi-Agent LLM-powered Pipeline)</strong>. Hệ thống được chia tách rõ ràng thành 3 tác tử độc lập đóng vai trò riêng biệt, tối ưu hóa cả khả năng tính toán bối cảnh khách quan lẫn độ mượt nhập vai sáng tạo của mô hình ngôn ngữ lớn.</p>
+            <p>Đặc biệt, phiên bản này giải quyết triệt để vấn đề <strong>ô nhiễm cơ sở dữ liệu chat</strong> bằng cơ chế <i>Tiêm sạch (Clean Message Cloning Injection)</i> và cho phép người chơi tùy biến chọn mô hình riêng biệt dành riêng cho GM Agent (Đạo diễn) ngay trên giao diện điều khiển.</p>
+        </section>
+
+        <!-- PHẦN 2: LƯU ĐỒ HOẠT ĐỘNG CHÍNH -->
+        <section class="page-break">
+            <h2>2. Sơ đồ Hoạt động chính (Main Flowchart)</h2>
+            <p>Sơ đồ trình tự dưới đây mô tả chính xác những gì xảy ra ở hậu trường khi người chơi gõ một tin nhắn mới và nhấn <strong>SEND</strong>:</p>
+            
+            <div class="diagram-container">
+                <div class="mermaid">
+                sequenceDiagram
+                    autonumber
+                    actor User as Người dùng
+                    participant ST as SillyTavern UI
+                    participant Orch as Event Orchestrator
+                    participant GM as GM Agent (Đạo diễn)
+                    participant State as State & Environment
+                    participant RP as RP Agent (Biên kịch)
+
+                    User->>ST: Nhấn nút SEND gửi tin nhắn
+                    ST->>Orch: Kích hoạt CHAT_COMPLETION_PROMPT_READY
+                    Note over Orch: Chặn luồng gửi đi để xử lý ngầm
+                    Orch->>GM: Gửi 5 tin nhắn gần nhất + Trạng thái môi trường hiện tại
+                    Note over GM: GM dùng LLMClient gọi generateRaw()<br/>gửi prompt phân tích bối cảnh mới
+                    GM-->>Orch: Phản hồi cục JSON (cảm xúc & bối cảnh mới)
+                    Orch->>State: Cập nhật dữ liệu cảm xúc/môi trường vào State
+                    Orch->>RP: Truyền Kế hoạch (Plan) & Trạng thái hiện tại
+                    RP-->>Orch: Trả về chuỗi System Note (Narrative Nudge) đã định dạng
+                    Note over Orch: TIÊM SẠCH:<br/>Nhân bản tin nhắn cuối trong mảng chat gửi đi<br/>và chèn Nudge vào bản sao. Không sửa DB chat!
+                    Orch-->>ST: Trả về mảng chat tạm thời đã chèn Nudge
+                    ST->>User: Gọi LLM chính viết thoại nhân vật dựa trên Nudge và hiển thị kết quả
+                </div>
+            </div>
+        </section>
+
+        <!-- PHẦN 3: BƯỚC THỰC HIỆN CHI TIẾT -->
+        <section class="page-break">
+            <h2>3. Các bước thực thi chi tiết (Execution Pipeline)</h2>
+            <div class="step-list">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <h4>Chặn Prompt gửi đi (Interception Phase)</h4>
+                        <p>Ngay khi sự kiện <code>CHAT_COMPLETION_PROMPT_READY</code> nổ ra, <code>EventOrchestrator</code> sẽ bắt lấy mảng chat clone được ST biên soạn gửi lên LLM. Điều này giúp chúng ta có cơ hội bổ sung dữ liệu bối cảnh trước khi LLM chính bắt đầu viết câu trả lời.</p>
+                    </div>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <h4>Phân tích bối cảnh & lập kịch bản (GM Agent Cognition)</h4>
+                        <p>GM Agent đóng vai trò là "Thực tại khách quan" và "Đạo diễn". Nó đọc lịch sử đối thoại và trạng thái môi trường hiện tại, sau đó gọi mô hình LLM được cấu hình riêng (ví dụ: Gemini Flash Lite) thông qua <code>LLMClient.generate()</code> để nhận định tình huống và xuất ra kết quả phân tích JSON về cảm xúc và vị trí, thời tiết, thời gian mới.</p>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <h4>Định hình chỉ thị ẩn (RP Agent Formatting)</h4>
+                        <p>RP Agent (Biên kịch) tiếp nhận chỉ thị thô của GM Agent, thực hiện việc định hình sắp xếp văn bản thô. Nó biên soạn ra một phân đoạn System Note sạch (ví dụ: mô tả địa điểm hiện tại là gì, thời tiết thế nào, Itto nên xưng hô ra sao) để bắt buộc LLM chính nhập vai tuân thủ.</p>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <h4>Tiêm Sạch (Clean message-cloning injection)</h4>
+                        <p>Để đảm bảo không bị ghi đè dữ liệu rác vào DB (nguyên nhân gây ô nhiễm prompt và làm hỏng nút Swipe), <code>Orchestrator</code> tạo một bản sao nông (shallow clone) của đối tượng tin nhắn cuối cùng trong mảng chat tạm thời, chèn System Note vào cuối bản sao đó, rồi tráo đổi vị trí của nó trong mảng tạm. Khi hoàn thành, SillyTavern sẽ gửi mảng này đi nhưng lịch sử chat đã lưu vẫn hoàn toàn sạch sẽ.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHẦN 4: HẬU TRƯỜNG CONSOLE -->
+        <section class="page-break">
+            <h2>4. Cơ chế Can thiệp Hậu trường (Backstage Console Console)</h2>
+            <p>AD Agent (Trợ lý đạo diễn) là người quản lý các biến trạng thái, cho phép người dùng can thiệp thủ công thông qua bảng Terminal của Dashboard. Dưới đây là các câu lệnh vận hành thực tế đã được tích hợp:</p>
+            
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Cú pháp lệnh</th>
+                            <th>Mục tiêu thay đổi</th>
+                            <th>Ví dụ thực tế</th>
+                            <th>Tác động hệ thống</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/status</code> hoặc <code>status</code></td>
+                            <td>Xem thông số hiện tại</td>
+                            <td><code>status</code></td>
+                            <td>In ra trạng thái tác tử, Cảm xúc hiện tại và Bối cảnh môi trường chi tiết.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/set location &lt;tên&gt;</code></td>
+                            <td>Thay đổi vị trí bối cảnh</td>
+                            <td><code>/set location Quán Rượu</code></td>
+                            <td>Cập nhật trực tiếp địa điểm hiện tại của State, đồng bộ tức thì lên giao diện UI.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/set weather &lt;tên&gt;</code></td>
+                            <td>Thay đổi thời tiết</td>
+                            <td><code>/set weather Mưa tầm tã</code></td>
+                            <td>Thay đổi trạng thái thời tiết khách quan, chống ảo giác tự vẽ thời tiết của LLM.</td>
+                        </tr>
+                        <tr>
+                            <td><code>/set time &lt;tên&gt;</code></td>
+                            <td>Thay đổi mốc thời gian</td>
+                            <td><code>/set time Đêm muộn</code></td>
+                            <td>Cập nhật mốc thời gian diễn ra câu chuyện (sáng, trưa, chiều, tối).</td>
+                        </tr>
+                        <tr>
+                            <td><code>/reset</code> hoặc <code>reset</code></td>
+                            <td>Khôi phục mặc định</td>
+                            <td><code>reset</code></td>
+                            <td>Trả toàn bộ thông số cảm xúc, bối cảnh môi trường về trạng thái khởi tạo.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 50px; border-top: 1px solid var(--border-color); padding-top: 20px;">
+            <p>Báo cáo mật - Chỉ lưu hành nội bộ dự án ST Anima. Ấn Ctrl+P trên trình duyệt để xuất tệp PDF A4 chuẩn đẹp.</p>
+        </footer>
+    </div>
+</body>
+</html>
