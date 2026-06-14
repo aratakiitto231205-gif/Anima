@@ -19,21 +19,21 @@
             flowchart: { useMaxWidth: false, htmlLabels: true },
             sequence: { 
                 useMaxWidth: false, 
-                width: 950, 
-                height: 650, 
-                boxMargin: 10, 
-                boxTextMargin: 5,
+                width: 1150, 
+                height: 800, 
+                boxMargin: 15, 
+                boxTextMargin: 8,
                 actorFontFamily: 'Inter, sans-serif',
-                actorFontSize: '13px',
+                actorFontSize: '17px',
                 actorFontWeight: '600',
                 noteFontFamily: 'Inter, sans-serif',
-                noteFontSize: '12px',
+                noteFontSize: '15px',
                 messageFontFamily: 'Inter, sans-serif',
-                messageFontSize: '13px'
+                messageFontSize: '16px'
             },
             themeVariables: {
                 fontFamily: 'Inter, sans-serif',
-                fontSize: '13px',
+                fontSize: '16px',
                 actorBkg: '#1e293b',
                 actorBorder: '#475569',
                 actorTextColor: '#f8fafc',
@@ -207,7 +207,7 @@
 
         .diagram-container svg {
             max-width: none !important;
-            width: var(--svg-width, 950px) !important;
+            width: var(--svg-width, 1150px) !important;
             height: auto !important;
             margin: 0 auto;
             display: block;
@@ -601,7 +601,7 @@
             const btnReset = document.getElementById('zoom-reset');
             
             let currentScale = 100; // percent
-            const baseWidth = 950;  // pixels
+            const baseWidth = 1150; // pixels
             const step = 15;        // percent
             const minScale = 50;    // percent
             const maxScale = 250;   // percent
