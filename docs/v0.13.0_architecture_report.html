@@ -207,10 +207,61 @@
 
         .diagram-container svg {
             max-width: none !important;
-            min-width: 950px;
+            width: var(--svg-width, 950px) !important;
             height: auto !important;
             margin: 0 auto;
             display: block;
+            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Zoom Controls */
+        .zoom-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            justify-content: flex-end;
+            user-select: none;
+        }
+
+        .zoom-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(129, 140, 248, 0.1);
+            border-color: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 0 12px var(--primary-glow);
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.96);
+        }
+
+        .zoom-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+            min-width: 60px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
         /* Force readable text colors inside SVG */
@@ -325,6 +376,10 @@
                 padding: 0;
             }
 
+            .zoom-controls {
+                display: none !important;
+            }
+
             :root {
                 --bg-color: #fff;
                 --card-bg: #fff;
@@ -397,6 +452,22 @@
         <section class="page-break">
             <h2>2. Sơ đồ Hoạt động chính (Main Flowchart)</h2>
             <p>Sơ đồ trình tự dưới đây mô tả chính xác những gì xảy ra ở hậu trường khi người chơi gõ một tin nhắn mới và nhấn <strong>SEND</strong>:</p>
+            
+            <div class="zoom-controls">
+                <button class="zoom-btn" id="zoom-out" title="Thu nhỏ">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Thu nhỏ</span>
+                </button>
+                <span class="zoom-val" id="zoom-val">100%</span>
+                <button class="zoom-btn" id="zoom-in" title="Phóng to">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Phóng to</span>
+                </button>
+                <button class="zoom-btn" id="zoom-reset" title="Đặt lại">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M3 21v-5h5"></path></svg>
+                    <span>Mặc định</span>
+                </button>
+            </div>
             
             <div class="diagram-container">
                 <div class="mermaid">
@@ -519,5 +590,61 @@
             <p>Báo cáo mật - Chỉ lưu hành nội bộ dự án ST Anima. Ấn Ctrl+P trên trình duyệt để xuất tệp PDF A4 chuẩn đẹp.</p>
         </footer>
     </div>
+
+    <!-- Zoom Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.diagram-container');
+            const scaleValEl = document.getElementById('zoom-val');
+            const btnIn = document.getElementById('zoom-in');
+            const btnOut = document.getElementById('zoom-out');
+            const btnReset = document.getElementById('zoom-reset');
+            
+            let currentScale = 100; // percent
+            const baseWidth = 950;  // pixels
+            const step = 15;        // percent
+            const minScale = 50;    // percent
+            const maxScale = 250;   // percent
+
+            function updateZoom() {
+                const svg = container.querySelector('svg');
+                if (svg) {
+                    const widthPx = Math.round((baseWidth * currentScale) / 100);
+                    svg.style.setProperty('width', `${widthPx}px`, 'important');
+                    scaleValEl.textContent = `${currentScale}%`;
+                }
+            }
+
+            btnIn.addEventListener('click', () => {
+                if (currentScale + step <= maxScale) {
+                    currentScale += step;
+                    updateZoom();
+                }
+            });
+
+            btnOut.addEventListener('click', () => {
+                if (currentScale - step >= minScale) {
+                    currentScale -= step;
+                    updateZoom();
+                }
+            });
+
+            btnReset.addEventListener('click', () => {
+                currentScale = 100;
+                updateZoom();
+            });
+
+            // Use MutationObserver to wait for Mermaid to inject the SVG
+            const observer = new MutationObserver((mutations) => {
+                const svg = container.querySelector('svg');
+                if (svg) {
+                    updateZoom();
+                    observer.disconnect(); // We got the SVG, stop observing
+                }
+            });
+
+            observer.observe(container, { childList: true, subtree: true });
+        });
+    </script>
 </body>
 </html>
