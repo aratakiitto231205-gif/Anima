@@ -19,7 +19,7 @@ export const ADAgent = {
                 status: 'success',
                 message: `Các lệnh hỗ trợ trong Backstage:\n` +
                          `- status : Xem trạng thái nhận thức hiện tại.\n` +
-                         `- set [key] [val] : Đặt chỉ số (ví dụ: set emotion Excited, set enabled false).\n` +
+                         `- set [key] [val] : Đặt chỉ số (ví dụ: set emotion Excited, set location Quán Rượu, set time Đêm).\n` +
                          `- reset : Reset các thông số về mặc định.`
             };
         }
@@ -30,6 +30,7 @@ export const ADAgent = {
                 message: `Trạng thái nhận thức hiện tại:\n` +
                          `- Trạng thái tác tử: ${state.enabled ? 'Active' : 'Disabled'}\n` +
                          `- Cảm xúc: ${state.active_emotion}\n` +
+                         `- Bối cảnh: Vị trí = ${state.environment?.location || 'Mặc định'}, Thời gian = ${state.environment?.timeOfDay || 'Mặc định'}, Thời tiết = ${state.environment?.weather || 'Mặc định'}\n` +
                          `- Kế hoạch đang kích hoạt: ${state.activePlan ? 'Đã nạp ✓' : 'Trống'}`
             };
         }
@@ -55,6 +56,27 @@ export const ADAgent = {
                 return {
                     status: 'success',
                     message: `Đã cập nhật trạng thái hoạt động: ${state.enabled}`
+                };
+            } else if (key === 'location') {
+                state.environment.location = val;
+                logAnima('success', 'AD Agent', `Thiết lập thành công: location = ${val}`);
+                return {
+                    status: 'success',
+                    message: `Đã cập nhật địa điểm: ${val}`
+                };
+            } else if (key === 'weather') {
+                state.environment.weather = val;
+                logAnima('success', 'AD Agent', `Thiết lập thành công: weather = ${val}`);
+                return {
+                    status: 'success',
+                    message: `Đã cập nhật thời tiết: ${val}`
+                };
+            } else if (key === 'time') {
+                state.environment.timeOfDay = val;
+                logAnima('success', 'AD Agent', `Thiết lập thành công: timeOfDay = ${val}`);
+                return {
+                    status: 'success',
+                    message: `Đã cập nhật thời gian: ${val}`
                 };
             } else {
                 return { status: 'error', message: `Không hỗ trợ chỉnh sửa thuộc tính "${key}" ở bản này.` };

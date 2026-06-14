@@ -14,9 +14,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v0.12.3 — Bare Skeleton)
+## 📊 Current State (v0.13.0 — LLM-powered GM Agent)
 
-> **v0.12.3** = v0.11.0 (reset) + spec 004 (sketch stubs) + spec 005 (wire check) + v0.12.3 (bare skeleton & tests).
+> **v0.13.0** = v0.12.4 (3-agent placeholders & environment) + v0.13.0 (LLM-powered GM Agent via SillyTavern's generateRaw API + GM model selector UI config).
 
 | Component | Status | Notes |
 |---|---|---|
@@ -24,9 +24,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | `panel.html` | ✅ UI shell | Sleek minimal layout (status, emotion, narrative plan, logs stream, console terminal) with clock |
 | `style.css` | ✅ CSS styling | Minimal styling for the dashboard |
 | `src/ui/dashboard.js` | ✅ UI Manager | Simplified DOM updater (renders status, emotion badge, thoughts plan, clock, and terminal submit) |
-| `src/core/state.js` | ✅ State Manager | Bare-bones state container: enabled, active_emotion, activePlan, lastUpdateTimestamp |
-| `src/core/orchestrator.js` | ✅ Orchestrator | Streamlined ST event bindings: CHAT_CHANGED, CHAT_COMPLETION_PROMPT_READY, MESSAGE_RECEIVED |
-| `src/agents/` | ✅ Brain Stubs | GM Agent (plan & appraisal), RP Agent (prompt nudger), AD Agent (backstage console commands: help, status, set, reset) |
+| `src/core/state.js` | ✅ State Manager | State container: enabled, active_emotion, activePlan, lastUpdateTimestamp, and environment (location, time, weather, inventory) |
+| `src/core/orchestrator.js` | ✅ Orchestrator | Streamlined ST event bindings: CHAT_CHANGED, CHAT_COMPLETION_PROMPT_READY (clones lastMsg to inject nudge cleanly), MESSAGE_RECEIVED |
+| `src/agents/` | ✅ Brain Placeholders | GM Agent (plan & appraisal + keyword environment heuristics), RP Agent (nudge formatter placeholder), AD Agent (backstage console commands: set environment, status, reset) |
 | `src/utils/logger.js` | ✅ Active | Logger system with dynamic UI callback binding (Dependency Injection) |
 | `src/utils/constants.js` | ✅ Active | Constants kept from archive |
 | `characters/itto/personality.json` | ✅ Done | Itto's CoALA traits config |
@@ -36,7 +36,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | `agent_handoff/` | ✅ Cleaned | Rebooted empty directory for future handoffs |
 | ESLint | ✅ Clean (0 warnings/errors) | Cấu hình Flat Config chạy tốt trên `src/` |
 | Git | ✅ Pushed | Default branch `main`, repo: https://github.com/aratakiitto231205-gif/Anima |
-| Tests | ✅ 10 Passed | Vitest unit tests for streamlined states, plans, and terminal commands |
+| Tests | ✅ 13 Passed | Vitest unit tests for streamlined states, plans, environment changes, and terminal commands |
 
 
 ---
@@ -173,6 +173,8 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-07 | Hoàn thành toàn bộ Spec 003 (v11.0) | Antigravity hoàn thành 20 blocks, tích hợp tests mới và sửa triệt để tất cả lỗi linter. |
 | 2026-06-09 | Sửa lỗi template 404 & dọn dẹp thư mục gốc | Khắc phục lỗi nạp template bằng phân giải `MODULE_NAME` động. Xóa file trùng lặp `template.html`, dời `VISION.md` vào `docs/` và `CHANGELOG_0.11.0.md` vào `docs/history/`. |
 | 2026-06-09 | Rebooted project & cleaned workspace | Cleared `agent_handoff/` and removed old research files from `docs/` to keep focus 100% minimal. |
+| 2026-06-14 | Triển khai 3 Agent & Environment (v0.12.4) | Dựng khung GM, RP, AD Agent. Tích hợp thực tại khách quan (Environment: location, time, weather). Chuyển sang tiêm sạch (clonedLastMsg) không làm bẩn DB chat của người dùng. |
+| 2026-06-14 | Tích hợp LLM cho GM Agent (v0.13.0) | Kết nối GM Agent với LLM thông qua API `generateRaw` của SillyTavern để lập kế hoạch hội thoại tự động (thay thế rule-based). Bổ sung selector chọn Model riêng cho GM trên Dashboard UI. |
 
 
 ---
@@ -206,4 +208,4 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-> **Last updated:** 2026-06-09 (v0.12.2 template fix + project cleanup)
+> **Last updated:** 2026-06-14 (v0.13.0 LLM-powered GM Agent + Model Selector UI)

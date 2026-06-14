@@ -3,7 +3,7 @@
     <div class="inline-drawer-toggle inline-drawer-header userSettingsInnerExpandable" style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.15)); border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
         <b style="color: var(--SmartThemeTextAccentColor); font-size: 1.05em; display: flex; align-items: center; gap: 8px;">
             <i class="fa-solid fa-brain" style="color: #6366f1; animation: pulseBrain 2s infinite;"></i>
-            <span>Anima Engine v0.12.3</span>
+            <span>Anima Engine v0.13.0</span>
         </b>
         <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down" style="transition: transform 0.3s ease;"></div>
     </div>
@@ -59,7 +59,19 @@
             </div>
         </div>
 
-        <!-- Section 5: Backstage Console Terminal Terminal -->
+        <!-- Section 5: GM Model Configuration -->
+        <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
+            <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-sliders" style="color: #10b981;"></i>
+                <span>Cấu hình GM Agent</span>
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label style="font-size: 0.8em; color: #cbd5e1;">Model cho GM (để trống = dùng thiết lập ST):</label>
+                <div id="anima_gm_model_selector_container"></div>
+            </div>
+        </div>
+
+        <!-- Section 6: Backstage Console Terminal -->
         <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
             <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
                 <i class="fa-solid fa-circle-nodes" style="color: #6366f1;"></i>

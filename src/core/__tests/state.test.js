@@ -11,12 +11,17 @@ describe('AnimaState Manager Tests', () => {
         expect(AnimaState.enabled).toBe(true);
         expect(AnimaState.active_emotion).toBe('Neutral 😐');
         expect(AnimaState.activePlan).toBeNull();
+        expect(AnimaState.environment.location).toBe('Mặc định');
     });
 
     it('should update state from GM Agent output plan', () => {
         const mockPlan = {
             state_update: {
-                active_emotion: 'Phấn khích 🎉'
+                active_emotion: 'Phấn khích 🎉',
+                environment: {
+                    location: 'Rừng sâu 🌲',
+                    timeOfDay: 'Ban đêm 🌙'
+                }
             },
             plan: {
                 appraisal: 'User rủ đi đấm nhau',
@@ -27,6 +32,8 @@ describe('AnimaState Manager Tests', () => {
         AnimaState.updateFromGM(mockPlan);
 
         expect(AnimaState.active_emotion).toBe('Phấn khích 🎉');
+        expect(AnimaState.environment.location).toBe('Rừng sâu 🌲');
+        expect(AnimaState.environment.timeOfDay).toBe('Ban đêm 🌙');
         expect(AnimaState.activePlan.appraisal).toBe('User rủ đi đấm nhau');
     });
 

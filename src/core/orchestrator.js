@@ -1,4 +1,3 @@
-// v0.12.3 — Event Orchestrator
 import { logAnima } from '../utils/logger.js';
 import { AnimaState } from './state.js';
 import { AnimaUI } from '../ui/dashboard.js';
@@ -74,8 +73,21 @@ export const AnimaOrchestrator = {
             // Format RP Nudge
             const nudge = RPAgent.formatNudge(plan, AnimaState);
 
-            // Inject nudge prompt
-            this.injectNudge(chat, nudge);
+            // Inject nudge prompt CLEANLY (without mutating database)
+            if (nudge && lastMsgObj) {
+                const lastMsgIdx = chat.length - 1;
+                const clonedLastMsg = { ...lastMsgObj };
+                
+                const rawText = clonedLastMsg.content || clonedLastMsg.mes || '';
+                const cleanContent = rawText.split('\n\n[BỐI CẢNH & TRẠNG THÁI HIỆN TẠI')[0];
+                
+                const injection = `\n\n${nudge}`;
+                if (clonedLastMsg.content !== undefined) clonedLastMsg.content = cleanContent + injection;
+                if (clonedLastMsg.mes !== undefined) clonedLastMsg.mes = cleanContent + injection;
+                
+                chat[lastMsgIdx] = clonedLastMsg;
+                logAnima('success', 'Orchestrator', 'Đã tiêm sạch Narrative Nudge vào prompt.');
+            }
 
             // Save State
             AnimaState.saveForCharacter(characterId);
@@ -89,23 +101,6 @@ export const AnimaOrchestrator = {
         if (typeof SillyTavern === 'undefined') return;
         const chatLog = SillyTavern.getContext().chat || [];
         this.onPromptInterceptor(chatLog);
-    },
-
-    injectNudge(chat, nudge) {
-        if (!chat || chat.length === 0) return;
-        
-        const lastMsgObj = chat[chat.length - 1];
-        if (!lastMsgObj) return;
-
-        const rawContent = lastMsgObj.content || lastMsgObj.mes || '';
-        const cleanContent = rawContent.split('\n\n[HỆ THỐNG PHẬN SỰ NHẬN THỨC ANIMA')[0];
-
-        const injection = `\n\n${nudge}\n\n[QUY TẮC PHÂN ĐOẠN XML]: Bạn BẮT BUỘC trả lời dưới dạng cấu trúc XML: <thought>suy nghĩ</thought><dialogue>lời thoại</dialogue>.`;
-
-        if (lastMsgObj.content !== undefined) lastMsgObj.content = cleanContent + injection;
-        if (lastMsgObj.mes !== undefined) lastMsgObj.mes = cleanContent + injection;
-
-        logAnima('success', 'Orchestrator', 'Đã tiêm Narrative Nudge vào prompt.');
     },
 
     async onMessageReceived(messageId) {

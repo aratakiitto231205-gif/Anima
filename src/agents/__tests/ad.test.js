@@ -31,6 +31,21 @@ describe('ADAgent Command Handler Tests', () => {
         expect(resultEmotion.status).toBe('success');
         expect(AnimaState.active_emotion).toBe('Excited');
 
+        // Test setting environment location
+        const resultLoc = ADAgent.handleUserCommand('set location Quán Rượu', AnimaState);
+        expect(resultLoc.status).toBe('success');
+        expect(AnimaState.environment.location).toBe('Quán Rượu');
+
+        // Test setting environment weather
+        const resultWeather = ADAgent.handleUserCommand('set weather Nắng', AnimaState);
+        expect(resultWeather.status).toBe('success');
+        expect(AnimaState.environment.weather).toBe('Nắng');
+
+        // Test setting environment time
+        const resultTime = ADAgent.handleUserCommand('set time Đêm', AnimaState);
+        expect(resultTime.status).toBe('success');
+        expect(AnimaState.environment.timeOfDay).toBe('Đêm');
+
         // Test error handling for invalid keys
         const resultInvalid = ADAgent.handleUserCommand('set invalid_key 10', AnimaState);
         expect(resultInvalid.status).toBe('error');

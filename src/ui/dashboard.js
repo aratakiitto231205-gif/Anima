@@ -43,15 +43,73 @@ export const AnimaUI = {
             }
 
             this.setupButtons();
-            
+            await this.setupModelSelector();
+
             // Register logger callback to append directly to UI log container
             registerAppendLogCallback((logEntry) => this.appendLog(logEntry));
-            
+
             logAnima('success', 'UI', 'Dashboard UI initialized successfully');
         } catch (err) {
             logAnima('error', 'UI', `Render failed: ${err.message}`);
             console.error('[st-anima] mount error:', err);
         }
+    },
+
+    async setupModelSelector() {
+        // Clone ST's model selector for GM agent config
+        const container = document.getElementById('anima_gm_model_selector_container');
+        if (!container) return;
+
+        // Find ST's existing model selector in settings
+        const stModelSelect = document.querySelector('#model_chat_completion_select, #model_togetherai_select, #model_openrouter_select, #models_select');
+        if (!stModelSelect) {
+            container.innerHTML = '<span style="font-size: 0.75em; color: #ef4444;">⚠️ ST model selector not found</span>';
+            logAnima('warning', 'UI', 'Cannot find ST model selector to clone');
+            return;
+        }
+
+        // Clone the selector
+        const clonedSelect = stModelSelect.cloneNode(true);
+        clonedSelect.id = 'anima_gm_model_select';
+        clonedSelect.style.cssText = 'width: 100%; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.3); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82em;';
+
+        // Add "Use ST Default" option at top
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = '(Dùng thiết lập ST)';
+        clonedSelect.insertBefore(defaultOption, clonedSelect.firstChild);
+
+        // Load saved preference
+        let settings = {};
+        try {
+            const ext = await import('../../../../../extensions.js');
+            settings = ext.extension_settings;
+        } catch {
+            // Ignore in tests
+        }
+
+        const saved = settings?.['st-anima']?.gm_model;
+        if (saved !== undefined) clonedSelect.value = saved;
+
+        // Save on change
+        clonedSelect.addEventListener('change', async () => {
+            try {
+                const ext = await import('../../../../../extensions.js');
+                const script = await import('../../../../script.js');
+                const extension_settings = ext.extension_settings;
+                const saveSettingsDebounced = script.saveSettingsDebounced;
+
+                if (!extension_settings['st-anima']) extension_settings['st-anima'] = {};
+                extension_settings['st-anima'].gm_model = clonedSelect.value;
+                saveSettingsDebounced();
+                logAnima('success', 'UI', `GM model set to: ${clonedSelect.value || 'ST default'}`);
+            } catch (err) {
+                logAnima('error', 'UI', `Failed to save GM model settings: ${err.message}`);
+            }
+        });
+
+        container.appendChild(clonedSelect);
+        logAnima('success', 'UI', 'Model selector cloned from ST settings');
     },
 
     setupButtons() {

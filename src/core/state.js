@@ -6,12 +6,24 @@ export const AnimaState = {
     active_emotion: 'Neutral 😐',
     activePlan: null,
     lastUpdateTimestamp: null,
+    environment: {
+        location: 'Mặc định',
+        timeOfDay: 'Mặc định',
+        weather: 'Mặc định',
+        inventory: []
+    },
 
     resetToDefault() {
         this.enabled = true;
         this.active_emotion = 'Neutral 😐';
         this.activePlan = null;
         this.lastUpdateTimestamp = new Date().toISOString();
+        this.environment = {
+            location: 'Mặc định',
+            timeOfDay: 'Mặc định',
+            weather: 'Mặc định',
+            inventory: []
+        };
     },
 
     loadForCharacter(characterId) {
@@ -34,6 +46,12 @@ export const AnimaState = {
                 this.active_emotion = savedState.active_emotion || 'Neutral 😐';
                 this.activePlan = savedState.activePlan || null;
                 this.lastUpdateTimestamp = savedState.lastUpdateTimestamp || new Date().toISOString();
+                this.environment = savedState.environment || {
+                    location: 'Mặc định',
+                    timeOfDay: 'Mặc định',
+                    weather: 'Mặc định',
+                    inventory: []
+                };
                 
                 logAnima('success', 'State', `Đã tải trạng thái: emotion=${this.active_emotion}`);
             } catch (err) {
@@ -56,7 +74,8 @@ export const AnimaState = {
             enabled: this.enabled,
             active_emotion: this.active_emotion,
             activePlan: this.activePlan,
-            lastUpdateTimestamp: this.lastUpdateTimestamp
+            lastUpdateTimestamp: this.lastUpdateTimestamp,
+            environment: this.environment
         };
 
         try {
@@ -72,6 +91,12 @@ export const AnimaState = {
 
         if (gmOutput.state_update?.active_emotion) {
             this.active_emotion = gmOutput.state_update.active_emotion;
+        }
+        if (gmOutput.state_update?.environment) {
+            this.environment = {
+                ...this.environment,
+                ...gmOutput.state_update.environment
+            };
         }
         if (gmOutput.plan) {
             this.activePlan = gmOutput.plan;
