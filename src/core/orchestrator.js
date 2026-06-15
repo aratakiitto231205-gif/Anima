@@ -52,31 +52,43 @@ export const AnimaOrchestrator = {
     async onPromptInterceptor(chat) {
         if (!chat || !Array.isArray(chat) || chat.length === 0) return;
         if (this.isProcessingPrompt) return;
-        
+
         this.isProcessingPrompt = true;
         try {
             if (typeof SillyTavern === 'undefined') return;
             const context = SillyTavern.getContext();
             const characterId = context?.characterId;
             if (characterId === undefined) return;
-            
+
             const character = context.characters[characterId];
             const characterName = character?.name || 'itto';
 
             const rawChat = context.chat || [];
             let actualLastUserMsgText = '';
+            let lastUserMsgIndex = -1;
             for (let i = rawChat.length - 1; i >= 0; i--) {
                 if (rawChat[i].is_user) {
                     actualLastUserMsgText = rawChat[i].mes || '';
+                    lastUserMsgIndex = i;
                     break;
                 }
             }
 
+            // Chỉ xử lý nếu có user message và nó chưa được process
+            if (!actualLastUserMsgText) return;
+
+            // Kiểm tra xem có char message nào sau user message không (tức đã gen xong)
+            const hasCharResponseAfter = rawChat.slice(lastUserMsgIndex + 1).some(m => !m.is_user);
+            if (hasCharResponseAfter) {
+                // Đã có response rồi, không gọi GM nữa
+                return;
+            }
+
             const lastMsgObj = chat[chat.length - 1];
 
-            // Prevent duplicate generation for the same user message (e.g. swipes or background ST tasks)
-            if (this.lastProcessedUserMsg === actualLastUserMsgText && actualLastUserMsgText !== '') {
-                // If we already planned for this message, just inject the existing nudge (if any) and return
+            // Swipe case: cùng user message nhưng gen lại response
+            if (this.lastProcessedUserMsg === actualLastUserMsgText) {
+                // Dùng lại plan cũ, chỉ inject nudge
                 if (AnimaState.activePlan) {
                     const nudge = RPAgent.formatNudge(AnimaState.activePlan, AnimaState);
                     if (nudge && lastMsgObj) {
@@ -93,7 +105,7 @@ export const AnimaOrchestrator = {
                 return;
             }
 
-            // Run GM planner
+            // User message mới → gọi GM
             const plan = await GMAgent.planAndUpdate(chat, AnimaState, characterName);
 
             // Update State & UI
