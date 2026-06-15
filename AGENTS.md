@@ -14,9 +14,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v0.13.0 — LLM-powered GM Agent)
+## 📊 Current State (v0.13.1 — LLM-powered GM Agent Hotfix)
 
-> **v0.13.0** = v0.12.4 (3-agent placeholders & environment) + v0.13.0 (LLM-powered GM Agent via SillyTavern's generateRaw API + GM model selector UI config).
+> **v0.13.1** = v0.13.0 + Hotfix infinite loop reentrancy trong GM interceptor.
 
 | Component | Status | Notes |
 |---|---|---|
@@ -208,4 +208,4 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-> **Last updated:** 2026-06-14 (v0.13.0 LLM-powered GM Agent + Model Selector UI)
+> **Last updated:** 2026-06-15 (v0.13.1 Hotfix infinite loop GM Agent)

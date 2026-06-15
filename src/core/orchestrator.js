@@ -9,6 +9,7 @@ export const AnimaOrchestrator = {
     eventSource: null,
     event_types: null,
     lastProcessedUserMsg: '',
+    isProcessingPrompt: false,
 
     init({ eventSource, event_types }) {
         this.eventSource = eventSource;
@@ -50,7 +51,9 @@ export const AnimaOrchestrator = {
 
     async onPromptInterceptor(chat) {
         if (!chat || !Array.isArray(chat) || chat.length === 0) return;
+        if (this.isProcessingPrompt) return;
         
+        this.isProcessingPrompt = true;
         try {
             if (typeof SillyTavern === 'undefined') return;
             const context = SillyTavern.getContext();
@@ -94,6 +97,8 @@ export const AnimaOrchestrator = {
             this.lastProcessedUserMsg = lastUserMsg;
         } catch (err) {
             logAnima('error', 'Orchestrator', `Lỗi xử lý prompt interceptor: ${err.message}`);
+        } finally {
+            this.isProcessingPrompt = false;
         }
     },
 

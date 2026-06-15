@@ -3,67 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Báo cáo Kiến trúc Hệ thống Anima v0.13.0</title>
-    <!-- Google Fonts -->
+    <title>Báo cáo Kiến trúc Anima v0.13.0</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Mermaid CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Mermaid for flowchart -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
     <script>
         mermaid.initialize({
             startOnLoad: true,
-            theme: 'dark',
-            securityLevel: 'loose',
-            flowchart: { useMaxWidth: false, htmlLabels: true },
-            sequence: { 
-                useMaxWidth: false, 
-                width: 1150, 
-                height: 800, 
-                boxMargin: 15, 
-                boxTextMargin: 8,
-                actorFontFamily: 'Inter, sans-serif',
-                actorFontSize: '17px',
-                actorFontWeight: '600',
-                noteFontFamily: 'Inter, sans-serif',
-                noteFontSize: '15px',
-                messageFontFamily: 'Inter, sans-serif',
-                messageFontSize: '16px'
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis',
+                padding: 20
             },
             themeVariables: {
+                fontSize: '24px',
                 fontFamily: 'Inter, sans-serif',
-                fontSize: '16px',
-                actorBkg: '#1e293b',
-                actorBorder: '#475569',
-                actorTextColor: '#f8fafc',
-                actorLineColor: '#475569',
-                signalColor: '#94a3b8',
-                signalTextColor: '#cbd5e1',
-                labelTextColor: '#cbd5e1',
-                loopTextColor: '#f3f4f6',
-                noteBkgColor: '#fef08a',
-                noteTextColor: '#0f172a'
+                primaryColor: '#e8e8e8',
+                primaryTextColor: '#000',
+                primaryBorderColor: '#000',
+                lineColor: '#000',
+                secondaryColor: '#f5f5f5',
+                tertiaryColor: '#fff',
+                edgeLabelBackground: '#fff',
+                nodeTextColor: '#000'
             }
         });
     </script>
 
     <style>
-        :root {
-            --bg-color: #0b0f19;
-            --card-bg: #111827;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --primary: #818cf8;
-            --primary-glow: rgba(129, 140, 248, 0.15);
-            --accent-green: #34d399;
-            --accent-green-glow: rgba(52, 211, 153, 0.15);
-            --accent-purple: #c084fc;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --shadow-premium: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
-        }
-
-        /* Basic Setup */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -71,580 +43,648 @@
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background: #ffffff;
+            color: #1a1a1a;
             font-family: 'Inter', sans-serif;
-            line-height: 1.6;
+            font-size: 18px;
+            line-height: 1.7;
             padding: 40px 20px;
-        }
-
-        .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        /* Glassmorphism Header */
         header {
-            background: linear-gradient(135deg, rgba(17, 24, 39, 0.7), rgba(11, 15, 25, 0.8));
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 40px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 32px;
             margin-bottom: 40px;
-            box-shadow: var(--shadow-premium);
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, var(--primary-glow) 0%, transparent 70%);
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .logo-area {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 20px;
-            position: relative;
-            z-index: 1;
         }
 
         .logo-text {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
+            font-size: 32px;
             font-weight: 800;
-            letter-spacing: 2px;
-            color: var(--text-main);
+            color: #000;
+            margin-bottom: 24px;
             text-transform: uppercase;
-            background: linear-gradient(to right, #ffffff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
         }
 
-        .version-badge {
-            background-color: var(--primary-glow);
-            color: var(--primary);
-            border: 1px solid rgba(129, 140, 248, 0.3);
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 0.8rem;
-            font-weight: 600;
+        .version {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 700;
             font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 32px;
         }
 
         .meta-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.9rem;
-            position: relative;
-            z-index: 1;
+            font-size: 18px;
+            margin-top: 24px;
         }
 
         .meta-table td {
-            padding: 6px 0;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .meta-table td.label {
-            color: var(--text-muted);
-            width: 120px;
-            font-weight: 500;
+            font-weight: 700;
+            width: 180px;
+            color: #000;
         }
 
         .meta-table td.value {
-            font-weight: 600;
-            color: var(--text-main);
+            font-weight: 500;
+            color: #333;
         }
 
-        /* Sections */
         section {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
             padding: 40px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow-premium);
+            margin-bottom: 32px;
         }
 
         h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
+            font-size: 32px;
+            font-weight: 800;
+            color: #000;
             margin-bottom: 24px;
-            color: var(--text-main);
-            border-left: 4px solid var(--primary);
-            padding-left: 15px;
-            display: flex;
-            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 3px solid #000;
         }
 
         p {
-            color: var(--text-muted);
+            font-size: 19px;
+            line-height: 1.8;
+            color: #333;
             margin-bottom: 20px;
-            font-size: 1rem;
         }
 
-        /* Mermaid Wrapper */
-        .diagram-container {
-            background-color: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            margin: 30px 0;
-            overflow-x: auto;
-            width: 100%;
-            display: block;
-        }
-
-        .diagram-container svg {
-            max-width: none !important;
-            width: var(--svg-width, 1150px) !important;
-            height: auto !important;
-            margin: 0 auto;
-            display: block;
-            transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        /* Zoom Controls */
-        .zoom-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            justify-content: flex-end;
-            user-select: none;
-        }
-
-        .zoom-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .zoom-btn:hover {
-            background: rgba(129, 140, 248, 0.1);
-            border-color: var(--primary);
-            color: #ffffff;
-            box-shadow: 0 0 12px var(--primary-glow);
-        }
-
-        .zoom-btn:active {
-            transform: scale(0.96);
-        }
-
-        .zoom-val {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            color: var(--primary);
-            font-weight: 600;
-            min-width: 60px;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-
-        /* Force readable text colors inside SVG */
-        .diagram-container svg text {
-            font-family: 'Inter', sans-serif !important;
-            fill: #f3f4f6 !important;
-        }
-        .diagram-container svg .actor rect {
-            fill: #1e293b !important;
-            stroke: #475569 !important;
-        }
-        .diagram-container svg .actor text {
-            fill: #f8fafc !important;
-        }
-        .diagram-container svg .messageText {
-            fill: #cbd5e1 !important;
-            stroke: none !important;
-        }
-        .diagram-container svg .note rect {
-            fill: #fef08a !important;
-            stroke: #eab308 !important;
-        }
-        .diagram-container svg .note text {
-            fill: #0f172a !important;
-        }
-
-        /* Step Card Styling */
-        .step-list {
-            margin: 20px 0;
-            display: grid;
-            gap: 20px;
-        }
-
-        .step-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 20px;
-            display: flex;
-            gap: 20px;
-        }
-
-        .step-num {
-            background-color: var(--primary);
-            color: #000;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        strong {
             font-weight: 700;
-            font-family: 'Outfit', sans-serif;
-            flex-shrink: 0;
+            color: #000;
         }
 
-        .step-body h4 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-            color: var(--text-main);
+        /* Flow Chart */
+        .flow-container {
+            background: #f9f9f9;
+            border: 2px solid #d0d0d0;
+            border-radius: 8px;
+            padding: 32px;
+            margin: 32px 0;
         }
 
-        .step-body p {
+        .flow-step {
+            background: #fff;
+            border: 3px solid #000;
+            border-radius: 8px;
+            padding: 24px 32px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '↓';
+            display: block;
+            text-align: center;
+            font-size: 40px;
+            font-weight: 800;
+            color: #000;
+            margin: 12px 0;
+        }
+
+        .flow-step:last-child::after {
+            content: '';
+        }
+
+        .flow-step-num {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 24px;
+            font-weight: 800;
+            margin-right: 16px;
+            vertical-align: middle;
+        }
+
+        .flow-step-title {
+            display: inline;
+            font-size: 24px;
+            font-weight: 800;
+            color: #000;
+            vertical-align: middle;
+        }
+
+        .flow-step-desc {
+            font-size: 19px;
+            line-height: 1.7;
+            color: #333;
+            margin-top: 16px;
+            margin-left: 64px;
+        }
+
+        .flow-agent {
+            display: inline-block;
+            background: #e8e8e8;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        /* Detail Steps */
+        .detail-card {
+            background: #f9f9f9;
+            border: 2px solid #d0d0d0;
+            border-radius: 8px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .detail-card h3 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 16px;
+        }
+
+        .detail-card h3 .num {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .detail-card p {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #333;
             margin-bottom: 0;
-            font-size: 0.92rem;
         }
 
-        /* Table */
-        .table-responsive {
-            overflow-x: auto;
+        .detail-card code {
+            background: #e8e8e8;
+            color: #000;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 17px;
+            font-weight: 600;
         }
 
-        table.data-table {
+        /* Commands Table */
+        .cmd-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 0.95rem;
+            margin: 24px 0;
+            font-size: 18px;
         }
 
-        table.data-table th, table.data-table td {
-            padding: 12px 16px;
+        .cmd-table th {
+            background: #000;
+            color: #fff;
+            padding: 16px 20px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            font-weight: 700;
+            font-size: 19px;
+            border: 2px solid #000;
         }
 
-        table.data-table th {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            color: var(--text-main);
-            background-color: rgba(255, 255, 255, 0.03);
+        .cmd-table td {
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            vertical-align: top;
         }
 
-        table.data-table td {
-            color: var(--text-muted);
+        .cmd-table tr:nth-child(even) {
+            background: #f9f9f9;
         }
 
-        table.data-table td code {
-            font-family: 'JetBrains Mono', monospace;
-            background-color: rgba(0, 0, 0, 0.3);
-            padding: 2px 6px;
+        .cmd-table code {
+            background: #000;
+            color: #fff;
+            padding: 4px 10px;
             border-radius: 4px;
-            font-size: 0.85rem;
-            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 17px;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
-        /* Printable setup */
+        footer {
+            text-align: center;
+            font-size: 17px;
+            color: #666;
+            margin-top: 60px;
+            padding-top: 32px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        /* Mermaid flowchart styling */
+        .mermaid-wrapper {
+            background: #fafafa;
+            border: 2px solid #d0d0d0;
+            border-radius: 8px;
+            padding: 40px 20px;
+            margin: 32px 0;
+            overflow-x: auto;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+        }
+
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Force large text in mermaid */
+        .mermaid .node rect,
+        .mermaid .node circle,
+        .mermaid .node polygon {
+            fill: #e8e8e8 !important;
+            stroke: #000 !important;
+            stroke-width: 3px !important;
+        }
+
+        .mermaid .node .label {
+            color: #000 !important;
+            font-size: 22px !important;
+            font-weight: 700 !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+
+        .mermaid .edgeLabel {
+            background: #fff !important;
+            color: #000 !important;
+            font-size: 20px !important;
+            font-weight: 600 !important;
+            padding: 8px !important;
+            border-radius: 4px !important;
+        }
+
+        .mermaid .edgePath .path {
+            stroke: #000 !important;
+            stroke-width: 3px !important;
+        }
+
+        .mermaid .marker {
+            fill: #000 !important;
+            stroke: #000 !important;
+        }
+
+        /* Visual Diagram */
+        .diagram-wrapper {
+            background: #fafafa;
+            border: 2px solid #d0d0d0;
+            border-radius: 8px;
+            padding: 40px 20px;
+            margin: 32px 0;
+            overflow-x: auto;
+        }
+
+        .diagram-agents {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 40px;
+            min-width: 900px;
+        }
+
+        .agent-box {
+            flex: 1;
+            background: #e8e8e8;
+            border: 3px solid #000;
+            border-radius: 8px;
+            padding: 20px 12px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: #000;
+            line-height: 1.3;
+        }
+
+        .diagram-sequence {
+            position: relative;
+            min-width: 900px;
+        }
+
+        .seq-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 32px;
+            gap: 20px;
+        }
+
+        .seq-num {
+            flex-shrink: 0;
+            background: #000;
+            color: #fff;
+            width: 44px;
+            height: 44px;
+            line-height: 44px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .seq-arrow {
+            flex: 1;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 6px;
+            padding: 16px 20px;
+            font-size: 19px;
+            font-weight: 600;
+            color: #000;
+            position: relative;
+        }
+
+        .seq-arrow::before {
+            content: '▶';
+            position: absolute;
+            right: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #000;
+        }
+
+        .seq-arrow .from {
+            display: inline-block;
+            background: #e8e8e8;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: 800;
+            margin-right: 8px;
+        }
+
+        .seq-arrow .to {
+            display: inline-block;
+            background: #e8e8e8;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-weight: 800;
+            margin-left: 8px;
+        }
+
+        .seq-note {
+            background: #fff3cd;
+            border: 2px solid #856404;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin: 16px 0 32px 64px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #856404;
+        }
+
         @media print {
             body {
-                background-color: #fff;
-                color: #000;
+                background: #fff;
                 padding: 0;
             }
-
-            .zoom-controls {
-                display: none !important;
-            }
-
-            :root {
-                --bg-color: #fff;
-                --card-bg: #fff;
-                --text-main: #000;
-                --text-muted: #333;
-                --primary: #4f46e5;
-                --border-color: #ddd;
-                --shadow-premium: none;
-            }
-
-            header, section {
+            section {
                 border: 1px solid #ccc;
-                box-shadow: none;
                 page-break-inside: avoid;
-            }
-
-            .diagram-container {
-                border: 1px solid #ccc;
-                background-color: #fff;
-            }
-
-            .step-card {
-                border: 1px solid #ccc;
-                background: #fff;
-                page-break-inside: avoid;
-            }
-            
-            .page-break {
-                page-break-before: always;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- BÁO CÁO HEADER -->
-        <header>
-            <div class="logo-area">
-                <span class="logo-text">Anima Engine Specs</span>
-                <span class="version-badge">v0.13.0 (Official Release)</span>
+    <header>
+        <div class="logo-text">Anima Engine</div>
+        <div class="version">v0.13.0 Official Release</div>
+        <table class="meta-table">
+            <tr>
+                <td class="label">BÁO CÁO:</td>
+                <td class="value">Mô hình Vận hành & Kiến trúc Anima Engine</td>
+            </tr>
+            <tr>
+                <td class="label">NGƯỜI NHẬN:</td>
+                <td class="value">Hitsuji (Project Director / Boss)</td>
+            </tr>
+            <tr>
+                <td class="label">NGƯỜI GỬI:</td>
+                <td class="value">Antigravity (Lead Architecture Agent)</td>
+            </tr>
+            <tr>
+                <td class="label">NGÀY:</td>
+                <td class="value">14 tháng 6, 2026</td>
+            </tr>
+        </table>
+    </header>
+
+    <section>
+        <h2>1. Tóm tắt Hệ thống</h2>
+        <p>Bản phát hành <strong>v0.13.0</strong> đánh dấu bước tiến chuyển dịch cấu trúc từ xử lý theo luật cứng (Heuristic Rules) sang <strong>trí tuệ nhân tạo hỗn hợp (Multi-Agent LLM-powered Pipeline)</strong>.</p>
+        <p>Hệ thống được chia tách rõ ràng thành <strong>3 tác tử độc lập</strong> đóng vai trò riêng biệt, tối ưu hóa cả khả năng tính toán bối cảnh khách quan lẫn độ mượt nhập vai sáng tạo của mô hình ngôn ngữ lớn.</p>
+        <p>Đặc biệt, phiên bản này giải quyết triệt để vấn đề <strong>ô nhiễm cơ sở dữ liệu chat</strong> bằng cơ chế <strong>Tiêm sạch (Clean Message Cloning Injection)</strong> và cho phép người chơi tùy biến chọn mô hình riêng biệt dành riêng cho GM Agent ngay trên giao diện điều khiển.</p>
+    </section>
+
+    <section>
+        <h2>2. Sơ đồ Luồng Hoạt động</h2>
+        <p>Dưới đây là lưu đồ trực quan trình tự xử lý khi người chơi gửi tin nhắn:</p>
+
+        <div class="mermaid-wrapper">
+            <div class="mermaid">
+graph TD
+    A["🙋 User<br/>Người dùng gửi tin nhắn<br/>nhấn SEND"]
+    B["💻 SillyTavern UI<br/>Kích hoạt sự kiện<br/>CHAT_COMPLETION_PROMPT_READY"]
+    C["⚙️ Event Orchestrator<br/>Chặn luồng gửi đi<br/>để xử lý ngầm"]
+    D["🎬 GM Agent<br/>Phân tích bối cảnh<br/>Gọi LLM riêng"]
+    E["📝 Kết quả JSON<br/>Cảm xúc + Môi trường<br/>Vị trí, Thời tiết, Thời gian"]
+    F["💾 State & Environment<br/>Cập nhật trạng thái<br/>hệ thống"]
+    G["✍️ RP Agent<br/>Nhận Kế hoạch từ GM<br/>Tạo System Note"]
+    H["🔧 Tiêm sạch<br/>Clone tin nhắn cuối<br/>Chèn Nudge vào bản sao"]
+    I["📤 Trả về SillyTavern<br/>Mảng chat tạm thời<br/>đã có Nudge"]
+    J["🤖 LLM chính<br/>Viết thoại nhân vật<br/>dựa trên Nudge"]
+    K["✅ Hiển thị<br/>Kết quả cho User"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G --> H
+    H --> I
+    I --> J
+    J --> K
+
+    style A fill:#e8e8e8,stroke:#000,stroke-width:3px
+    style B fill:#e8e8e8,stroke:#000,stroke-width:3px
+    style C fill:#fff3cd,stroke:#856404,stroke-width:3px
+    style D fill:#d4edda,stroke:#155724,stroke-width:3px
+    style E fill:#e8e8e8,stroke:#000,stroke-width:3px
+    style F fill:#e8e8e8,stroke:#000,stroke-width:3px
+    style G fill:#d4edda,stroke:#155724,stroke-width:3px
+    style H fill:#f8d7da,stroke:#721c24,stroke-width:3px
+    style I fill:#e8e8e8,stroke:#000,stroke-width:3px
+    style J fill:#e8e8e8,stroke:#000,stroke-width:3px
+    style K fill:#d4edda,stroke:#155724,stroke-width:3px
             </div>
-            <table class="meta-table">
+        </div>
+
+        <div class="flow-container">
+            <div class="flow-step">
+                <span class="flow-step-num">1</span>
+                <span class="flow-step-title">Người dùng gửi tin nhắn</span>
+                <div class="flow-step-desc">
+                    <span class="flow-agent">User</span> nhấn nút <strong>SEND</strong> trên giao diện <span class="flow-agent">SillyTavern</span>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <span class="flow-step-num">2</span>
+                <span class="flow-step-title">Chặn luồng để xử lý</span>
+                <div class="flow-step-desc">
+                    <span class="flow-agent">Event Orchestrator</span> bắt sự kiện <code>CHAT_COMPLETION_PROMPT_READY</code> và chặn luồng gửi đi để xử lý ngầm
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <span class="flow-step-num">3</span>
+                <span class="flow-step-title">GM Agent phân tích bối cảnh</span>
+                <div class="flow-step-desc">
+                    <span class="flow-agent">GM Agent</span> nhận 5 tin nhắn gần nhất + trạng thái môi trường hiện tại, gọi LLM để phân tích và trả về JSON chứa cảm xúc & bối cảnh mới
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <span class="flow-step-num">4</span>
+                <span class="flow-step-title">Cập nhật trạng thái</span>
+                <div class="flow-step-desc">
+                    <span class="flow-agent">Orchestrator</span> cập nhật dữ liệu cảm xúc/môi trường vào <span class="flow-agent">State & Environment</span>
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <span class="flow-step-num">5</span>
+                <span class="flow-step-title">RP Agent tạo chỉ thị</span>
+                <div class="flow-step-desc">
+                    <span class="flow-agent">RP Agent</span> nhận Kế hoạch từ GM và Trạng thái hiện tại, tạo ra System Note (Narrative Nudge) đã định dạng
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <span class="flow-step-num">6</span>
+                <span class="flow-step-title">Tiêm sạch vào chat</span>
+                <div class="flow-step-desc">
+                    <span class="flow-agent">Orchestrator</span> nhân bản tin nhắn cuối trong mảng chat, chèn Nudge vào bản sao (không sửa DB gốc)
+                </div>
+            </div>
+
+            <div class="flow-step">
+                <span class="flow-step-num">7</span>
+                <span class="flow-step-title">Trả về và hiển thị</span>
+                <div class="flow-step-desc">
+                    <span class="flow-agent">SillyTavern</span> gọi LLM chính viết thoại nhân vật dựa trên Nudge và hiển thị kết quả cho người dùng
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>3. Chi tiết các bước thực thi</h2>
+
+        <div class="detail-card">
+            <h3><span class="num">1</span> Chặn Prompt (Interception Phase)</h3>
+            <p>Ngay khi sự kiện <code>CHAT_COMPLETION_PROMPT_READY</code> nổ ra, <code>EventOrchestrator</code> sẽ bắt lấy mảng chat clone được SillyTavern biên soạn gửi lên LLM. Điều này giúp chúng ta có cơ hội bổ sung dữ liệu bối cảnh trước khi LLM chính bắt đầu viết câu trả lời.</p>
+        </div>
+
+        <div class="detail-card">
+            <h3><span class="num">2</span> Phân tích bối cảnh (GM Agent Cognition)</h3>
+            <p>GM Agent đóng vai trò là "Thực tại khách quan" và "Đạo diễn". Nó đọc lịch sử đối thoại và trạng thái môi trường hiện tại, sau đó gọi mô hình LLM được cấu hình riêng (ví dụ: Gemini Flash Lite) thông qua <code>LLMClient.generate()</code> để nhận định tình huống và xuất ra kết quả phân tích JSON về cảm xúc và vị trí, thời tiết, thời gian mới.</p>
+        </div>
+
+        <div class="detail-card">
+            <h3><span class="num">3</span> Định hình chỉ thị (RP Agent Formatting)</h3>
+            <p>RP Agent (Biên kịch) tiếp nhận chỉ thị thô của GM Agent, thực hiện việc định hình sắp xếp văn bản. Nó biên soạn ra một phân đoạn System Note sạch (ví dụ: mô tả địa điểm hiện tại là gì, thời tiết thế nào, Itto nên xưng hô ra sao) để bắt buộc LLM chính nhập vai tuân thủ.</p>
+        </div>
+
+        <div class="detail-card">
+            <h3><span class="num">4</span> Tiêm Sạch (Clean Injection)</h3>
+            <p>Để đảm bảo không bị ghi đè dữ liệu rác vào DB (nguyên nhân gây ô nhiễm prompt và làm hỏng nút Swipe), <code>Orchestrator</code> tạo một bản sao nông (shallow clone) của đối tượng tin nhắn cuối cùng trong mảng chat tạm thời, chèn System Note vào cuối bản sao đó, rồi tráo đổi vị trí của nó trong mảng tạm. Khi hoàn thành, SillyTavern sẽ gửi mảng này đi nhưng lịch sử chat đã lưu vẫn hoàn toàn sạch sẽ.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>4. Bảng điều khiển Hậu trường</h2>
+        <p>AD Agent (Trợ lý đạo diễn) là người quản lý các biến trạng thái, cho phép người dùng can thiệp thủ công thông qua Terminal của Dashboard. Dưới đây là các câu lệnh vận hành thực tế:</p>
+
+        <table class="cmd-table">
+            <thead>
                 <tr>
-                    <td class="label">BÁO CÁO:</td>
-                    <td class="value">MÔ HÌNH VẬN HÀNH & KIẾN TRÚC ANIMA ENGINE</td>
+                    <th>Lệnh</th>
+                    <th>Mục đích</th>
+                    <th>Ví dụ</th>
+                    <th>Tác động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>/status</code></td>
+                    <td>Xem trạng thái</td>
+                    <td><code>status</code></td>
+                    <td>In ra trạng thái tác tử, cảm xúc và bối cảnh môi trường chi tiết</td>
                 </tr>
                 <tr>
-                    <td class="label">NGƯỜI NHẬN:</td>
-                    <td class="value">Hitsuji (Project Director / Boss)</td>
+                    <td><code>/set location</code></td>
+                    <td>Thay đổi vị trí</td>
+                    <td><code>/set location Quán Rượu</code></td>
+                    <td>Cập nhật trực tiếp địa điểm hiện tại của State, đồng bộ lên UI</td>
                 </tr>
                 <tr>
-                    <td class="label">NGƯỜI GỬI:</td>
-                    <td class="value">Antigravity (Lead Architecture Agent)</td>
+                    <td><code>/set weather</code></td>
+                    <td>Thay đổi thời tiết</td>
+                    <td><code>/set weather Mưa</code></td>
+                    <td>Thay đổi trạng thái thời tiết khách quan, chống ảo giác của LLM</td>
                 </tr>
                 <tr>
-                    <td class="label">NGÀY BÁO CÁO:</td>
-                    <td class="value">14 tháng 6, 2026</td>
+                    <td><code>/set time</code></td>
+                    <td>Thay đổi thời gian</td>
+                    <td><code>/set time Đêm muộn</code></td>
+                    <td>Cập nhật mốc thời gian diễn ra câu chuyện (sáng, trưa, chiều, tối)</td>
                 </tr>
-            </table>
-        </header>
+                <tr>
+                    <td><code>/reset</code></td>
+                    <td>Khôi phục mặc định</td>
+                    <td><code>reset</code></td>
+                    <td>Trả toàn bộ thông số cảm xúc và bối cảnh về trạng thái khởi tạo</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
-        <!-- PHẦN 1: MỞ ĐẦU -->
-        <section>
-            <h2>1. Tóm tắt Hệ thống (Executive Summary)</h2>
-            <p>Bản phát hành <strong>v0.13.0</strong> đánh dấu bước tiến chuyển dịch cấu trúc từ xử lý theo luật cứng (Heuristic Rules) sang <strong>trí tuệ nhân tạo hỗn hợp (Multi-Agent LLM-powered Pipeline)</strong>. Hệ thống được chia tách rõ ràng thành 3 tác tử độc lập đóng vai trò riêng biệt, tối ưu hóa cả khả năng tính toán bối cảnh khách quan lẫn độ mượt nhập vai sáng tạo của mô hình ngôn ngữ lớn.</p>
-            <p>Đặc biệt, phiên bản này giải quyết triệt để vấn đề <strong>ô nhiễm cơ sở dữ liệu chat</strong> bằng cơ chế <i>Tiêm sạch (Clean Message Cloning Injection)</i> và cho phép người chơi tùy biến chọn mô hình riêng biệt dành riêng cho GM Agent (Đạo diễn) ngay trên giao diện điều khiển.</p>
-        </section>
-
-        <!-- PHẦN 2: LƯU ĐỒ HOẠT ĐỘNG CHÍNH -->
-        <section class="page-break">
-            <h2>2. Sơ đồ Hoạt động chính (Main Flowchart)</h2>
-            <p>Sơ đồ trình tự dưới đây mô tả chính xác những gì xảy ra ở hậu trường khi người chơi gõ một tin nhắn mới và nhấn <strong>SEND</strong>:</p>
-            
-            <div class="zoom-controls">
-                <button class="zoom-btn" id="zoom-out" title="Thu nhỏ">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span>Thu nhỏ</span>
-                </button>
-                <span class="zoom-val" id="zoom-val">100%</span>
-                <button class="zoom-btn" id="zoom-in" title="Phóng to">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    <span>Phóng to</span>
-                </button>
-                <button class="zoom-btn" id="zoom-reset" title="Đặt lại">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M3 21v-5h5"></path></svg>
-                    <span>Mặc định</span>
-                </button>
-            </div>
-            
-            <div class="diagram-container">
-                <div class="mermaid">
-                sequenceDiagram
-                    autonumber
-                    actor User as Người dùng
-                    participant ST as SillyTavern UI
-                    participant Orch as Event Orchestrator
-                    participant GM as GM Agent (Đạo diễn)
-                    participant State as State & Environment
-                    participant RP as RP Agent (Biên kịch)
-
-                    User->>ST: Nhấn nút SEND gửi tin nhắn
-                    ST->>Orch: Kích hoạt CHAT_COMPLETION_PROMPT_READY
-                    Note over Orch: Chặn luồng gửi đi để xử lý ngầm
-                    Orch->>GM: Gửi 5 tin nhắn gần nhất + Trạng thái môi trường hiện tại
-                    Note over GM: GM dùng LLMClient gọi generateRaw()<br/>gửi prompt phân tích bối cảnh mới
-                    GM-->>Orch: Phản hồi cục JSON (cảm xúc & bối cảnh mới)
-                    Orch->>State: Cập nhật dữ liệu cảm xúc/môi trường vào State
-                    Orch->>RP: Truyền Kế hoạch (Plan) & Trạng thái hiện tại
-                    RP-->>Orch: Trả về chuỗi System Note (Narrative Nudge) đã định dạng
-                    Note over Orch: TIÊM SẠCH:<br/>Nhân bản tin nhắn cuối trong mảng chat gửi đi<br/>và chèn Nudge vào bản sao. Không sửa DB chat!
-                    Orch-->>ST: Trả về mảng chat tạm thời đã chèn Nudge
-                    ST->>User: Gọi LLM chính viết thoại nhân vật dựa trên Nudge và hiển thị kết quả
-                </div>
-            </div>
-        </section>
-
-        <!-- PHẦN 3: BƯỚC THỰC HIỆN CHI TIẾT -->
-        <section class="page-break">
-            <h2>3. Các bước thực thi chi tiết (Execution Pipeline)</h2>
-            <div class="step-list">
-                <div class="step-card">
-                    <div class="step-num">1</div>
-                    <div class="step-body">
-                        <h4>Chặn Prompt gửi đi (Interception Phase)</h4>
-                        <p>Ngay khi sự kiện <code>CHAT_COMPLETION_PROMPT_READY</code> nổ ra, <code>EventOrchestrator</code> sẽ bắt lấy mảng chat clone được ST biên soạn gửi lên LLM. Điều này giúp chúng ta có cơ hội bổ sung dữ liệu bối cảnh trước khi LLM chính bắt đầu viết câu trả lời.</p>
-                    </div>
-                </div>
-                
-                <div class="step-card">
-                    <div class="step-num">2</div>
-                    <div class="step-body">
-                        <h4>Phân tích bối cảnh & lập kịch bản (GM Agent Cognition)</h4>
-                        <p>GM Agent đóng vai trò là "Thực tại khách quan" và "Đạo diễn". Nó đọc lịch sử đối thoại và trạng thái môi trường hiện tại, sau đó gọi mô hình LLM được cấu hình riêng (ví dụ: Gemini Flash Lite) thông qua <code>LLMClient.generate()</code> để nhận định tình huống và xuất ra kết quả phân tích JSON về cảm xúc và vị trí, thời tiết, thời gian mới.</p>
-                    </div>
-                </div>
-
-                <div class="step-card">
-                    <div class="step-num">3</div>
-                    <div class="step-body">
-                        <h4>Định hình chỉ thị ẩn (RP Agent Formatting)</h4>
-                        <p>RP Agent (Biên kịch) tiếp nhận chỉ thị thô của GM Agent, thực hiện việc định hình sắp xếp văn bản thô. Nó biên soạn ra một phân đoạn System Note sạch (ví dụ: mô tả địa điểm hiện tại là gì, thời tiết thế nào, Itto nên xưng hô ra sao) để bắt buộc LLM chính nhập vai tuân thủ.</p>
-                    </div>
-                </div>
-
-                <div class="step-card">
-                    <div class="step-num">4</div>
-                    <div class="step-body">
-                        <h4>Tiêm Sạch (Clean message-cloning injection)</h4>
-                        <p>Để đảm bảo không bị ghi đè dữ liệu rác vào DB (nguyên nhân gây ô nhiễm prompt và làm hỏng nút Swipe), <code>Orchestrator</code> tạo một bản sao nông (shallow clone) của đối tượng tin nhắn cuối cùng trong mảng chat tạm thời, chèn System Note vào cuối bản sao đó, rồi tráo đổi vị trí của nó trong mảng tạm. Khi hoàn thành, SillyTavern sẽ gửi mảng này đi nhưng lịch sử chat đã lưu vẫn hoàn toàn sạch sẽ.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PHẦN 4: HẬU TRƯỜNG CONSOLE -->
-        <section class="page-break">
-            <h2>4. Cơ chế Can thiệp Hậu trường (Backstage Console Console)</h2>
-            <p>AD Agent (Trợ lý đạo diễn) là người quản lý các biến trạng thái, cho phép người dùng can thiệp thủ công thông qua bảng Terminal của Dashboard. Dưới đây là các câu lệnh vận hành thực tế đã được tích hợp:</p>
-            
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Cú pháp lệnh</th>
-                            <th>Mục tiêu thay đổi</th>
-                            <th>Ví dụ thực tế</th>
-                            <th>Tác động hệ thống</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>/status</code> hoặc <code>status</code></td>
-                            <td>Xem thông số hiện tại</td>
-                            <td><code>status</code></td>
-                            <td>In ra trạng thái tác tử, Cảm xúc hiện tại và Bối cảnh môi trường chi tiết.</td>
-                        </tr>
-                        <tr>
-                            <td><code>/set location &lt;tên&gt;</code></td>
-                            <td>Thay đổi vị trí bối cảnh</td>
-                            <td><code>/set location Quán Rượu</code></td>
-                            <td>Cập nhật trực tiếp địa điểm hiện tại của State, đồng bộ tức thì lên giao diện UI.</td>
-                        </tr>
-                        <tr>
-                            <td><code>/set weather &lt;tên&gt;</code></td>
-                            <td>Thay đổi thời tiết</td>
-                            <td><code>/set weather Mưa tầm tã</code></td>
-                            <td>Thay đổi trạng thái thời tiết khách quan, chống ảo giác tự vẽ thời tiết của LLM.</td>
-                        </tr>
-                        <tr>
-                            <td><code>/set time &lt;tên&gt;</code></td>
-                            <td>Thay đổi mốc thời gian</td>
-                            <td><code>/set time Đêm muộn</code></td>
-                            <td>Cập nhật mốc thời gian diễn ra câu chuyện (sáng, trưa, chiều, tối).</td>
-                        </tr>
-                        <tr>
-                            <td><code>/reset</code> hoặc <code>reset</code></td>
-                            <td>Khôi phục mặc định</td>
-                            <td><code>reset</code></td>
-                            <td>Trả toàn bộ thông số cảm xúc, bối cảnh môi trường về trạng thái khởi tạo.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- FOOTER -->
-        <footer style="text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 50px; border-top: 1px solid var(--border-color); padding-top: 20px;">
-            <p>Báo cáo mật - Chỉ lưu hành nội bộ dự án ST Anima. Ấn Ctrl+P trên trình duyệt để xuất tệp PDF A4 chuẩn đẹp.</p>
-        </footer>
-    </div>
-
-    <!-- Zoom Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.querySelector('.diagram-container');
-            const scaleValEl = document.getElementById('zoom-val');
-            const btnIn = document.getElementById('zoom-in');
-            const btnOut = document.getElementById('zoom-out');
-            const btnReset = document.getElementById('zoom-reset');
-            
-            let currentScale = 100; // percent
-            const baseWidth = 1150; // pixels
-            const step = 15;        // percent
-            const minScale = 50;    // percent
-            const maxScale = 250;   // percent
-
-            function updateZoom() {
-                const svg = container.querySelector('svg');
-                if (svg) {
-                    const widthPx = Math.round((baseWidth * currentScale) / 100);
-                    svg.style.setProperty('width', `${widthPx}px`, 'important');
-                    scaleValEl.textContent = `${currentScale}%`;
-                }
-            }
-
-            btnIn.addEventListener('click', () => {
-                if (currentScale + step <= maxScale) {
-                    currentScale += step;
-                    updateZoom();
-                }
-            });
-
-            btnOut.addEventListener('click', () => {
-                if (currentScale - step >= minScale) {
-                    currentScale -= step;
-                    updateZoom();
-                }
-            });
-
-            btnReset.addEventListener('click', () => {
-                currentScale = 100;
-                updateZoom();
-            });
-
-            // Use MutationObserver to wait for Mermaid to inject the SVG
-            const observer = new MutationObserver((mutations) => {
-                const svg = container.querySelector('svg');
-                if (svg) {
-                    updateZoom();
-                    observer.disconnect(); // We got the SVG, stop observing
-                }
-            });
-
-            observer.observe(container, { childList: true, subtree: true });
-        });
-    </script>
+    <footer>
+        <p><strong>Báo cáo mật - Chỉ lưu hành nội bộ dự án ST Anima</strong></p>
+        <p>Nhấn Ctrl+P để xuất PDF</p>
+    </footer>
 </body>
 </html>
