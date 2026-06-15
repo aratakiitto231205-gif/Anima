@@ -14,9 +14,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v0.13.1 — LLM-powered GM Agent Hotfix)
+## 📊 Current State (v0.13.2 — LLM-powered GM Agent Hotfix 2)
 
-> **v0.13.1** = v0.13.0 + Hotfix infinite loop reentrancy trong GM interceptor.
+> **v0.13.2** = v0.13.1 + Fix duplicate API calls on prompt intercept & UI fixes.
 
 | Component | Status | Notes |
 |---|---|---|
@@ -208,4 +208,4 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-> **Last updated:** 2026-06-15 (v0.13.1 Hotfix infinite loop GM Agent)
+> **Last updated:** 2026-06-15 (v0.13.2 Hotfix UI & duplicate calls)

@@ -3,7 +3,7 @@
     <div class="inline-drawer-toggle inline-drawer-header userSettingsInnerExpandable" style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.15)); border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
         <b style="color: var(--SmartThemeTextAccentColor); font-size: 1.05em; display: flex; align-items: center; gap: 8px;">
             <i class="fa-solid fa-brain" style="color: #6366f1; animation: pulseBrain 2s infinite;"></i>
-            <span>Anima Engine v0.13.1</span>
+            <span>Anima Engine v0.13.2</span>
         </b>
         <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down" style="transition: transform 0.3s ease;"></div>
     </div>
@@ -19,8 +19,8 @@
 
         <!-- Section 2: Vitals Status (Status & Emotion) -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; justify-content: center; align-items: center; text-align: center;">
-                <span style="font-size: 0.75em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Tác tử</span>
+            <div id="anima_toggle_btn" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; justify-content: center; align-items: center; text-align: center; cursor: pointer; transition: all 0.2s;" title="Nhấn để bật/tắt Anima Engine">
+                <span style="font-size: 0.75em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Tác tử (Click Bật/Tắt)</span>
                 <div id="cog_dash_status" style="font-weight: bold; color: #10b981; font-size: 1.1em; text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);">Active</div>
             </div>
             
@@ -63,11 +63,13 @@
         <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
             <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
                 <i class="fa-solid fa-sliders" style="color: #10b981;"></i>
-                <span>Cấu hình GM Agent</span>
+                <span>Cấu hình API</span>
             </h4>
             <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.8em; color: #cbd5e1;">Model cho GM (để trống = dùng thiết lập ST):</label>
-                <div id="anima_gm_model_selector_container"></div>
+                <label style="font-size: 0.8em; color: #cbd5e1;">GM Agent sử dụng chung Connection Profile của ST.</label>
+                <button id="anima_open_st_api_btn" style="padding: 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); cursor: pointer; font-family: monospace; font-weight: bold; transition: all 0.2s;">
+                    <i class="fa-solid fa-plug"></i> Mở bảng thiết lập ST API
+                </button>
             </div>
         </div>
 

@@ -66,6 +66,25 @@ export const AnimaOrchestrator = {
             const lastMsgObj = chat[chat.length - 1];
             const lastUserMsg = lastMsgObj?.mes || lastMsgObj?.content || '';
 
+            // Prevent duplicate generation for the same user message (e.g. swipes or background ST tasks)
+            if (this.lastProcessedUserMsg === lastUserMsg) {
+                // If we already planned for this message, just inject the existing nudge (if any) and return
+                if (AnimaState.activePlan) {
+                    const nudge = RPAgent.formatNudge(AnimaState.activePlan, AnimaState);
+                    if (nudge && lastMsgObj) {
+                        const lastMsgIdx = chat.length - 1;
+                        const clonedLastMsg = { ...lastMsgObj };
+                        const rawText = clonedLastMsg.content || clonedLastMsg.mes || '';
+                        const cleanContent = rawText.split('\n\n[BỐI CẢNH & TRẠNG THÁI HIỆN TẠI')[0];
+                        const injection = `\n\n${nudge}`;
+                        if (clonedLastMsg.content !== undefined) clonedLastMsg.content = cleanContent + injection;
+                        if (clonedLastMsg.mes !== undefined) clonedLastMsg.mes = cleanContent + injection;
+                        chat[lastMsgIdx] = clonedLastMsg;
+                    }
+                }
+                return;
+            }
+
             // Run GM planner
             const plan = await GMAgent.planAndUpdate(chat, AnimaState, characterName);
 
