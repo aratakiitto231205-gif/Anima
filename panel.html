@@ -3,7 +3,7 @@
     <div class="inline-drawer-toggle inline-drawer-header userSettingsInnerExpandable" style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.15)); border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
         <b style="color: var(--SmartThemeTextAccentColor); font-size: 1.05em; display: flex; align-items: center; gap: 8px;">
             <i class="fa-solid fa-brain" style="color: #6366f1; animation: pulseBrain 2s infinite;"></i>
-            <span>Anima Engine v0.13.2</span>
+            <span>Anima Engine v0.13.3</span>
         </b>
         <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down" style="transition: transform 0.3s ease;"></div>
     </div>
@@ -63,13 +63,24 @@
         <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
             <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
                 <i class="fa-solid fa-sliders" style="color: #10b981;"></i>
-                <span>Cấu hình API</span>
+                <span>Cấu hình API cho GM Agent</span>
             </h4>
             <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label style="font-size: 0.8em; color: #cbd5e1;">GM Agent sử dụng chung Connection Profile của ST.</label>
-                <button id="anima_open_st_api_btn" style="padding: 8px; border-radius: 4px; background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); cursor: pointer; font-family: monospace; font-weight: bold; transition: all 0.2s;">
-                    <i class="fa-solid fa-plug"></i> Mở bảng thiết lập ST API
-                </button>
+                <select id="anima_api_mode" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.3); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82em; font-family: monospace;">
+                    <option value="global">Dùng thiết lập chung của ST</option>
+                    <option value="custom">Tùy chỉnh (Custom OpenAI-compatible API)</option>
+                </select>
+                
+                <div id="anima_custom_api_panel" style="display: none; flex-direction: column; gap: 6px; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
+                    <label style="font-size: 0.75em; color: #cbd5e1;">API URL (Gồm cả /v1):</label>
+                    <input type="text" id="anima_custom_url" placeholder="https://api.openai.com/v1" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.3); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82em; font-family: monospace;" />
+                    
+                    <label style="font-size: 0.75em; color: #cbd5e1;">API Key:</label>
+                    <input type="password" id="anima_custom_key" placeholder="sk-..." style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.3); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82em; font-family: monospace;" />
+                    
+                    <label style="font-size: 0.75em; color: #cbd5e1;">Model ID:</label>
+                    <input type="text" id="anima_custom_model" placeholder="gpt-4o-mini" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.3); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82em; font-family: monospace;" />
+                </div>
             </div>
         </div>
 

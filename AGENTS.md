@@ -14,9 +14,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v0.13.2 — LLM-powered GM Agent Hotfix 2)
+## 📊 Current State (v0.13.3 — LLM-powered GM Agent Hotfix 3)
 
-> **v0.13.2** = v0.13.1 + Fix duplicate API calls on prompt intercept & UI fixes.
+> **v0.13.3** = v0.13.2 + Fix broken prompt intercept due to ST array format & Add Custom API Subpanel.
 
 | Component | Status | Notes |
 |---|---|---|
@@ -208,4 +208,4 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-> **Last updated:** 2026-06-15 (v0.13.2 Hotfix UI & duplicate calls)
+> **Last updated:** 2026-06-15 (v0.13.3 Custom API Panel & Orchestrator Fix)

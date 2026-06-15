@@ -63,11 +63,19 @@ export const AnimaOrchestrator = {
             const character = context.characters[characterId];
             const characterName = character?.name || 'itto';
 
+            const rawChat = context.chat || [];
+            let actualLastUserMsgText = '';
+            for (let i = rawChat.length - 1; i >= 0; i--) {
+                if (rawChat[i].is_user) {
+                    actualLastUserMsgText = rawChat[i].mes || '';
+                    break;
+                }
+            }
+
             const lastMsgObj = chat[chat.length - 1];
-            const lastUserMsg = lastMsgObj?.mes || lastMsgObj?.content || '';
 
             // Prevent duplicate generation for the same user message (e.g. swipes or background ST tasks)
-            if (this.lastProcessedUserMsg === lastUserMsg) {
+            if (this.lastProcessedUserMsg === actualLastUserMsgText && actualLastUserMsgText !== '') {
                 // If we already planned for this message, just inject the existing nudge (if any) and return
                 if (AnimaState.activePlan) {
                     const nudge = RPAgent.formatNudge(AnimaState.activePlan, AnimaState);
@@ -113,7 +121,7 @@ export const AnimaOrchestrator = {
 
             // Save State
             AnimaState.saveForCharacter(characterId);
-            this.lastProcessedUserMsg = lastUserMsg;
+            this.lastProcessedUserMsg = actualLastUserMsgText;
         } catch (err) {
             logAnima('error', 'Orchestrator', `Lỗi xử lý prompt interceptor: ${err.message}`);
         } finally {

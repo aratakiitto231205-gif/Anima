@@ -57,6 +57,8 @@ export const AnimaUI = {
 
 
     setupButtons() {
+        this.setupApiPanel();
+        
         // Log Actions
         document.getElementById('cog_btn_clear_logs')?.addEventListener('click', () => clearAnimaLogs());
         document.getElementById('cog_btn_copy_logs')?.addEventListener('click', () => copyAnimaLogsToClipboard());
@@ -110,16 +112,64 @@ export const AnimaUI = {
             logAnima('info', 'UI', `Anima Engine toggled: ${newState}`);
         });
 
-        // Open ST API Panel
-        document.getElementById('anima_open_st_api_btn')?.addEventListener('click', () => {
-            const apiBtn = document.getElementById('api_button');
-            if (apiBtn) {
-                apiBtn.click();
-                logAnima('info', 'UI', 'Đã chuyển sang tab thiết lập ST API');
-            } else {
-                logAnima('warning', 'UI', 'Không tìm thấy tab API của ST');
+    },
+
+    async setupApiPanel() {
+        const modeSelect = document.getElementById('anima_api_mode');
+        const customPanel = document.getElementById('anima_custom_api_panel');
+        const urlInput = document.getElementById('anima_custom_url');
+        const keyInput = document.getElementById('anima_custom_key');
+        const modelInput = document.getElementById('anima_custom_model');
+
+        if (!modeSelect || !customPanel) return;
+
+        // Load settings
+        let settings = {};
+        try {
+            const ext = await import('../../../../../extensions.js');
+            settings = ext.extension_settings?.['st-anima'] || {};
+        } catch {
+            // Ignore in tests
+        }
+
+        // Set initial values
+        if (settings.api_mode) modeSelect.value = settings.api_mode;
+        if (settings.custom_url) urlInput.value = settings.custom_url;
+        if (settings.custom_key) keyInput.value = settings.custom_key;
+        if (settings.custom_model) modelInput.value = settings.custom_model;
+
+        const updateVisibility = () => {
+            customPanel.style.display = modeSelect.value === 'custom' ? 'flex' : 'none';
+        };
+        updateVisibility();
+
+        const saveSettings = async () => {
+            try {
+                const ext = await import('../../../../../extensions.js');
+                const script = await import('../../../../script.js');
+                const extension_settings = ext.extension_settings;
+                const saveSettingsDebounced = script.saveSettingsDebounced;
+
+                if (!extension_settings['st-anima']) extension_settings['st-anima'] = {};
+                extension_settings['st-anima'].api_mode = modeSelect.value;
+                extension_settings['st-anima'].custom_url = urlInput.value.trim();
+                extension_settings['st-anima'].custom_key = keyInput.value.trim();
+                extension_settings['st-anima'].custom_model = modelInput.value.trim();
+                
+                saveSettingsDebounced();
+                logAnima('success', 'UI', 'Đã lưu cấu hình API GM');
+            } catch (err) {
+                logAnima('error', 'UI', `Lỗi lưu cấu hình: ${err.message}`);
             }
+        };
+
+        modeSelect.addEventListener('change', () => {
+            updateVisibility();
+            saveSettings();
         });
+        urlInput.addEventListener('change', saveSettings);
+        keyInput.addEventListener('change', saveSettings);
+        modelInput.addEventListener('change', saveSettings);
     },
 
     renderPlaceholders(settings, defaultSettings) {

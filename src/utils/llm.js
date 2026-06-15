@@ -1,11 +1,10 @@
-// v0.13.0 — LLM Integration (reuse SillyTavern's generation API)
 import { logAnima } from './logger.js';
 
 export const LLMClient = {
     /**
-     * Calls ST's generation API with given prompt
+     * Calls LLM API with given prompt
      * @param {string} prompt - The prompt to send
-     * @param {Object} _options - Optional overrides (model, temperature, etc.)
+     * @param {Object} _options - Optional overrides
      * @returns {Promise<string>} Generated text
      */
     async generate(prompt, _options = {}) {
@@ -14,6 +13,50 @@ export const LLMClient = {
         }
 
         try {
+            let settings = {};
+            try {
+                const ext = await import('../../../../../extensions.js');
+                settings = ext.extension_settings?.['st-anima'] || {};
+            } catch {
+                // Ignore in testing environments
+            }
+
+            if (settings.api_mode === 'custom') {
+                const url = settings.custom_url || 'https://api.openai.com/v1';
+                const key = settings.custom_key || '';
+                const model = settings.custom_model || 'gpt-4o-mini';
+
+                logAnima('info', 'LLM', `Calling Custom API: ${url} (Model: ${model})`);
+                
+                const endpoint = url.endsWith('/') ? `${url}chat/completions` : `${url}/chat/completions`;
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${key}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{ role: 'user', content: prompt }],
+                        temperature: 0.7,
+                        max_tokens: 800
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Custom API returned ${response.status}: ${await response.text()}`);
+                }
+
+                const data = await response.json();
+                const result = data.choices?.[0]?.message?.content;
+
+                if (!result) throw new Error('No content in Custom API response');
+
+                logAnima('success', 'LLM', `Generated ${result.length} chars (Custom API)`);
+                return result;
+            }
+
+            // Fallback to ST's global API
             const context = SillyTavern.getContext();
             const { generateRaw } = context;
 
@@ -21,29 +64,14 @@ export const LLMClient = {
                 throw new Error('generateRaw function not available in ST context');
             }
 
-            // Check if user configured a specific model for GM
-            let gmModel = null;
-            try {
-                const ext = await import('../../../../../extensions.js');
-                gmModel = ext.extension_settings?.['st-anima']?.gm_model;
-            } catch {
-                // Ignore in testing environments
-            }
-
-            if (gmModel) {
-                logAnima('info', 'LLM', `Using GM-specific model: ${gmModel}`);
-                // ST's generateRaw will use the currently active API settings
-                // Model override would need deeper ST API integration
-            }
-
-            // Use ST's generateRaw API (respects user's current API/model settings)
+            logAnima('info', 'LLM', `Using ST Global API`);
             const result = await generateRaw(prompt, null, false, false);
 
             if (!result) {
                 throw new Error('Empty response from LLM');
             }
 
-            logAnima('success', 'LLM', `Generated ${result.length} chars`);
+            logAnima('success', 'LLM', `Generated ${result.length} chars (ST Global)`);
             return result;
         } catch (err) {
             logAnima('error', 'LLM', `Generation failed: ${err.message}`);
