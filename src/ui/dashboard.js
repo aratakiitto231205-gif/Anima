@@ -57,8 +57,8 @@ export const AnimaUI = {
 
 
     setupButtons() {
-        this.setupApiPanel();
-        
+        this.renderApiStatus();
+
         // Log Actions
         document.getElementById('cog_btn_clear_logs')?.addEventListener('click', () => clearAnimaLogs());
         document.getElementById('cog_btn_copy_logs')?.addEventListener('click', () => copyAnimaLogsToClipboard());
@@ -103,11 +103,17 @@ export const AnimaUI = {
             const newState = !AnimaState.enabled;
             ADAgent.handleUserCommand(`set enabled ${newState}`, AnimaState);
             this.updateUI(AnimaState);
+
+            // Persist state to character card so it survives reload
             if (typeof SillyTavern !== 'undefined') {
                 const charId = SillyTavern.getContext()?.characterId;
                 if (charId !== undefined) {
                     AnimaState.saveForCharacter(charId);
                 }
+            }
+
+            if (typeof toastr !== 'undefined') {
+                toastr.success(`Anima Engine: ${newState ? 'Đã bật' : 'Đã tắt'}`);
             }
             logAnima('info', 'UI', `Anima Engine toggled: ${newState}`);
         });
@@ -115,61 +121,37 @@ export const AnimaUI = {
     },
 
     async setupApiPanel() {
-        const modeSelect = document.getElementById('anima_api_mode');
-        const customPanel = document.getElementById('anima_custom_api_panel');
-        const urlInput = document.getElementById('anima_custom_url');
-        const keyInput = document.getElementById('anima_custom_key');
-        const modelInput = document.getElementById('anima_custom_model');
+        // Backward-compatible: now just calls renderApiStatus
+        return this.renderApiStatus();
+    },
 
-        if (!modeSelect || !customPanel) return;
+    async renderApiStatus() {
+        const statusEl = document.getElementById('anima_api_status');
+        if (!statusEl) return;
 
-        // Load settings
-        let settings = {};
-        try {
-            const ext = await import('../../../../../extensions.js');
-            settings = ext.extension_settings?.['st-anima'] || {};
-        } catch {
-            // Ignore in tests
+        if (typeof SillyTavern === 'undefined') {
+            statusEl.innerHTML = '<i style="color: #f87171;">ST context chưa sẵn sàng</i>';
+            return;
         }
 
-        // Set initial values
-        if (settings.api_mode) modeSelect.value = settings.api_mode;
-        if (settings.custom_url) urlInput.value = settings.custom_url;
-        if (settings.custom_key) keyInput.value = settings.custom_key;
-        if (settings.custom_model) modelInput.value = settings.custom_model;
+        try {
+            const context = SillyTavern.getContext();
+            const mainApi = context.main_api || 'unknown';
+            const chatSource = context.chat_completion_source || '';
+            const model = context.model || '(chưa chọn)';
+            const apiUrl = context.api_url || '';
 
-        const updateVisibility = () => {
-            customPanel.style.display = modeSelect.value === 'custom' ? 'flex' : 'none';
-        };
-        updateVisibility();
+            let html = '<div style="display: flex; flex-direction: column; gap: 4px;">';
+            html += `<div><span style="color: #94a3b8;">API:</span> <span style="color: #34d399;">${mainApi}</span>${chatSource ? ` <span style="color: #64748b;">(${chatSource})</span>` : ''}</div>`;
+            html += `<div><span style="color: #94a3b8;">Model:</span> <span style="color: #fbbf24;">${model}</span></div>`;
+            if (apiUrl) html += `<div><span style="color: #94a3b8;">URL:</span> <span style="color: #cbd5e1; word-break: break-all;">${apiUrl}</span></div>`;
+            html += '<div style="color: #64748b; font-size: 0.9em; margin-top: 2px;"><i>GM Agent dùng connection profile hiện tại của ST.</i></div>';
+            html += '</div>';
 
-        const saveSettings = async () => {
-            try {
-                const ext = await import('../../../../../extensions.js');
-                const script = await import('../../../../script.js');
-                const extension_settings = ext.extension_settings;
-                const saveSettingsDebounced = script.saveSettingsDebounced;
-
-                if (!extension_settings['st-anima']) extension_settings['st-anima'] = {};
-                extension_settings['st-anima'].api_mode = modeSelect.value;
-                extension_settings['st-anima'].custom_url = urlInput.value.trim();
-                extension_settings['st-anima'].custom_key = keyInput.value.trim();
-                extension_settings['st-anima'].custom_model = modelInput.value.trim();
-                
-                saveSettingsDebounced();
-                logAnima('success', 'UI', 'Đã lưu cấu hình API GM');
-            } catch (err) {
-                logAnima('error', 'UI', `Lỗi lưu cấu hình: ${err.message}`);
-            }
-        };
-
-        modeSelect.addEventListener('change', () => {
-            updateVisibility();
-            saveSettings();
-        });
-        urlInput.addEventListener('change', saveSettings);
-        keyInput.addEventListener('change', saveSettings);
-        modelInput.addEventListener('change', saveSettings);
+            statusEl.innerHTML = html;
+        } catch (err) {
+            statusEl.innerHTML = `<i style="color: #f87171;">Lỗi đọc connection profile: ${err.message}</i>`;
+        }
     },
 
     renderPlaceholders(settings, defaultSettings) {

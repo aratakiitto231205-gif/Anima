@@ -65,22 +65,8 @@
                 <i class="fa-solid fa-sliders" style="color: #10b981;"></i>
                 <span>Cấu hình API cho GM Agent</span>
             </h4>
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <select id="anima_api_mode" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.3); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82em; font-family: monospace;">
-                    <option value="global">Dùng thiết lập chung của ST</option>
-                    <option value="custom">Tùy chỉnh (Custom OpenAI-compatible API)</option>
-                </select>
-                
-                <div id="anima_custom_api_panel" style="display: none; flex-direction: column; gap: 6px; margin-top: 4px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px;">
-                    <label style="font-size: 0.75em; color: #cbd5e1;">API URL (Gồm cả /v1):</label>
-                    <input type="text" id="anima_custom_url" placeholder="https://api.openai.com/v1" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.3); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82em; font-family: monospace;" />
-                    
-                    <label style="font-size: 0.75em; color: #cbd5e1;">API Key:</label>
-                    <input type="password" id="anima_custom_key" placeholder="sk-..." style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.3); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82em; font-family: monospace;" />
-                    
-                    <label style="font-size: 0.75em; color: #cbd5e1;">Model ID:</label>
-                    <input type="text" id="anima_custom_model" placeholder="gpt-4o-mini" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(0,0,0,0.3); color: #e2e8f0; border: 1px solid rgba(255,255,255,0.1); font-size: 0.82em; font-family: monospace;" />
-                </div>
+            <div id="anima_api_status" style="font-size: 0.82em; color: #cbd5e1; background: rgba(0, 0, 0, 0.2); border-radius: 4px; padding: 8px 10px; font-family: monospace;">
+                <i style="color: #64748b;">Đang tải thông tin connection profile...</i>
             </div>
         </div>
 

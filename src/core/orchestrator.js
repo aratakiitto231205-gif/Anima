@@ -9,6 +9,7 @@ export const AnimaOrchestrator = {
     eventSource: null,
     event_types: null,
     lastProcessedUserMsg: '',
+    lastProcessedSwipeId: -1,
     isProcessingPrompt: false,
 
     init({ eventSource, event_types }) {
@@ -19,7 +20,18 @@ export const AnimaOrchestrator = {
         this.eventSource.on(this.event_types.CHAT_CHANGED, () => this.onChatChanged());
         this.eventSource.on(this.event_types.MESSAGE_RECEIVED, (msgId) => this.onMessageReceived(msgId));
         this.eventSource.on(this.event_types.CHARACTER_MESSAGE_RENDERED, (msgId) => this.onMessageReceived(msgId));
-        
+
+        // Refresh connection profile panel when profile loads
+        if (this.event_types.CONNECTION_PROFILE_LOADED) {
+            this.eventSource.on(this.event_types.CONNECTION_PROFILE_LOADED, () => AnimaUI.renderApiStatus());
+        }
+        if (this.event_types.CHATCOMPLETION_MODEL_CHANGED) {
+            this.eventSource.on(this.event_types.CHATCOMPLETION_MODEL_CHANGED, () => AnimaUI.renderApiStatus());
+        }
+        if (this.event_types.MAIN_API_CHANGED) {
+            this.eventSource.on(this.event_types.MAIN_API_CHANGED, () => AnimaUI.renderApiStatus());
+        }
+
         // ST prompt readiness interception
         this.eventSource.on(this.event_types.CHAT_COMPLETION_PROMPT_READY, (data) => this.onPromptInterceptor(data?.chat));
         this.eventSource.on(this.event_types.GENERATE_BEFORE_COMBINE_PROMPTS, () => this.onTextCompletionPromptReady());
@@ -33,6 +45,7 @@ export const AnimaOrchestrator = {
 
     async onChatChanged() {
         this.lastProcessedUserMsg = '';
+        this.lastProcessedSwipeId = -1;
         
         if (typeof SillyTavern === 'undefined') return;
         const context = SillyTavern.getContext();
@@ -53,6 +66,12 @@ export const AnimaOrchestrator = {
         if (!chat || !Array.isArray(chat) || chat.length === 0) return;
         if (this.isProcessingPrompt) return;
 
+        // Skip if Anima is disabled
+        if (AnimaState.enabled === false) {
+            logAnima('info', 'Orchestrator', 'Anima disabled - skipping GM.');
+            return;
+        }
+
         this.isProcessingPrompt = true;
         try {
             if (typeof SillyTavern === 'undefined') return;
@@ -65,30 +84,28 @@ export const AnimaOrchestrator = {
 
             const rawChat = context.chat || [];
             let actualLastUserMsgText = '';
-            let lastUserMsgIndex = -1;
             for (let i = rawChat.length - 1; i >= 0; i--) {
                 if (rawChat[i].is_user) {
                     actualLastUserMsgText = rawChat[i].mes || '';
-                    lastUserMsgIndex = i;
                     break;
                 }
             }
 
-            // Chỉ xử lý nếu có user message và nó chưa được process
+            // Chỉ xử lý nếu có user message
             if (!actualLastUserMsgText) return;
-
-            // Kiểm tra xem có char message nào sau user message không (tức đã gen xong)
-            const hasCharResponseAfter = rawChat.slice(lastUserMsgIndex + 1).some(m => !m.is_user);
-            if (hasCharResponseAfter) {
-                // Đã có response rồi, không gọi GM nữa
-                return;
-            }
 
             const lastMsgObj = chat[chat.length - 1];
 
-            // Swipe case: cùng user message nhưng gen lại response
-            if (this.lastProcessedUserMsg === actualLastUserMsgText) {
-                // Dùng lại plan cũ, chỉ inject nudge
+            // Detect swipe: same user message, but swipe_id changed since last process
+            const lastCharMsg = rawChat[rawChat.length - 1];
+            const currentSwipeId = lastCharMsg?.swipe_id ?? lastCharMsg?.swipeId ?? 0;
+            const isSwipe = this.lastProcessedUserMsg === actualLastUserMsgText
+                          && currentSwipeId !== this.lastProcessedSwipeId;
+
+            if (isSwipe) {
+                logAnima('info', 'Orchestrator', `Swipe detected (id=${currentSwipeId}), GM sẽ chạy lại với state trước.`);
+            } else if (this.lastProcessedUserMsg === actualLastUserMsgText && !isSwipe) {
+                // Cùng message, cùng swipe → duplicate, chỉ inject nudge nếu có
                 if (AnimaState.activePlan) {
                     const nudge = RPAgent.formatNudge(AnimaState.activePlan, AnimaState);
                     if (nudge && lastMsgObj) {
@@ -105,7 +122,7 @@ export const AnimaOrchestrator = {
                 return;
             }
 
-            // User message mới → gọi GM
+            // User message mới HOẶC swipe → gọi GM (state vẫn cập nhật từ lần trước nếu swipe)
             const plan = await GMAgent.planAndUpdate(chat, AnimaState, characterName);
 
             // Update State & UI
@@ -134,6 +151,7 @@ export const AnimaOrchestrator = {
             // Save State
             AnimaState.saveForCharacter(characterId);
             this.lastProcessedUserMsg = actualLastUserMsgText;
+            this.lastProcessedSwipeId = currentSwipeId;
         } catch (err) {
             logAnima('error', 'Orchestrator', `Lỗi xử lý prompt interceptor: ${err.message}`);
         } finally {

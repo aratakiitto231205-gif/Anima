@@ -44,6 +44,7 @@ async function init() {
     // 2. Mount Dashboard UI và vẽ placeholder
     await AnimaUI.mount(MODULE_NAME);
     AnimaUI.renderPlaceholders(extension_settings[EXT_NAME], defaultSettings);
+    AnimaUI.renderApiStatus();
 
     // 3. Khởi tạo Event Orchestrator
     AnimaOrchestrator.init({ eventSource, event_types });
