@@ -177,6 +177,8 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-14 | Tích hợp LLM cho GM Agent (v0.13.0) | Kết nối GM Agent với LLM thông qua API `generateRaw` của SillyTavern để lập kế hoạch hội thoại tự động (thay thế rule-based). Bổ sung selector chọn Model riêng cho GM trên Dashboard UI. |
 | 2026-06-21 | Fix Swipe State & Global Toggle (v0.13.4) | Bổ sung `snapshot()` cho `AnimaState` để chống cộng dồn cảm xúc khi swipe. Nút toggle dashboard giờ thay đổi `extension_settings.enabled` thay vì state cục bộ. |
 | 2026-06-21 | Native Custom API UI (v0.13.4) | Xây dựng UI form Custom API y hệt ST (Chat Completion Source, Reverse Proxy, Connect button). Chuyển `llm.js` sang Dependency Injection để vượt lỗi import `extensions.js` trong Vitest. |
+| 2026-06-21 | UI Cloning & Isolation Policy | Khi clone UI của ST (VD: Connection Profile), TUYỆT ĐỐI KHÔNG copy-paste code nội bộ của ST (như jQuery ajax, biến global). Phải viết lại bằng JS thuần (`fetch`) để đảm bảo tính độc lập (Isolation) và không ghi đè setting chat chính của user. |
+| 2026-06-21 | Autosave over over-engineering | Thay vì làm hệ thống Profile Management phức tạp (New/Save/Delete), dùng event `input` để autosave realtime. Vừa đáp ứng UX (không bắt user gõ lại), vừa giữ codebase nhẹ gọn. |
 
 
 ---
