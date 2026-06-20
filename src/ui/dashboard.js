@@ -229,9 +229,25 @@ export const AnimaUI = {
         availableModelsSelect?.addEventListener('change', (e) => {
             if (modelInput) {
                 modelInput.value = e.target.value;
+                const settings = extension_settings[this.MODULE_NAME];
+                if (settings) settings.custom_api_model = e.target.value;
                 saveSettingsDebounced();
             }
         });
+
+        // Auto-save inputs while typing
+        const autoSaveInput = (id, settingKey) => {
+            document.getElementById(id)?.addEventListener('input', (e) => {
+                const settings = extension_settings[this.MODULE_NAME];
+                if (settings) {
+                    settings[settingKey] = e.target.value;
+                    saveSettingsDebounced();
+                }
+            });
+        };
+        autoSaveInput('anima_custom_api_url', 'custom_api_url');
+        autoSaveInput('anima_custom_api_key', 'custom_api_key');
+        autoSaveInput('anima_custom_api_model', 'custom_api_model');
 
         // Save Key Visual Feedback
         document.getElementById('anima_custom_api_key_btn')?.addEventListener('click', () => {
