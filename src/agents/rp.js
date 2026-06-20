@@ -1,4 +1,4 @@
-// v0.12.3 — Role-Play Writer Prompt Nudge Formatter
+// v0.13.3 — Role-Play Writer Prompt Nudge Formatter
 import { logAnima } from '../utils/logger.js';
 
 export const RPAgent = {

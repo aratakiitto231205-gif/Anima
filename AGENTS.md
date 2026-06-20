@@ -14,9 +14,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v0.13.3 — LLM-powered GM Agent Hotfix 3)
+## 📊 Current State (v0.13.4 — State Snapshot, Global Toggle & Native Custom API UI)
 
-> **v0.13.3** = v0.13.2 + Fix broken prompt intercept due to ST array format & Add Custom API Subpanel.
+> **v0.13.4** = Fix swipe state accumulation + Toggle extension globally + Custom API UI matches ST native.
 
 | Component | Status | Notes |
 |---|---|---|
@@ -175,6 +175,8 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-09 | Rebooted project & cleaned workspace | Cleared `agent_handoff/` and removed old research files from `docs/` to keep focus 100% minimal. |
 | 2026-06-14 | Triển khai 3 Agent & Environment (v0.12.4) | Dựng khung GM, RP, AD Agent. Tích hợp thực tại khách quan (Environment: location, time, weather). Chuyển sang tiêm sạch (clonedLastMsg) không làm bẩn DB chat của người dùng. |
 | 2026-06-14 | Tích hợp LLM cho GM Agent (v0.13.0) | Kết nối GM Agent với LLM thông qua API `generateRaw` của SillyTavern để lập kế hoạch hội thoại tự động (thay thế rule-based). Bổ sung selector chọn Model riêng cho GM trên Dashboard UI. |
+| 2026-06-21 | Fix Swipe State & Global Toggle (v0.13.4) | Bổ sung `snapshot()` cho `AnimaState` để chống cộng dồn cảm xúc khi swipe. Nút toggle dashboard giờ thay đổi `extension_settings.enabled` thay vì state cục bộ. |
+| 2026-06-21 | Native Custom API UI (v0.13.4) | Xây dựng UI form Custom API y hệt ST (Chat Completion Source, Reverse Proxy, Connect button). Chuyển `llm.js` sang Dependency Injection để vượt lỗi import `extensions.js` trong Vitest. |
 
 
 ---
@@ -208,4 +210,4 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-> **Last updated:** 2026-06-15 (v0.13.3 Custom API Panel & Orchestrator Fix)
+> **Last updated:** 2026-06-21 (v0.13.4 State Snapshot, Global Toggle & Native Custom API UI)

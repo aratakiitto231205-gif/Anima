@@ -1,4 +1,4 @@
-// v0.12.3 — Simplified Dashboard UI Manager
+// v0.13.3 — Simplified Dashboard UI Manager
 import { 
     logAnima, 
     registerAppendLogCallback, 
@@ -8,6 +8,8 @@ import {
 } from '../utils/logger.js';
 import { ADAgent } from '../agents/ad.js';
 import { AnimaState } from '../core/state.js';
+import { extension_settings } from '../../../../../extensions.js';
+import { saveSettingsDebounced } from '../../../../../../script.js';
 
 export const AnimaUI = {
     MODULE_NAME: 'st-anima',
@@ -100,17 +102,13 @@ export const AnimaUI = {
 
         // Toggle State Enable/Disable
         document.getElementById('anima_toggle_btn')?.addEventListener('click', () => {
-            const newState = !AnimaState.enabled;
-            ADAgent.handleUserCommand(`set enabled ${newState}`, AnimaState);
+            const settings = extension_settings[this.MODULE_NAME];
+            const newState = !(settings.enabled !== false);
+            
+            settings.enabled = newState;
+            saveSettingsDebounced();
+            
             this.updateUI(AnimaState);
-
-            // Persist state to character card so it survives reload
-            if (typeof SillyTavern !== 'undefined') {
-                const charId = SillyTavern.getContext()?.characterId;
-                if (charId !== undefined) {
-                    AnimaState.saveForCharacter(charId);
-                }
-            }
 
             if (typeof toastr !== 'undefined') {
                 toastr.success(`Anima Engine: ${newState ? 'Đã bật' : 'Đã tắt'}`);
@@ -118,6 +116,48 @@ export const AnimaUI = {
             logAnima('info', 'UI', `Anima Engine toggled: ${newState}`);
         });
 
+        // API Config Selection
+        const selectApiType = document.getElementById('anima_api_type');
+        const customPanel = document.getElementById('anima_custom_api_panel');
+        const stPanel = document.getElementById('anima_st_api_panel');
+
+        const toggleApiPanel = () => {
+            if (!selectApiType) return;
+            const isCustom = selectApiType.value === 'custom';
+            if (customPanel) customPanel.style.display = isCustom ? 'flex' : 'none';
+            if (stPanel) stPanel.style.display = isCustom ? 'none' : 'flex';
+            
+            const settings = extension_settings[this.MODULE_NAME];
+            if (settings) {
+                settings.api_type = isCustom ? 'custom' : 'st_main';
+                saveSettingsDebounced();
+            }
+        };
+
+        selectApiType?.addEventListener('change', toggleApiPanel);
+
+        // Open ST Settings
+        document.getElementById('anima_open_st_api_btn')?.addEventListener('click', () => {
+            const stApiBtn = document.getElementById('api_button');
+            if (stApiBtn) {
+                stApiBtn.click();
+            } else {
+                logAnima('warn', 'UI', 'Không tìm thấy nút api_button của SillyTavern.');
+            }
+        });
+
+        // Save Custom Config
+        document.getElementById('anima_custom_api_save_btn')?.addEventListener('click', () => {
+            const settings = extension_settings[this.MODULE_NAME];
+            if (!settings) return;
+            settings.custom_api_url = document.getElementById('anima_custom_api_url')?.value || '';
+            settings.custom_api_key = document.getElementById('anima_custom_api_key')?.value || '';
+            settings.custom_api_model = document.getElementById('anima_custom_api_model')?.value || '';
+            saveSettingsDebounced();
+            
+            if (typeof toastr !== 'undefined') toastr.success('Đã lưu cấu hình API riêng cho GM Agent.');
+            logAnima('success', 'UI', 'Custom API configuration saved.');
+        });
     },
 
     async setupApiPanel() {
@@ -156,12 +196,30 @@ export const AnimaUI = {
 
     renderPlaceholders(settings, defaultSettings) {
         const activeSettings = settings || defaultSettings;
+        const isEnabled = activeSettings.enabled !== false;
+
+        // Restore API config inputs
+        const apiType = activeSettings.api_type || 'st_main';
+        const selectApiType = document.getElementById('anima_api_type');
+        if (selectApiType) selectApiType.value = apiType;
+
+        const customPanel = document.getElementById('anima_custom_api_panel');
+        const stPanel = document.getElementById('anima_st_api_panel');
+        if (customPanel) customPanel.style.display = apiType === 'custom' ? 'flex' : 'none';
+        if (stPanel) stPanel.style.display = apiType === 'custom' ? 'none' : 'flex';
+
+        const urlInput = document.getElementById('anima_custom_api_url');
+        const keyInput = document.getElementById('anima_custom_api_key');
+        const modelInput = document.getElementById('anima_custom_api_model');
+        if (urlInput) urlInput.value = activeSettings.custom_api_url || '';
+        if (keyInput) keyInput.value = activeSettings.custom_api_key || '';
+        if (modelInput) modelInput.value = activeSettings.custom_api_model || '';
 
         // Status
         const statusEl = document.getElementById('cog_dash_status');
         if (statusEl) {
-            statusEl.innerText = activeSettings.enabled ? 'Active ✓' : 'Disabled';
-            statusEl.style.color = activeSettings.enabled ? '#10b981' : '#94a3b8';
+            statusEl.innerText = isEnabled ? 'Active ✓' : 'Disabled';
+            statusEl.style.color = isEnabled ? '#10b981' : '#94a3b8';
         }
 
         // Emotion
@@ -204,8 +262,9 @@ export const AnimaUI = {
         // Status
         const statusEl = document.getElementById('cog_dash_status');
         if (statusEl) {
-            statusEl.innerText = state.enabled ? 'Active ✓' : 'Disabled';
-            statusEl.style.color = state.enabled ? '#10b981' : '#94a3b8';
+            const isEnabled = extension_settings[this.MODULE_NAME]?.enabled !== false;
+            statusEl.innerText = isEnabled ? 'Active ✓' : 'Disabled';
+            statusEl.style.color = isEnabled ? '#10b981' : '#94a3b8';
         }
 
         // Emotion

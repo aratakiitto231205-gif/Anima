@@ -1,10 +1,10 @@
-// v0.13.0 — Game Master Agent (LLM-powered)
+// v0.13.3 — Game Master Agent (LLM-powered)
 import { logAnima } from '../utils/logger.js';
 import { LLMClient } from '../utils/llm.js';
 
 export const GMAgent = {
     // Computes structured narrative plan & emotion updates based on chat context
-    async planAndUpdate(chat, state, characterName) {
+    async planAndUpdate(chat, state, characterName, settings = {}) {
         logAnima('info', 'GM Agent', `Đang lập kịch bản kể chuyện cho ${characterName}...`);
 
         if (!chat || chat.length === 0) {
@@ -15,7 +15,7 @@ export const GMAgent = {
             const context = this.buildContext(chat, state, characterName);
             const prompt = this.buildPrompt(context);
 
-            const response = await LLMClient.generate(prompt);
+            const response = await LLMClient.generate(prompt, settings);
             const parsed = this.parseResponse(response);
 
             return parsed;

@@ -1,4 +1,4 @@
-// v0.12.2 — Clean Skeleton Bootstrapper
+// v0.13.3 — Clean Skeleton Bootstrapper
 import { eventSource, event_types, saveSettingsDebounced } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
 import { AnimaUI } from './src/ui/dashboard.js';
@@ -31,7 +31,7 @@ const defaultSettings = {
 };
 
 async function init() {
-    logAnima('info', 'System', 'Khởi chạy Anima Engine v0.12.2...');
+    logAnima('info', 'System', 'Khởi chạy Anima Engine v0.13.3...');
 
     // 1. Khởi tạo cài đặt mặc định
     if (!extension_settings[EXT_NAME]) {

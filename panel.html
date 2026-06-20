@@ -61,12 +61,58 @@
 
         <!-- Section 5: GM Model Configuration -->
         <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
-            <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
-                <i class="fa-solid fa-sliders" style="color: #10b981;"></i>
-                <span>Cấu hình API cho GM Agent</span>
+            <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                <i class="fa-solid fa-server" style="color: #10b981;"></i>
+                <span>API Connection</span>
             </h4>
-            <div id="anima_api_status" style="font-size: 0.82em; color: #cbd5e1; background: rgba(0, 0, 0, 0.2); border-radius: 4px; padding: 8px 10px; font-family: monospace;">
-                <i style="color: #64748b;">Đang tải thông tin connection profile...</i>
+            
+            <div class="api_setup flex-container" style="margin-bottom: 5px;">
+                <label for="anima_api_type" style="font-size: 0.85em;">API</label>
+                <select id="anima_api_type" class="text_pole flex1">
+                    <option value="st_main">SillyTavern Default</option>
+                    <option value="custom">Custom (OpenAI Format)</option>
+                </select>
+            </div>
+
+            <!-- ST Connection Default Subpanel -->
+            <div id="anima_st_api_panel" style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="font-size: 0.82em; color: #cbd5e1; background: rgba(0, 0, 0, 0.2); border-radius: 4px; padding: 8px 10px; font-family: monospace;">
+                    <i>Đang sử dụng cấu hình API chung của hệ thống.</i>
+                </div>
+                <div id="anima_open_st_api_btn" class="menu_button menu_button_icon" style="justify-content: center; width: 100%;">
+                    <i class="fa-solid fa-plug"></i>
+                    <span>Mở Module Cài Đặt Gốc</span>
+                </div>
+            </div>
+
+            <!-- Custom API Subpanel (y hệt ST OpenAI) -->
+            <div id="anima_custom_api_panel" class="api_setup" style="display: none; flex-direction: column; gap: 10px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;">
+                
+                <div class="flex-container alignitemscenter">
+                    <label for="anima_custom_api_url" style="font-size: 0.85em;">Chat Completion Source</label>
+                    <select id="anima_custom_api_source" class="text_pole flex1">
+                        <option value="reverse_proxy">Reverse Proxy</option>
+                    </select>
+                </div>
+
+                <div class="flex-container alignitemscenter">
+                    <label for="anima_custom_api_url" style="font-size: 0.85em;">Reverse Proxy</label>
+                    <input type="text" id="anima_custom_api_url" class="text_pole flex1" placeholder="http://127.0.0.1:5001/v1" />
+                </div>
+                
+                <div class="flex-container alignitemscenter">
+                    <label for="anima_custom_api_key" style="font-size: 0.85em;">API Key</label>
+                    <input type="password" id="anima_custom_api_key" class="text_pole flex1" placeholder="sk-..." />
+                    <div id="anima_custom_api_save_btn" class="menu_button menu_button_icon">
+                        <i class="fa-solid fa-plug"></i>
+                        <span>Connect</span>
+                    </div>
+                </div>
+
+                <div class="flex-container alignitemscenter">
+                    <label for="anima_custom_api_model" style="font-size: 0.85em;">Chat Completion Model</label>
+                    <input type="text" id="anima_custom_api_model" class="text_pole flex1" placeholder="gpt-4o-mini" />
+                </div>
             </div>
         </div>
 

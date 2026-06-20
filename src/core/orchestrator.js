@@ -67,7 +67,8 @@ export const AnimaOrchestrator = {
         if (this.isProcessingPrompt) return;
 
         // Skip if Anima is disabled
-        if (AnimaState.enabled === false) {
+        const settings = extension_settings?.['st-anima'] || {};
+        if (settings.enabled === false) {
             logAnima('info', 'Orchestrator', 'Anima disabled - skipping GM.');
             return;
         }
@@ -104,6 +105,7 @@ export const AnimaOrchestrator = {
 
             if (isSwipe) {
                 logAnima('info', 'Orchestrator', `Swipe detected (id=${currentSwipeId}), GM sẽ chạy lại với state trước.`);
+                AnimaState.restoreSnapshot();
             } else if (this.lastProcessedUserMsg === actualLastUserMsgText && !isSwipe) {
                 // Cùng message, cùng swipe → duplicate, chỉ inject nudge nếu có
                 if (AnimaState.activePlan) {
@@ -122,8 +124,11 @@ export const AnimaOrchestrator = {
                 return;
             }
 
-            // User message mới HOẶC swipe → gọi GM (state vẫn cập nhật từ lần trước nếu swipe)
-            const plan = await GMAgent.planAndUpdate(chat, AnimaState, characterName);
+            // User message mới HOẶC swipe → gọi GM
+            if (!isSwipe) {
+                AnimaState.snapshot();
+            }
+            const plan = await GMAgent.planAndUpdate(chat, AnimaState, characterName, settings);
 
             // Update State & UI
             AnimaState.updateFromGM(plan);
@@ -170,6 +175,9 @@ export const AnimaOrchestrator = {
         const context = SillyTavern.getContext();
         const chat = context?.chat;
         if (!chat) return;
+
+        const settings = extension_settings?.['st-anima'] || {};
+        if (settings.enabled === false) return;
 
         const messageObj = chat[messageId];
         if (!messageObj || messageObj.is_user || messageObj.is_system) return;

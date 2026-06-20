@@ -1,4 +1,4 @@
-// v0.11.0 skeleton — sketch stage
+// v0.13.3 — logger
 let appendLogToUiCallback = null;
 
 export function registerAppendLogCallback(callback) {
@@ -19,9 +19,11 @@ const MAX_LOG_SIZE = 150;
 let animaLogs = [];
 
 try {
-    const savedLogs = sessionStorage.getItem('anima_engine_session_logs');
-    if (savedLogs) {
-        animaLogs = JSON.parse(savedLogs);
+    if (typeof sessionStorage !== 'undefined') {
+        const savedLogs = sessionStorage.getItem('anima_engine_session_logs');
+        if (savedLogs) {
+            animaLogs = JSON.parse(savedLogs);
+        }
     }
 } catch (e) {
     console.warn('Anima Logger: Failed to load session logs:', e);
@@ -45,7 +47,9 @@ export function logAnima(level, moduleName, message, detail = null) {
     }
 
     try {
-        sessionStorage.setItem('anima_engine_session_logs', JSON.stringify(animaLogs));
+        if (typeof sessionStorage !== 'undefined') {
+            sessionStorage.setItem('anima_engine_session_logs', JSON.stringify(animaLogs));
+        }
     } catch {
         // Session storage update failed, fail silently
     }

@@ -7,7 +7,11 @@ export const LLMClient = {
      * @param {Object} _options - Optional overrides
      * @returns {Promise<string>} Generated text
      */
-    async generate(prompt, _options = {}) {
+    async generate(prompt, settings = {}) {
+        if (settings.api_type === 'custom') {
+            return this.generateCustom(prompt, settings);
+        }
+
         if (typeof SillyTavern === 'undefined') {
             throw new Error('SillyTavern context not available');
         }
@@ -33,6 +37,50 @@ export const LLMClient = {
         } catch (err) {
             logAnima('error', 'LLM', `Generation failed: ${err.message}`);
             throw err;
+        }
+    },
+
+    async generateCustom(prompt, settings) {
+        logAnima('info', 'LLM', 'Calling Custom API (OpenAI format)');
+        
+        const url = settings.custom_api_url;
+        if (!url) throw new Error('Chưa thiết lập URL cho Custom API.');
+        
+        const apiKey = settings.custom_api_key || '';
+        const model = settings.custom_api_model || 'gpt-3.5-turbo';
+
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (apiKey) {
+            headers['Authorization'] = `Bearer ${apiKey}`;
+        }
+
+        const body = JSON.stringify({
+            model: model,
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.7,
+            max_tokens: 1000
+        });
+
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: body
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data && data.choices && data.choices.length > 0) {
+            const result = data.choices[0].message.content;
+            logAnima('success', 'LLM', `Generated ${result.length} chars from Custom API`);
+            return result;
+        } else {
+            throw new Error('Custom API trả về định dạng không hợp lệ.');
         }
     }
 };

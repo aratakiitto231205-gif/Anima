@@ -1,4 +1,4 @@
-// v0.12.3 — Simplified State Manager
+// v0.13.3 — Simplified State Manager
 import { logAnima } from '../utils/logger.js';
 
 export const AnimaState = {
@@ -11,6 +11,25 @@ export const AnimaState = {
         timeOfDay: 'Mặc định',
         weather: 'Mặc định',
         inventory: []
+    },
+    snapshotState: null,
+
+    snapshot() {
+        this.snapshotState = {
+            active_emotion: this.active_emotion,
+            activePlan: this.activePlan ? JSON.parse(JSON.stringify(this.activePlan)) : null,
+            environment: JSON.parse(JSON.stringify(this.environment))
+        };
+        logAnima('info', 'State', 'Đã lưu snapshot state.');
+    },
+
+    restoreSnapshot() {
+        if (this.snapshotState) {
+            this.active_emotion = this.snapshotState.active_emotion;
+            this.activePlan = this.snapshotState.activePlan ? JSON.parse(JSON.stringify(this.snapshotState.activePlan)) : null;
+            this.environment = JSON.parse(JSON.stringify(this.snapshotState.environment));
+            logAnima('info', 'State', 'Đã khôi phục state từ snapshot.');
+        }
     },
 
     resetToDefault() {
