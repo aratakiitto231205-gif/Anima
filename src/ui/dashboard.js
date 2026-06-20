@@ -146,18 +146,152 @@ export const AnimaUI = {
             }
         });
 
-        // Save Custom Config
-        document.getElementById('anima_custom_api_save_btn')?.addEventListener('click', () => {
-            const settings = extension_settings[this.MODULE_NAME];
-            if (!settings) return;
-            settings.custom_api_url = document.getElementById('anima_custom_api_url')?.value || '';
-            settings.custom_api_key = document.getElementById('anima_custom_api_key')?.value || '';
-            settings.custom_api_model = document.getElementById('anima_custom_api_model')?.value || '';
+        // API Connection Profile UI Logic
+        const connectBtn = document.getElementById('anima_custom_api_save_btn');
+        const statusEl = document.getElementById('anima_custom_api_status');
+        const availableModelsSelect = document.getElementById('anima_custom_api_available_models');
+        const modelInput = document.getElementById('anima_custom_api_model');
+
+        const updateApiStatus = (isValid, message) => {
+            if (!statusEl) return;
+            const dot = statusEl.querySelector('div');
+            const text = statusEl.querySelector('span');
+            if (isValid) {
+                dot.style.background = '#10b981';
+                text.style.color = '#10b981';
+                text.textContent = 'Valid';
+            } else {
+                dot.style.background = '#ef4444';
+                text.style.color = '#ef4444';
+                text.textContent = message || 'Invalid';
+            }
+        };
+
+        // Fetch Models and Validate Connection
+        connectBtn?.addEventListener('click', async () => {
             saveSettingsDebounced();
             
-            if (typeof toastr !== 'undefined') toastr.success('Đã lưu cấu hình API riêng cho GM Agent.');
-            logAnima('success', 'UI', 'Custom API configuration saved.');
+            const urlInput = document.getElementById('anima_custom_api_url');
+            const keyInput = document.getElementById('anima_custom_api_key');
+            if (!urlInput || !keyInput) return;
+            
+            let baseUrl = urlInput.value.trim();
+            if (!baseUrl) return;
+            if (baseUrl.endsWith('/chat/completions')) {
+                baseUrl = baseUrl.replace('/chat/completions', '');
+            }
+            if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+
+            try {
+                if (statusEl) statusEl.querySelector('span').textContent = 'Connecting...';
+                
+                const response = await fetch(`${baseUrl}/models`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${keyInput.value}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                
+                if (data && data.data && Array.isArray(data.data)) {
+                    updateApiStatus(true);
+                    if (availableModelsSelect) {
+                        availableModelsSelect.innerHTML = '';
+                        const models = data.data.map(m => m.id).sort();
+                        models.forEach(id => {
+                            const opt = document.createElement('option');
+                            opt.value = id;
+                            opt.textContent = id;
+                            availableModelsSelect.appendChild(opt);
+                        });
+                        // Set current model if present
+                        if (modelInput && models.includes(modelInput.value)) {
+                            availableModelsSelect.value = modelInput.value;
+                        } else if (models.length > 0) {
+                            availableModelsSelect.value = models[0];
+                            if (modelInput) modelInput.value = models[0];
+                            saveSettingsDebounced();
+                        }
+                    }
+                } else {
+                    throw new Error('Invalid /models format');
+                }
+            } catch (err) {
+                updateApiStatus(false, err.message);
+                logAnima('error', 'UI', 'Connect API failed', err);
+            }
         });
+
+        // Dropdown selection to input
+        availableModelsSelect?.addEventListener('change', (e) => {
+            if (modelInput) {
+                modelInput.value = e.target.value;
+                saveSettingsDebounced();
+            }
+        });
+
+        // Save Key Visual Feedback
+        document.getElementById('anima_custom_api_key_btn')?.addEventListener('click', () => {
+            saveSettingsDebounced();
+            const keySavedMsg = document.getElementById('anima_custom_api_key_saved');
+            if (keySavedMsg) {
+                keySavedMsg.style.display = 'block';
+                setTimeout(() => {
+                    keySavedMsg.style.display = 'none';
+                }, 3000);
+            }
+        });
+
+        // Test Message Logic
+        document.getElementById('anima_custom_api_test_btn')?.addEventListener('click', async () => {
+            saveSettingsDebounced();
+            const url = document.getElementById('anima_custom_api_url')?.value?.trim();
+            const key = document.getElementById('anima_custom_api_key')?.value;
+            const model = document.getElementById('anima_custom_api_model')?.value;
+            
+            if (!url) return;
+            let targetUrl = url;
+            if (!targetUrl.endsWith('/chat/completions')) {
+                if (targetUrl.endsWith('/')) targetUrl = targetUrl.slice(0, -1);
+                targetUrl = `${targetUrl}/chat/completions`;
+            }
+            
+            try {
+                if (statusEl) statusEl.querySelector('span').textContent = 'Testing...';
+                const response = await fetch(targetUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${key}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: model || 'gpt-3.5-turbo',
+                        messages: [{role: 'user', content: 'Say "Hello from Anima GM!"'}],
+                        max_tokens: 15
+                    })
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+                
+                if (data.choices && data.choices[0]) {
+                    updateApiStatus(true);
+                    logAnima('info', 'UI', `Test Success: ${data.choices[0].message.content}`);
+                    window.alert(`Test Success: ${data.choices[0].message.content}`);
+                } else {
+                    throw new Error('Invalid chat response format');
+                }
+            } catch (err) {
+                updateApiStatus(false, err.message);
+                window.alert(`Test Failed: ${err.message}`);
+                logAnima('error', 'UI', 'Test API failed', err);
+            }
+        });
+
+        // End of Custom API Logic
     },
 
     async setupApiPanel() {
