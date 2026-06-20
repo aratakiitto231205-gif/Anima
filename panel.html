@@ -60,15 +60,14 @@
         </div>
 
         <!-- Section 5: GM Model Configuration -->
-        <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 8px;">
-            <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
-                <i class="fa-solid fa-server" style="color: #10b981;"></i>
-                <span>API Connection</span>
-            </h4>
+        <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 12px; display: flex; flex-direction: column; gap: 12px;">
             
-            <div class="api_setup flex-container" style="margin-bottom: 5px;">
-                <label for="anima_api_type" style="font-size: 0.85em;">API</label>
-                <select id="anima_api_type" class="text_pole flex1">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label for="anima_api_type" style="font-size: 0.9em; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+                    <i class="fa-solid fa-server" style="color: #10b981;"></i>
+                    API Connection Profile
+                </label>
+                <select id="anima_api_type" class="text_pole" style="width: 100%; box-sizing: border-box;">
                     <option value="st_main">SillyTavern Default</option>
                     <option value="custom">Custom (OpenAI Format)</option>
                 </select>
@@ -86,32 +85,36 @@
             </div>
 
             <!-- Custom API Subpanel (y hệt ST OpenAI) -->
-            <div id="anima_custom_api_panel" class="api_setup" style="display: none; flex-direction: column; gap: 10px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 10px;">
+            <div id="anima_custom_api_panel" style="display: none; flex-direction: column; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
                 
-                <div class="flex-container alignitemscenter">
-                    <label for="anima_custom_api_url" style="font-size: 0.85em;">Chat Completion Source</label>
-                    <select id="anima_custom_api_source" class="text_pole flex1">
-                        <option value="reverse_proxy">Reverse Proxy</option>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;">Chat Completion Source</label>
+                    <select id="anima_custom_api_source" class="text_pole" style="width: 100%; box-sizing: border-box;">
+                        <option value="custom">Custom (OpenAI-compatible)</option>
                     </select>
                 </div>
 
-                <div class="flex-container alignitemscenter">
-                    <label for="anima_custom_api_url" style="font-size: 0.85em;">Reverse Proxy</label>
-                    <input type="text" id="anima_custom_api_url" class="text_pole flex1" placeholder="http://127.0.0.1:5001/v1" />
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;">Custom Endpoint (Base URL)</label>
+                    <input type="text" id="anima_custom_api_url" class="text_pole" placeholder="https://api.openai.com/v1" style="width: 100%; box-sizing: border-box;" />
+                    <small style="font-size: 0.75em; color: #94a3b8; line-height: 1.3;">Doesn't work? Try adding <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 3px; font-family: monospace;">/v1</code> at the end! <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 3px; font-family: monospace;">/chat/completions</code> suffix will be added automatically.</small>
                 </div>
                 
-                <div class="flex-container alignitemscenter">
-                    <label for="anima_custom_api_key" style="font-size: 0.85em;">API Key</label>
-                    <input type="password" id="anima_custom_api_key" class="text_pole flex1" placeholder="sk-..." />
-                    <div id="anima_custom_api_save_btn" class="menu_button menu_button_icon">
-                        <i class="fa-solid fa-plug"></i>
-                        <span>Connect</span>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;">Custom API Key <span style="font-weight: normal; font-size: 0.85em; color: #94a3b8;">(Optional)</span></label>
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <input type="password" id="anima_custom_api_key" class="text_pole" placeholder="sk-..." style="flex: 1; box-sizing: border-box;" />
+                        <div class="menu_button menu_button_icon" title="Save Key" style="padding: 6px 10px;"><i class="fa-solid fa-key"></i></div>
                     </div>
                 </div>
 
-                <div class="flex-container alignitemscenter">
-                    <label for="anima_custom_api_model" style="font-size: 0.85em;">Chat Completion Model</label>
-                    <input type="text" id="anima_custom_api_model" class="text_pole flex1" placeholder="gpt-4o-mini" />
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;">Enter a Model ID</label>
+                    <input type="text" id="anima_custom_api_model" class="text_pole" placeholder="gpt-4o-mini" style="width: 100%; box-sizing: border-box;" />
+                </div>
+
+                <div style="display: flex; gap: 6px; margin-top: 4px;">
+                    <div id="anima_custom_api_save_btn" class="menu_button" style="padding: 6px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); font-size: 0.85em;">Connect</div>
                 </div>
             </div>
         </div>
