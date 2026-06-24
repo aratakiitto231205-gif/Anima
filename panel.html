@@ -3,7 +3,7 @@
     <div class="inline-drawer-toggle inline-drawer-header userSettingsInnerExpandable" style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.15)); border-radius: 6px; padding: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
         <b style="color: var(--SmartThemeTextAccentColor); font-size: 1.05em; display: flex; align-items: center; gap: 8px;">
             <i class="fa-solid fa-brain" style="color: #6366f1; animation: pulseBrain 2s infinite;"></i>
-            <span>Anima Engine v0.13.3.3</span>
+            <span>Anima Engine v0.13.4</span>
         </b>
         <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down" style="transition: transform 0.3s ease;"></div>
     </div>
@@ -11,21 +11,34 @@
     <!-- Content Area (Glassmorphic look) -->
     <div class="inline-drawer-content" style="padding: 15px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0 0 6px 6px; margin-top: -1px; backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 12px;">
         
-        <!-- Section 1: Time Clock -->
-        <div id="anima_live_clock" style="display: flex; justify-content: space-between; align-items: center; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 6px; padding: 8px 12px;">
-            <span style="font-size: 0.82em; opacity: 0.85; color: var(--SmartThemeTextColor);">🕐 Thời gian thế giới:</span>
-            <span id="anima_live_clock_value" style="font-weight: bold; color: #818cf8; font-family: monospace; font-size: 0.85em;">—</span>
+        <!-- Section 1: Time Clock & Language Selector -->
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 10px;">
+            <!-- Clock -->
+            <div id="anima_live_clock" style="display: flex; justify-content: space-between; align-items: center; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 6px; padding: 8px 12px; height: 36px; box-sizing: border-box;">
+                <span id="anima_label_clock" style="font-size: 0.82em; opacity: 0.85; color: var(--SmartThemeTextColor); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">🕐 Thời gian:</span>
+                <span id="anima_live_clock_value" style="font-weight: bold; color: #818cf8; font-family: monospace; font-size: 0.85em;">—</span>
+            </div>
+            <!-- Language Selector -->
+            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.15); border-radius: 6px; padding: 6px 12px; height: 36px; box-sizing: border-box;">
+                <span style="font-size: 0.82em; opacity: 0.85; color: var(--SmartThemeTextColor);">🌐</span>
+                <select id="anima_language_select" class="text_pole" style="font-size: 0.8em; padding: 2px 4px; border-radius: 4px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: #fff; cursor: pointer; height: 24px; line-height: 1.2; width: 100%;">
+                    <option value="en">English</option>
+                    <option value="vi">Tiếng Việt</option>
+                    <option value="ja">日本語</option>
+                    <option value="zh">中文</option>
+                </select>
+            </div>
         </div>
 
         <!-- Section 2: Vitals Status (Status & Emotion) -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <div id="anima_toggle_btn" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; justify-content: center; align-items: center; text-align: center; cursor: pointer; transition: all 0.2s;" title="Nhấn để bật/tắt Anima Engine">
-                <span style="font-size: 0.75em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Anima Engine (Bật/Tắt)</span>
+                <span id="anima_label_toggle_header" style="font-size: 0.75em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Anima Engine (Bật/Tắt)</span>
                 <div id="cog_dash_status" style="font-weight: bold; color: #10b981; font-size: 1.1em; text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);">Active</div>
             </div>
             
             <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px; display: flex; flex-direction: column; gap: 4px; justify-content: center; align-items: center; text-align: center;">
-                <span style="font-size: 0.75em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Cảm xúc đích</span>
+                <span id="anima_label_emotion_header" style="font-size: 0.75em; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em;">Cảm xúc đích</span>
                 <div id="cog_dash_emotion" style="font-weight: bold; color: #38bdf8; font-size: 1.1em; text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);">Neutral 😐</div>
             </div>
         </div>
@@ -34,7 +47,7 @@
         <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
             <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
                 <i class="fa-solid fa-map" style="color: #fbbf24;"></i>
-                <span>Kịch bản kể chuyện (Narrative Plan)</span>
+                <span id="anima_label_plan_header">Kịch bản kể chuyện (Narrative Plan)</span>
             </h4>
             <div id="cog_dash_thoughts" style="font-size: 0.82em; line-height: 1.45; background: rgba(0, 0, 0, 0.2); border-radius: 4px; padding: 8px 10px; color: #e2e8f0; font-family: monospace; border-left: 2px solid #fbbf24; word-break: break-word;">
                 <i style="color: #64748b;">Chưa có kế hoạch kể chuyện nào...</i>
@@ -46,7 +59,7 @@
             <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; justify-content: space-between; align-items: center;">
                 <span style="display: flex; align-items: center; gap: 6px;">
                     <i class="fa-solid fa-terminal" style="color: #a855f7;"></i>
-                    <span>Nhật ký nhận thức (Logs)</span>
+                    <span id="anima_label_logs_header">Nhật ký nhận thức (Logs)</span>
                 </span>
                 <div style="display: flex; gap: 6px;">
                     <i id="cog_btn_copy_logs" class="fa-solid fa-copy" style="cursor: pointer; opacity: 0.7; transition: opacity 0.2s;" title="Sao chép log"></i>
@@ -65,7 +78,7 @@
             <div style="display: flex; flex-direction: column; gap: 4px;">
                 <label for="anima_api_type" style="font-size: 0.9em; font-weight: bold; color: #fff; display: flex; align-items: center; gap: 6px; cursor: pointer;">
                     <i class="fa-solid fa-server" style="color: #10b981;"></i>
-                    API Connection Profile
+                    <span id="anima_label_api_profile_header">API Connection Profile</span>
                 </label>
                 <select id="anima_api_type" class="text_pole" style="width: 100%; box-sizing: border-box;">
                     <option value="st_main">SillyTavern Default</option>
@@ -76,11 +89,11 @@
             <!-- ST Connection Default Subpanel -->
             <div id="anima_st_api_panel" style="display: flex; flex-direction: column; gap: 8px;">
                 <div style="font-size: 0.82em; color: #cbd5e1; background: rgba(0, 0, 0, 0.2); border-radius: 4px; padding: 8px 10px; font-family: monospace;">
-                    <i>Đang sử dụng cấu hình API chung của hệ thống.</i>
+                    <i id="anima_label_st_api_desc">Đang sử dụng cấu hình API chung của hệ thống.</i>
                 </div>
                 <div id="anima_open_st_api_btn" class="menu_button menu_button_icon" style="justify-content: center; width: 100%;">
                     <i class="fa-solid fa-plug"></i>
-                    <span>Mở Module Cài Đặt Gốc</span>
+                    <span id="anima_label_open_st_api_btn">Mở Module Cài Đặt Gốc</span>
                 </div>
             </div>
 
@@ -88,21 +101,21 @@
             <div id="anima_custom_api_panel" style="display: none; flex-direction: column; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
                 
                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;">Chat Completion Source</label>
+                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;"><span id="anima_label_custom_source">Chat Completion Source</span></label>
                     <select id="anima_custom_api_source" class="text_pole" style="width: 100%; box-sizing: border-box;">
                         <option value="custom">Custom (OpenAI-compatible)</option>
                     </select>
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;">Custom Endpoint (Base URL)</label>
+                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;"><span id="anima_label_custom_endpoint">Custom Endpoint (Base URL)</span></label>
                     <input type="text" id="anima_custom_api_url" class="text_pole" placeholder="https://api.openai.com/v1" style="width: 100%; box-sizing: border-box;" />
-                    <small style="font-size: 0.75em; color: #94a3b8; line-height: 1.3;">Doesn't work? Try adding <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 3px; font-family: monospace;">/v1</code> at the end! <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 3px; font-family: monospace;">/chat/completions</code> suffix will be added automatically.</small>
+                    <small id="anima_label_custom_endpoint_desc" style="font-size: 0.75em; color: #94a3b8; line-height: 1.3;">Doesn't work? Try adding <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 3px; font-family: monospace;">/v1</code> at the end! <code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 3px; font-family: monospace;">/chat/completions</code> suffix will be added automatically.</small>
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;">Custom API Key <span style="font-weight: normal; font-size: 0.85em; color: #94a3b8;">(Optional)</span></label>
-                    <div id="anima_custom_api_key_saved" style="font-size: 0.8em; color: #10b981; margin-bottom: 2px; display: none;"><i class="fa-solid fa-check"></i> Key saved</div>
+                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;"><span id="anima_label_custom_key">Custom API Key (Optional)</span></label>
+                    <div id="anima_custom_api_key_saved" style="font-size: 0.8em; color: #10b981; margin-bottom: 2px; display: none;"><i class="fa-solid fa-check"></i> <span id="anima_label_key_saved_text">Key saved</span></div>
                     <div style="display: flex; gap: 4px; align-items: center;">
                         <input type="password" id="anima_custom_api_key" class="text_pole" placeholder="sk-..." style="flex: 1; box-sizing: border-box;" />
                         <div id="anima_custom_api_key_btn" class="menu_button menu_button_icon" title="Save Key" style="padding: 6px 10px;"><i class="fa-solid fa-key"></i></div>
@@ -110,25 +123,25 @@
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;">Enter a Model ID</label>
+                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;"><span id="anima_label_custom_model_id">Enter a Model ID</span></label>
                     <input type="text" id="anima_custom_api_model" class="text_pole" placeholder="gpt-4o-mini" style="width: 100%; box-sizing: border-box;" />
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 4px;">
-                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;">Available Models</label>
+                    <label style="font-size: 0.9em; font-weight: bold; color: #fff;"><span id="anima_label_custom_available_models">Available Models</span></label>
                     <select id="anima_custom_api_available_models" class="text_pole" style="width: 100%; box-sizing: border-box;">
                         <option value="">Load models to view...</option>
                     </select>
                 </div>
 
                 <div style="display: flex; gap: 6px; margin-top: 4px; align-items: center;">
-                    <div id="anima_custom_api_save_btn" class="menu_button" style="padding: 6px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); font-size: 0.85em;">Connect</div>
-                    <div id="anima_custom_api_test_btn" class="menu_button" style="padding: 6px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); font-size: 0.85em;">Test Message</div>
+                    <div id="anima_custom_api_save_btn" class="menu_button" style="padding: 6px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); font-size: 0.85em;"><span id="anima_label_connect_btn">Connect</span></div>
+                    <div id="anima_custom_api_test_btn" class="menu_button" style="padding: 6px 12px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.05); font-size: 0.85em;"><span id="anima_label_test_btn">Test Message</span></div>
                 </div>
                 
                 <div id="anima_custom_api_status" style="display: flex; align-items: center; gap: 6px; font-size: 0.85em; font-weight: bold; color: #64748b; margin-top: 2px;">
                     <div style="width: 10px; height: 10px; border-radius: 50%; background: #64748b;"></div>
-                    <span>Untested</span>
+                    <span id="anima_label_api_status_text">Untested</span>
                 </div>
             </div>
         </div>
@@ -137,11 +150,11 @@
         <div style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 6px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;">
             <h4 style="margin: 0; font-size: 0.85em; color: var(--SmartThemeTextAccentColor); font-weight: bold; display: flex; align-items: center; gap: 6px;">
                 <i class="fa-solid fa-circle-nodes" style="color: #6366f1;"></i>
-                <span>Hậu trường (Backstage Terminal)</span>
+                <span id="anima_label_backstage_header">Hậu trường (Backstage Terminal)</span>
             </h4>
             <div style="display: flex; gap: 6px; align-items: center;">
                 <input type="text" id="cog_admin_chat_input" style="flex-grow: 1; padding: 6px 10px; border-radius: 5px; border: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.35); color: #f8fafc; font-size: 0.82em; font-family: monospace;" placeholder="Nhập lệnh (ví dụ: help, status)..." />
-                <button id="cog_admin_send_btn" style="padding: 6px 12px; font-size: 0.8em; font-weight: 600; border-radius: 5px; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.15); color: #818cf8; cursor: pointer; transition: all 0.2s; font-family: monospace;">Gửi</button>
+                <button id="cog_admin_send_btn" style="padding: 6px 12px; font-size: 0.8em; font-weight: 600; border-radius: 5px; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(99, 102, 241, 0.15); color: #818cf8; cursor: pointer; transition: all 0.2s; font-family: monospace;"><span id="anima_label_backstage_send">Gửi</span></button>
             </div>
         </div>
 

@@ -14,9 +14,9 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-## 📊 Current State (v0.13.4 — State Snapshot, Global Toggle & Native Custom API UI)
+## 📊 Current State (v0.13.4 — State Snapshot, Global Toggle, Custom API UI & Multi-Language)
 
-> **v0.13.4** = Fix swipe state accumulation + Toggle extension globally + Custom API UI matches ST native.
+> **v0.13.4** = Fix swipe state accumulation + Toggle extension globally + Custom API UI + Multi-Language (en, vi, ja, zh).
 
 | Component | Status | Notes |
 |---|---|---|
@@ -36,7 +36,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | `agent_handoff/` | ✅ Cleaned | Rebooted empty directory for future handoffs |
 | ESLint | ✅ Clean (0 warnings/errors) | Cấu hình Flat Config chạy tốt trên `src/` |
 | Git | ✅ Pushed | Default branch `main`, repo: https://github.com/aratakiitto231205-gif/Anima |
-| Tests | ✅ 13 Passed | Vitest unit tests for streamlined states, plans, environment changes, and terminal commands |
+| Tests | ✅ 16 Passed | Vitest unit tests for streamlined states, plans, environment changes, terminal commands, and translation dictionary symmetry |
 
 
 ---
@@ -179,6 +179,7 @@ This project uses **Arataki Itto** as the test character. Character definition (
 | 2026-06-21 | Native Custom API UI (v0.13.4) | Xây dựng UI form Custom API y hệt ST (Chat Completion Source, Reverse Proxy, Connect button). Chuyển `llm.js` sang Dependency Injection để vượt lỗi import `extensions.js` trong Vitest. |
 | 2026-06-21 | UI Cloning & Isolation Policy | Khi clone UI của ST (VD: Connection Profile), TUYỆT ĐỐI KHÔNG copy-paste code nội bộ của ST (như jQuery ajax, biến global). Phải viết lại bằng JS thuần (`fetch`) để đảm bảo tính độc lập (Isolation) và không ghi đè setting chat chính của user. |
 | 2026-06-21 | Autosave over over-engineering | Thay vì làm hệ thống Profile Management phức tạp (New/Save/Delete), dùng event `input` để autosave realtime. Vừa đáp ứng UX (không bắt user gõ lại), vừa giữ codebase nhẹ gọn. |
+| 2026-06-24 | Hỗ trợ đa ngôn ngữ (v0.13.4) | Bổ sung từ điển dịch en, vi, ja, zh và cơ chế tự động chuyển nhãn, placeholder, tooltip, và định dạng giờ Live Clock động. Thêm test đối xứng i18n. |
 
 
 ---
@@ -212,4 +213,4 @@ This project uses **Arataki Itto** as the test character. Character definition (
 
 ---
 
-> **Last updated:** 2026-06-21 (v0.13.4 State Snapshot, Global Toggle & Native Custom API UI)
+> **Last updated:** 2026-06-24 (v0.13.4 State Snapshot, Global Toggle, Custom API UI & Multi-Language)

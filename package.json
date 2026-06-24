@@ -1,6 +1,6 @@
 {
   "name": "st-anima",
-  "version": "0.13.3.3",
+  "version": "0.13.4",
   "description": "SillyTavern extension — Anima Engine",
   "main": "index.js",
   "scripts": {

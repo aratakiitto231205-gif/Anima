@@ -1,4 +1,4 @@
-// v0.13.3.3 — Simplified Dashboard UI Manager
+// v0.13.4 — Simplified Dashboard UI Manager
 import { 
     logAnima, 
     registerAppendLogCallback, 
@@ -10,6 +10,7 @@ import { ADAgent } from '../agents/ad.js';
 import { AnimaState } from '../core/state.js';
 import { extension_settings } from '../../../../../extensions.js';
 import { saveSettingsDebounced } from '../../../../../../script.js';
+import { translations } from '../utils/i18n.js';
 
 function escapeHTML(str) {
     if (!str) return '';
@@ -110,6 +111,16 @@ export const AnimaUI = {
             if (e.key === 'Enter') handleSend();
         });
 
+        // Language Selector
+        document.getElementById('anima_language_select')?.addEventListener('change', (e) => {
+            const settings = extension_settings[this.MODULE_NAME];
+            if (settings) {
+                settings.lang = e.target.value;
+                saveSettingsDebounced();
+                this.applyLanguage(settings.lang);
+            }
+        });
+
         // Toggle State Enable/Disable
         document.getElementById('anima_toggle_btn')?.addEventListener('click', () => {
             const settings = extension_settings[this.MODULE_NAME];
@@ -120,10 +131,11 @@ export const AnimaUI = {
             
             this.updateUI(AnimaState);
 
+            const t = translations[settings.lang || 'en'] || translations.en;
             if (typeof toastr !== 'undefined') {
-                toastr.success(`Anima Engine: ${newState ? 'Đã bật' : 'Đã tắt'}`);
+                toastr.success(`Anima Engine: ${newState ? t.engine_enabled : t.engine_disabled}`);
             }
-            logAnima('info', 'UI', `Anima Engine toggled: ${newState}`);
+            logAnima('info', 'UI', `${t.engine_toggled} ${newState ? t.engine_enabled : t.engine_disabled}`);
         });
 
         // API Config Selection
@@ -153,7 +165,7 @@ export const AnimaUI = {
             if (stApiBtn) {
                 stApiBtn.click();
             } else {
-                logAnima('warn', 'UI', 'Không tìm thấy nút api_button của SillyTavern.');
+                logAnima('warn', 'UI', 'SillyTavern api_button not found.');
             }
         });
 
@@ -167,14 +179,17 @@ export const AnimaUI = {
             if (!statusEl) return;
             const dot = statusEl.querySelector('div');
             const text = statusEl.querySelector('span');
+            const settings = extension_settings[this.MODULE_NAME] || {};
+            const lang = settings.lang || 'en';
+            const t = translations[lang] || translations.en;
             if (isValid) {
                 dot.style.background = '#10b981';
                 text.style.color = '#10b981';
-                text.textContent = 'Valid';
+                text.textContent = t.api_valid || 'Valid';
             } else {
                 dot.style.background = '#ef4444';
                 text.style.color = '#ef4444';
-                text.textContent = message || 'Invalid';
+                text.textContent = message || t.api_invalid || 'Invalid';
             }
         };
 
@@ -194,7 +209,10 @@ export const AnimaUI = {
             if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
 
             try {
-                if (statusEl) statusEl.querySelector('span').textContent = 'Connecting...';
+                const settings = extension_settings[this.MODULE_NAME] || {};
+                const lang = settings.lang || 'en';
+                const t = translations[lang] || translations.en;
+                if (statusEl) statusEl.querySelector('span').textContent = t.api_connecting || 'Connecting...';
                 
                 const response = await fetch(`${baseUrl}/models`, {
                     method: 'GET',
@@ -224,12 +242,11 @@ export const AnimaUI = {
                         } else if (models.length > 0) {
                             availableModelsSelect.value = models[0];
                             if (modelInput) modelInput.value = models[0];
-                            const settings = extension_settings[this.MODULE_NAME];
-                            if (settings) {
-                                settings.custom_api_model = models[0];
-                                saveSettingsDebounced();
-                                AnimaUI.saveApiConfigToCharacter(settings);
-                            }
+                             if (settings) {
+                                 settings.custom_api_model = models[0];
+                                 saveSettingsDebounced();
+                                 AnimaUI.saveApiConfigToCharacter(settings);
+                             }
                         }
                     }
                 } else {
@@ -300,7 +317,10 @@ export const AnimaUI = {
             }
             
             try {
-                if (statusEl) statusEl.querySelector('span').textContent = 'Testing...';
+                const settings = extension_settings[this.MODULE_NAME] || {};
+                const lang = settings.lang || 'en';
+                const t = translations[lang] || translations.en;
+                if (statusEl) statusEl.querySelector('span').textContent = t.api_testing || 'Testing...';
                 const response = await fetch(targetUrl, {
                     method: 'POST',
                     headers: {
@@ -319,14 +339,19 @@ export const AnimaUI = {
                 
                 if (data.choices && data.choices[0]) {
                     updateApiStatus(true);
-                    logAnima('info', 'UI', `Test Success: ${data.choices[0].message.content}`);
-                    window.alert(`Test Success: ${data.choices[0].message.content}`);
+                    const successMsg = `${t.api_test_success || 'Test Success:'} ${data.choices[0].message.content}`;
+                    logAnima('info', 'UI', successMsg);
+                    window.alert(successMsg);
                 } else {
                     throw new Error('Invalid chat response format');
                 }
             } catch (err) {
+                const settings = extension_settings[this.MODULE_NAME] || {};
+                const lang = settings.lang || 'en';
+                const t = translations[lang] || translations.en;
                 updateApiStatus(false, err.message);
-                window.alert(`Test Failed: ${err.message}`);
+                const failedMsg = `${t.api_test_failed || 'Test Failed:'} ${err.message}`;
+                window.alert(failedMsg);
                 logAnima('error', 'UI', 'Test API failed', err);
             }
         });
@@ -372,6 +397,12 @@ export const AnimaUI = {
         const activeSettings = settings || defaultSettings;
         const isEnabled = activeSettings.enabled !== false;
 
+        // Restore language selector and apply translations
+        const lang = activeSettings.lang || 'en';
+        const selectLang = document.getElementById('anima_language_select');
+        if (selectLang) selectLang.value = lang;
+        this.applyLanguage(lang);
+
         // Restore API config inputs
         const apiType = activeSettings.api_type || 'st_main';
         const selectApiType = document.getElementById('anima_api_type');
@@ -392,17 +423,14 @@ export const AnimaUI = {
         // Status
         const statusEl = document.getElementById('cog_dash_status');
         if (statusEl) {
-            statusEl.innerText = isEnabled ? 'Active ✓' : 'Disabled';
+            const t = translations[lang] || translations.en;
+            statusEl.innerText = isEnabled ? `${t.engine_enabled} ✓` : t.engine_disabled;
             statusEl.style.color = isEnabled ? '#10b981' : '#94a3b8';
         }
 
         // Emotion
         const emoEl = document.getElementById('cog_dash_emotion');
         if (emoEl) emoEl.innerText = 'Neutral 😐';
-
-        // Thoughts/Plan
-        const thoughtsEl = document.getElementById('cog_dash_thoughts');
-        if (thoughtsEl) thoughtsEl.innerHTML = '<i style="color: #64748b;">Chưa có kế hoạch kể chuyện nào...</i>';
     },
 
     updateLiveClock(featureTimeEnabled) {
@@ -423,7 +451,13 @@ export const AnimaUI = {
         const valEl = document.getElementById('anima_live_clock_value');
         
         const tick = () => {
-            if (valEl) valEl.innerText = new Date().toLocaleString('vi-VN');
+            const settings = extension_settings[this.MODULE_NAME] || {};
+            const lang = settings.lang || 'en';
+            let locale = 'en-US';
+            if (lang === 'vi') locale = 'vi-VN';
+            else if (lang === 'ja') locale = 'ja-JP';
+            else if (lang === 'zh') locale = 'zh-CN';
+            if (valEl) valEl.innerText = new Date().toLocaleString(locale);
         };
         tick();
         this.clockInterval = setInterval(tick, 1000);
@@ -458,7 +492,8 @@ export const AnimaUI = {
                 }
                 if (changed) {
                     saveSettingsDebounced();
-                    logAnima('info', 'UI', 'Đã khôi phục API Profile từ nhân vật.');
+                    const t = translations[settings.lang || 'en'] || translations.en;
+                    logAnima('info', 'UI', t.restored_profile || 'Restored API Profile from character.');
                 }
             }
         }
@@ -478,9 +513,94 @@ export const AnimaUI = {
         };
         try {
             context.writeExtensionField(charId, 'st_anima_api_config', apiConfig);
-            logAnima('success', 'UI', 'Đã lưu API config vào nhân vật.');
+            const t = translations[settings.lang || 'en'] || translations.en;
+            logAnima('success', 'UI', t.saved_profile || 'Saved API config to character.');
         } catch (e) {
-            logAnima('error', 'UI', `Không thể lưu API config vào nhân vật: ${e.message}`);
+            logAnima('error', 'UI', `Failed to save API config to character: ${e.message}`);
+        }
+    },
+
+    applyLanguage(lang) {
+        const t = translations[lang] || translations.en;
+        
+        // Element translation mappings
+        const textElements = {
+            'anima_label_clock': t.clock_label,
+            'anima_label_toggle_header': t.toggle_header,
+            'anima_label_emotion_header': t.emotion_header,
+            'anima_label_plan_header': t.plan_header,
+            'anima_label_logs_header': t.logs_header,
+            'anima_label_api_profile_header': t.api_profile_header,
+            'anima_label_st_api_desc': t.st_api_desc,
+            'anima_label_open_st_api_btn': t.open_st_api_btn,
+            'anima_label_custom_source': t.custom_source,
+            'anima_label_custom_endpoint': t.custom_endpoint,
+            'anima_label_custom_key': t.custom_key,
+            'anima_label_key_saved_text': t.custom_key_saved,
+            'anima_label_custom_model_id': t.custom_model_id,
+            'anima_label_custom_available_models': t.custom_available_models,
+            'anima_label_connect_btn': t.connect_btn,
+            'anima_label_test_btn': t.test_btn,
+            'anima_label_backstage_header': t.backstage_header,
+            'anima_label_backstage_send': t.backstage_send
+        };
+
+        for (const [id, value] of Object.entries(textElements)) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        }
+
+        // Translate API profile dropdown option elements
+        const selectApiType = document.getElementById('anima_api_type');
+        if (selectApiType) {
+            const optSt = selectApiType.querySelector('option[value="st_main"]');
+            if (optSt) optSt.textContent = t.api_type_st || 'SillyTavern Default';
+            const optCustom = selectApiType.querySelector('option[value="custom"]');
+            if (optCustom) optCustom.textContent = t.api_type_custom || 'Custom (OpenAI Format)';
+        }
+
+        // Translate Custom API source dropdown option elements
+        const selectCustomSource = document.getElementById('anima_custom_api_source');
+        if (selectCustomSource) {
+            const optCustomSource = selectCustomSource.querySelector('option[value="custom"]');
+            if (optCustomSource) optCustomSource.textContent = t.api_source_custom || 'Custom (OpenAI-compatible)';
+        }
+
+        // Translate Custom Endpoint description small HTML element
+        const endpointDesc = document.getElementById('anima_label_custom_endpoint_desc');
+        if (endpointDesc) {
+            endpointDesc.innerHTML = t.custom_endpoint_desc;
+        }
+
+        // Translate empty available model placeholder in Custom API available models dropdown
+        const selectAvailableModels = document.getElementById('anima_custom_api_available_models');
+        if (selectAvailableModels) {
+            const firstOpt = selectAvailableModels.querySelector('option[value=""]');
+            if (firstOpt) firstOpt.textContent = t.custom_load_models_placeholder || 'Load models to view...';
+        }
+
+        // Placeholders and titles
+        const inputEl = document.getElementById('cog_admin_chat_input');
+        if (inputEl) inputEl.placeholder = t.backstage_placeholder;
+
+        const copyLogsBtn = document.getElementById('cog_btn_copy_logs');
+        if (copyLogsBtn) copyLogsBtn.title = t.title_copy_logs || 'Copy logs';
+
+        const downloadLogsBtn = document.getElementById('cog_btn_download_logs');
+        if (downloadLogsBtn) downloadLogsBtn.title = t.title_download_logs || 'Download logs';
+
+        const clearLogsBtn = document.getElementById('cog_btn_clear_logs');
+        if (clearLogsBtn) clearLogsBtn.title = t.title_clear_logs || 'Clear logs';
+        
+        // Also update placeholders if plan/thoughts are empty
+        const thoughtsEl = document.getElementById('cog_dash_thoughts');
+        if (thoughtsEl && (!AnimaState.activePlan || !AnimaState.activePlan.segments)) {
+            thoughtsEl.innerHTML = `<i style="color: #64748b;">${escapeHTML(t.plan_empty)}</i>`;
+        }
+        
+        const logsContainer = document.getElementById('cog_logs_container');
+        if (logsContainer && logsContainer.querySelector('i')) {
+            logsContainer.innerHTML = `<i style="color: #64748b; font-size: 0.82em;">${escapeHTML(t.logs_empty)}</i>`;
         }
     },
 
@@ -491,7 +611,9 @@ export const AnimaUI = {
         const statusEl = document.getElementById('cog_dash_status');
         if (statusEl) {
             const isEnabled = extension_settings[this.MODULE_NAME]?.enabled !== false;
-            statusEl.innerText = isEnabled ? 'Active ✓' : 'Disabled';
+            const lang = extension_settings[this.MODULE_NAME]?.lang || 'en';
+            const t = translations[lang] || translations.en;
+            statusEl.innerText = isEnabled ? `${t.engine_enabled} ✓` : t.engine_disabled;
             statusEl.style.color = isEnabled ? '#10b981' : '#94a3b8';
         }
 
@@ -510,7 +632,9 @@ export const AnimaUI = {
                 ).join('<br/>');
                 thoughtsEl.innerHTML = `<strong>Appraisal:</strong> ${escapeHTML(state.activePlan.appraisal || 'N/A')}<br/>${planLines}`;
             } else {
-                thoughtsEl.innerHTML = '<i style="color: #64748b;">Chưa có kế hoạch kể chuyện nào...</i>';
+                const lang = extension_settings[this.MODULE_NAME]?.lang || 'en';
+                const t = translations[lang] || translations.en;
+                thoughtsEl.innerHTML = `<i style="color: #64748b;">${escapeHTML(t.plan_empty)}</i>`;
             }
         }
     },
