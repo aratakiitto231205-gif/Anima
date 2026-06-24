@@ -59,8 +59,12 @@ export const AnimaOrchestrator = {
             logAnima('info', 'Orchestrator', `Nạp trạng thái nhân vật: ${characterId}`);
             AnimaState.loadForCharacter(characterId);
             
-            // Sync dashboardclock and UI
+            // Sync API config from character card and re-render placeholders
+            AnimaUI.syncApiConfigFromCharacter(characterId);
             const settings = extension_settings?.[this.MODULE_NAME] || {};
+            AnimaUI.renderPlaceholders(settings);
+            
+            // Sync dashboardclock and UI
             AnimaUI.updateLiveClock(settings.feature_time !== false);
             AnimaUI.updateUI(AnimaState);
         }

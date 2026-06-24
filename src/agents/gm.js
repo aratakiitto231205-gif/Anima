@@ -1,4 +1,4 @@
-// v0.13.3.1 — Game Master Agent (LLM-powered)
+// v0.13.3.2 — Game Master Agent (LLM-powered)
 import { logAnima } from '../utils/logger.js';
 import { LLMClient } from '../utils/llm.js';
 

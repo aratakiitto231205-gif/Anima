@@ -1,4 +1,4 @@
-// v0.13.3.1 — Simplified Dashboard UI Manager
+// v0.13.3.2 — Simplified Dashboard UI Manager
 import { 
     logAnima, 
     registerAppendLogCallback, 
@@ -131,6 +131,7 @@ export const AnimaUI = {
             if (settings) {
                 settings.api_type = isCustom ? 'custom' : 'st_main';
                 saveSettingsDebounced();
+                AnimaUI.saveApiConfigToCharacter(settings);
             }
         };
 
@@ -213,7 +214,12 @@ export const AnimaUI = {
                         } else if (models.length > 0) {
                             availableModelsSelect.value = models[0];
                             if (modelInput) modelInput.value = models[0];
-                            saveSettingsDebounced();
+                            const settings = extension_settings[this.MODULE_NAME];
+                            if (settings) {
+                                settings.custom_api_model = models[0];
+                                saveSettingsDebounced();
+                                AnimaUI.saveApiConfigToCharacter(settings);
+                            }
                         }
                     }
                 } else {
@@ -230,8 +236,11 @@ export const AnimaUI = {
             if (modelInput) {
                 modelInput.value = e.target.value;
                 const settings = extension_settings[this.MODULE_NAME];
-                if (settings) settings.custom_api_model = e.target.value;
-                saveSettingsDebounced();
+                if (settings) {
+                    settings.custom_api_model = e.target.value;
+                    saveSettingsDebounced();
+                    AnimaUI.saveApiConfigToCharacter(settings);
+                }
             }
         });
 
@@ -242,6 +251,7 @@ export const AnimaUI = {
                 if (settings) {
                     settings[settingKey] = e.target.value;
                     saveSettingsDebounced();
+                    AnimaUI.saveApiConfigToCharacter(settings);
                 }
             });
         };
@@ -252,6 +262,10 @@ export const AnimaUI = {
         // Save Key Visual Feedback
         document.getElementById('anima_custom_api_key_btn')?.addEventListener('click', () => {
             saveSettingsDebounced();
+            const settings = extension_settings[AnimaUI.MODULE_NAME];
+            if (settings) {
+                AnimaUI.saveApiConfigToCharacter(settings);
+            }
             const keySavedMsg = document.getElementById('anima_custom_api_key_saved');
             if (keySavedMsg) {
                 keySavedMsg.style.display = 'block';
@@ -404,6 +418,60 @@ export const AnimaUI = {
         tick();
         this.clockInterval = setInterval(tick, 1000);
         logAnima('success', 'UI', 'Live clock ticking started');
+    },
+
+    syncApiConfigFromCharacter(characterId) {
+        if (typeof SillyTavern === 'undefined' || characterId === undefined) return;
+        const context = SillyTavern.getContext();
+        const character = context?.characters?.[characterId];
+        const apiConfig = character?.data?.extensions?.st_anima_api_config;
+        
+        if (apiConfig) {
+            const settings = extension_settings[this.MODULE_NAME];
+            if (settings) {
+                let changed = false;
+                if (apiConfig.api_type !== undefined && settings.api_type !== apiConfig.api_type) {
+                    settings.api_type = apiConfig.api_type;
+                    changed = true;
+                }
+                if (apiConfig.custom_api_url !== undefined && settings.custom_api_url !== apiConfig.custom_api_url) {
+                    settings.custom_api_url = apiConfig.custom_api_url;
+                    changed = true;
+                }
+                if (apiConfig.custom_api_key !== undefined && settings.custom_api_key !== apiConfig.custom_api_key) {
+                    settings.custom_api_key = apiConfig.custom_api_key;
+                    changed = true;
+                }
+                if (apiConfig.custom_api_model !== undefined && settings.custom_api_model !== apiConfig.custom_api_model) {
+                    settings.custom_api_model = apiConfig.custom_api_model;
+                    changed = true;
+                }
+                if (changed) {
+                    saveSettingsDebounced();
+                    logAnima('info', 'UI', 'Đã khôi phục API Profile từ nhân vật.');
+                }
+            }
+        }
+    },
+
+    saveApiConfigToCharacter(settings) {
+        if (typeof SillyTavern === 'undefined' || !settings) return;
+        const context = SillyTavern.getContext();
+        const charId = context?.characterId;
+        if (charId === undefined) return;
+        
+        const apiConfig = {
+            api_type: settings.api_type,
+            custom_api_url: settings.custom_api_url,
+            custom_api_key: settings.custom_api_key,
+            custom_api_model: settings.custom_api_model
+        };
+        try {
+            context.writeExtensionField(charId, 'st_anima_api_config', apiConfig);
+            logAnima('success', 'UI', 'Đã lưu API config vào nhân vật.');
+        } catch (e) {
+            logAnima('error', 'UI', `Không thể lưu API config vào nhân vật: ${e.message}`);
+        }
     },
 
     updateUI(state) {

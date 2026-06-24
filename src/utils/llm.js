@@ -46,6 +46,12 @@ export const LLMClient = {
         const url = settings.custom_api_url;
         if (!url) throw new Error('Chưa thiết lập URL cho Custom API.');
         
+        let targetUrl = url.trim();
+        if (!targetUrl.endsWith('/chat/completions')) {
+            if (targetUrl.endsWith('/')) targetUrl = targetUrl.slice(0, -1);
+            targetUrl = `${targetUrl}/chat/completions`;
+        }
+        
         const apiKey = settings.custom_api_key || '';
         const model = settings.custom_api_model || 'gpt-3.5-turbo';
 
@@ -63,7 +69,7 @@ export const LLMClient = {
             max_tokens: 1000
         });
 
-        const response = await fetch(url, {
+        const response = await fetch(targetUrl, {
             method: 'POST',
             headers: headers,
             body: body
