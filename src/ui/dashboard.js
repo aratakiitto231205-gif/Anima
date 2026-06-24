@@ -11,6 +11,16 @@ import { AnimaState } from '../core/state.js';
 import { extension_settings } from '../../../../../extensions.js';
 import { saveSettingsDebounced } from '../../../../../../script.js';
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 export const AnimaUI = {
     MODULE_NAME: 'st-anima',
     clockInterval: null,
@@ -496,9 +506,9 @@ export const AnimaUI = {
         if (thoughtsEl) {
             if (state.activePlan && state.activePlan.segments) {
                 const planLines = state.activePlan.segments.map((s, idx) => 
-                    `[Seg ${idx + 1} - ${s.type}]: ${s.intent}`
+                    `[Seg ${idx + 1} - ${escapeHTML(s.type)}]: ${escapeHTML(s.intent)}`
                 ).join('<br/>');
-                thoughtsEl.innerHTML = `<strong>Appraisal:</strong> ${state.activePlan.appraisal || 'N/A'}<br/>${planLines}`;
+                thoughtsEl.innerHTML = `<strong>Appraisal:</strong> ${escapeHTML(state.activePlan.appraisal || 'N/A')}<br/>${planLines}`;
             } else {
                 thoughtsEl.innerHTML = '<i style="color: #64748b;">Chưa có kế hoạch kể chuyện nào...</i>';
             }
@@ -525,7 +535,7 @@ export const AnimaUI = {
         else if (logEntry.level === 'COGNITIVE') color = '#c084fc';
         else if (logEntry.level === 'INFO') color = '#94a3b8';
 
-        logDiv.innerHTML = `<span style="color: #64748b;">[${logEntry.time}]</span> <span style="color: ${color}; font-weight: bold;">[${logEntry.level}]</span> <span style="color: #818cf8;">[${logEntry.module}]</span> <span style="color: #e2e8f0;">${logEntry.message}</span>`;
+        logDiv.innerHTML = `<span style="color: #64748b;">[${logEntry.time}]</span> <span style="color: ${color}; font-weight: bold;">[${logEntry.level}]</span> <span style="color: #818cf8;">[${logEntry.module}]</span> <span style="color: #e2e8f0;">${escapeHTML(logEntry.message)}</span>`;
         
         container.appendChild(logDiv);
         container.scrollTop = container.scrollHeight;

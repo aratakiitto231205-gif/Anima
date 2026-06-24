@@ -12,7 +12,7 @@ try {
     const extensionPath = new URL('.', import.meta.url).pathname;
     const extIdx = extensionPath.indexOf('/extensions/');
     if (extIdx !== -1) {
-        MODULE_NAME = extensionPath.substring(extIdx + 12).replace(/\/$/, '');
+        MODULE_NAME = decodeURIComponent(extensionPath.substring(extIdx + 12).replace(/\/$/, ''));
     }
 } catch (e) {
     console.error("Anima Engine: Failed to resolve MODULE_NAME dynamically, using default:", e);
