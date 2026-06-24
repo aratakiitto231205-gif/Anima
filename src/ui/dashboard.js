@@ -1,4 +1,4 @@
-// v0.13.3.2 — Simplified Dashboard UI Manager
+// v0.13.3.3 — Simplified Dashboard UI Manager
 import { 
     logAnima, 
     registerAppendLogCallback, 

@@ -1,4 +1,4 @@
-// v0.13.3.2 — Assistant Director Agent (Backstage Command Handler)
+// v0.13.3.3 — Assistant Director Agent (Backstage Command Handler)
 import { logAnima } from '../utils/logger.js';
 
 export const ADAgent = {

@@ -1,4 +1,4 @@
-// v0.13.3.2 — logger
+// v0.13.3.3 — logger
 let appendLogToUiCallback = null;
 
 export function registerAppendLogCallback(callback) {

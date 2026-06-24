@@ -1,4 +1,4 @@
-// v0.13.3.2 — Simplified State Manager
+// v0.13.3.3 — Simplified State Manager
 import { logAnima } from '../utils/logger.js';
 
 export const AnimaState = {
