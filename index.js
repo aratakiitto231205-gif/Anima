@@ -1,4 +1,4 @@
-// v0.13.3 — Clean Skeleton Bootstrapper
+// v0.13.3.1 — Clean Skeleton Bootstrapper
 import { eventSource, event_types, saveSettingsDebounced } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
 import { AnimaUI } from './src/ui/dashboard.js';
@@ -7,7 +7,6 @@ import { AnimaState } from './src/core/state.js';
 import { logAnima } from './src/utils/logger.js';
 
 let MODULE_NAME = 'st-anima';
-const EXT_NAME = 'st-anima';
 
 try {
     const extensionPath = new URL('.', import.meta.url).pathname;
@@ -31,23 +30,23 @@ const defaultSettings = {
 };
 
 async function init() {
-    logAnima('info', 'System', 'Khởi chạy Anima Engine v0.13.3...');
+    logAnima('info', 'System', 'Khởi chạy Anima Engine v0.13.3.1...');
 
     // 1. Khởi tạo cài đặt mặc định
-    if (!extension_settings[EXT_NAME]) {
-        extension_settings[EXT_NAME] = { ...defaultSettings };
-    } else if (Object.keys(extension_settings[EXT_NAME]).length === 0) {
-        Object.assign(extension_settings[EXT_NAME], defaultSettings);
+    if (!extension_settings[MODULE_NAME]) {
+        extension_settings[MODULE_NAME] = { ...defaultSettings };
+    } else if (Object.keys(extension_settings[MODULE_NAME]).length === 0) {
+        Object.assign(extension_settings[MODULE_NAME], defaultSettings);
     }
     saveSettingsDebounced();
 
     // 2. Mount Dashboard UI và vẽ placeholder
     await AnimaUI.mount(MODULE_NAME);
-    AnimaUI.renderPlaceholders(extension_settings[EXT_NAME], defaultSettings);
+    AnimaUI.renderPlaceholders(extension_settings[MODULE_NAME], defaultSettings);
     AnimaUI.renderApiStatus();
 
     // 3. Khởi tạo Event Orchestrator
-    AnimaOrchestrator.init({ eventSource, event_types });
+    AnimaOrchestrator.init({ eventSource, event_types, MODULE_NAME });
 
     // 4. Nạp trạng thái nhân vật hiện tại nếu đã chọn
     setTimeout(() => {
@@ -58,7 +57,7 @@ async function init() {
                 AnimaState.loadForCharacter(charId);
                 AnimaUI.updateUI(AnimaState);
                 
-                const settings = extension_settings[EXT_NAME];
+                const settings = extension_settings[MODULE_NAME];
                 AnimaUI.updateLiveClock(settings.feature_time !== false);
             }
         }

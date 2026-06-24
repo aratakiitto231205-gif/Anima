@@ -8,13 +8,17 @@ import { extension_settings } from '../../../../../extensions.js';
 export const AnimaOrchestrator = {
     eventSource: null,
     event_types: null,
+    MODULE_NAME: 'st-anima',
     lastProcessedUserMsg: '',
     lastProcessedSwipeId: -1,
     isProcessingPrompt: false,
 
-    init({ eventSource, event_types }) {
+    init({ eventSource, event_types, MODULE_NAME }) {
         this.eventSource = eventSource;
         this.event_types = event_types;
+        if (MODULE_NAME) {
+            this.MODULE_NAME = MODULE_NAME;
+        }
 
         // Core ST events registration
         this.eventSource.on(this.event_types.CHAT_CHANGED, () => this.onChatChanged());
@@ -56,7 +60,7 @@ export const AnimaOrchestrator = {
             AnimaState.loadForCharacter(characterId);
             
             // Sync dashboardclock and UI
-            const settings = extension_settings?.['st-anima'] || {};
+            const settings = extension_settings?.[this.MODULE_NAME] || {};
             AnimaUI.updateLiveClock(settings.feature_time !== false);
             AnimaUI.updateUI(AnimaState);
         }
@@ -67,7 +71,7 @@ export const AnimaOrchestrator = {
         if (this.isProcessingPrompt) return;
 
         // Skip if Anima is disabled
-        const settings = extension_settings?.['st-anima'] || {};
+        const settings = extension_settings?.[this.MODULE_NAME] || {};
         if (settings.enabled === false) {
             logAnima('info', 'Orchestrator', 'Anima disabled - skipping GM.');
             return;
@@ -176,7 +180,7 @@ export const AnimaOrchestrator = {
         const chat = context?.chat;
         if (!chat) return;
 
-        const settings = extension_settings?.['st-anima'] || {};
+        const settings = extension_settings?.[this.MODULE_NAME] || {};
         if (settings.enabled === false) return;
 
         const messageObj = chat[messageId];
