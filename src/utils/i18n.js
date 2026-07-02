@@ -45,7 +45,11 @@ export const translations = {
         model_not_selected: '(none)',
         title_copy_logs: 'Copy logs',
         title_download_logs: 'Download logs',
-        title_clear_logs: 'Clear logs'
+        title_clear_logs: 'Clear logs',
+        danger_zone: 'Danger Zone',
+        clear_data_btn: 'Clear All Extension Data',
+        clear_data_confirm: 'Are you sure you want to clear ALL Anima extension data? This will clear all settings, local storage backups, and configuration fields for ALL characters! This action is irreversible.',
+        clear_data_success: 'All extension data cleared successfully. Reloading SillyTavern...'
     },
     vi: {
         clock_label: '🕐 Thời gian:',
@@ -92,7 +96,11 @@ export const translations = {
         model_not_selected: '(chưa chọn)',
         title_copy_logs: 'Sao chép log',
         title_download_logs: 'Tải log',
-        title_clear_logs: 'Xóa log'
+        title_clear_logs: 'Xóa log',
+        danger_zone: 'Khu vực nguy hiểm (Danger Zone)',
+        clear_data_btn: 'Xóa Sạch Tất Cả Dữ Liệu',
+        clear_data_confirm: 'Bạn có chắc chắn muốn xóa TOÀN BỘ dữ liệu Anima? Thao tác này sẽ xóa tất cả cài đặt, bản sao lưu local storage và cấu hình trên TẤT CẢ nhân vật! Hành động này không thể hoàn tác.',
+        clear_data_success: 'Đã xóa toàn bộ dữ liệu extension thành công. Đang tải lại trang...'
     },
     ja: {
         clock_label: '🕐 世界時間:',
@@ -139,7 +147,11 @@ export const translations = {
         model_not_selected: '(未選択)',
         title_copy_logs: 'ログをコピー',
         title_download_logs: 'ログをダウンロード',
-        title_clear_logs: 'ログを消去'
+        title_clear_logs: 'ログを消去',
+        danger_zone: '危険ゾーン',
+        clear_data_btn: 'すべての拡張データを消去',
+        clear_data_confirm: '本当にすべてのAnima拡張データをクリアしますか？これにより、すべてのキャラクターの設定、ローカルストレージのバックアップ、および構成フィールドがクリアされます！このアクションは元に戻せません。',
+        clear_data_success: 'すべての拡張データが正常に消去されました。SillyTavernを再読み込みしています...'
     },
     zh: {
         clock_label: '🕐 世界时间:',
@@ -186,6 +198,10 @@ export const translations = {
         model_not_selected: '(未选择)',
         title_copy_logs: '复制日志',
         title_download_logs: '下载日志',
-        title_clear_logs: '清除日志'
+        title_clear_logs: '清除日志',
+        danger_zone: '危险区域',
+        clear_data_btn: '清除所有扩展数据',
+        clear_data_confirm: '您确定要清除所有 Anima 扩展数据吗？这将清除所有角色的设置、本地存储备份和配置字段！此操作是不可逆的。',
+        clear_data_success: '所有扩展数据已成功清除。正在重新加载 SillyTavern...'
     }
 };

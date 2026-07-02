@@ -356,6 +356,59 @@ export const AnimaUI = {
             }
         });
 
+        // Clear all extension data button
+        document.getElementById('anima_clear_data_btn')?.addEventListener('click', async () => {
+            const settings = extension_settings[this.MODULE_NAME] || {};
+            const lang = settings.lang || 'en';
+            const t = translations[lang] || translations.en;
+            
+            const confirmed = window.confirm(t.clear_data_confirm || 'Are you sure you want to delete all extension data? This will reset all settings, backups, and character config.');
+            if (!confirmed) return;
+            
+            try {
+                // 1. Clear character extension settings for ALL characters
+                if (typeof SillyTavern !== 'undefined') {
+                    const context = SillyTavern.getContext();
+                    const characters = context.characters || [];
+                    for (let i = 0; i < characters.length; i++) {
+                        try {
+                            context.writeExtensionField(i, 'st_anima_state', null);
+                            context.writeExtensionField(i, 'st_anima_api_config', null);
+                        } catch (err) {
+                            console.error(`[st-anima] Failed to clear extensions for character index ${i}:`, err);
+                        }
+                    }
+                }
+                
+                // 2. Clear localStorage backups
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key && (key.startsWith('st_anima_backup_') || key.startsWith('anima_backup_'))) {
+                        localStorage.removeItem(key);
+                    }
+                }
+                
+                // 3. Clear extension settings in memory
+                extension_settings[this.MODULE_NAME] = {};
+                saveSettingsDebounced();
+                
+                logAnima('success', 'UI', 'All extension data cleared successfully. Reloading SillyTavern...');
+                if (typeof toastr !== 'undefined') {
+                    toastr.success(t.clear_data_success || 'All extension data cleared successfully. Reloading page...');
+                }
+                
+                // Reload page after a short delay
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } catch (err) {
+                logAnima('error', 'UI', `Failed to clear extension data: ${err.message}`);
+                if (typeof toastr !== 'undefined') {
+                    toastr.error(`Failed to clear data: ${err.message}`);
+                }
+            }
+        });
+
         // End of Custom API Logic
     },
 
@@ -542,7 +595,9 @@ export const AnimaUI = {
             'anima_label_connect_btn': t.connect_btn,
             'anima_label_test_btn': t.test_btn,
             'anima_label_backstage_header': t.backstage_header,
-            'anima_label_backstage_send': t.backstage_send
+            'anima_label_backstage_send': t.backstage_send,
+            'anima_label_danger_zone': t.danger_zone,
+            'anima_label_clear_data_btn': t.clear_data_btn
         };
 
         for (const [id, value] of Object.entries(textElements)) {
